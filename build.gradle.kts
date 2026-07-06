@@ -138,10 +138,16 @@ subprojects {
             }
         }
     }
+
     plugins.withType(JavaPlugin::class.java) {
         extensions.configure(JavaPluginExtension::class.java) {
             sourceCompatibility = androidSourceCompatibility
             targetCompatibility = androidTargetCompatibility
+        }
+    }
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
         }
     }
 }
