@@ -116,6 +116,6 @@ while page <= total_pages:
         
     page += 1
 
-with open('modules.json', 'w', encoding='utf-8') as f:
+with open('scripts/modules.json', 'w', encoding='utf-8') as f:
     json.dump({"modules": modules}, f, indent=2, ensure_ascii=False)
 print(f"Saved {len(modules)} modules to modules.json successfully. Performed {new_fetches} new GitHub API fetches.")

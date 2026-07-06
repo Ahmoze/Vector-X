@@ -1,6 +1,8 @@
 name: Update Modules Repository
 
 on:
+  push:
+    branches: [ master ]
   schedule:
     - cron: '0 0,12 * * *' # Run twice a day
   workflow_dispatch: # Allow manual trigger
