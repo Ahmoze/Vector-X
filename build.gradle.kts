@@ -28,7 +28,7 @@ abstract class GitCommitCountValueSource : ValueSource<String, ValueSourceParame
                 isIgnoreExitValue = true
             }
         val count = output.toString().trim().toIntOrNull() ?: 0
-        return (count + 3018).toString() // Compensate for truncated git history (3031 for current HEAD)
+        return (count + 3019).toString() // Compensate for truncated git history (3033 for current HEAD)
     }
 }
 
@@ -93,7 +93,7 @@ subprojects {
                 val flags =
                     listOf(
                         "-DVERSION_CODE=${versionCodeProvider.get()}",
-                        "-DVERSION_NAME='\"${versionNameProvider.get()}\"'",
+                        "-DVERSION_NAME=\\\"${versionNameProvider.get()}\\\"",
                     )
 
                 val args =
