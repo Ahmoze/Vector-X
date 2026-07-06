@@ -1,0 +1,114 @@
+name: Core
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+    tags: [ v* ]
+  pull_request:
+  merge_group:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_HARDLINK: "true"
+      CCACHE_BASEDIR: "${{ github.workspace }}"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Write key
+        if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/master' ) || github.ref_type == 'tag' }}
+        run: |
+          if [ ! -z "${{ secrets.KEY_STORE }}" ]; then
+            echo androidStorePassword='${{ secrets.KEY_STORE_PASSWORD }}' >> gradle.properties
+            echo androidKeyAlias='${{ secrets.ALIAS }}' >> gradle.properties
+            echo androidKeyPassword='${{ secrets.KEY_PASSWORD }}' >> gradle.properties
+            echo androidStoreFile='key.jks' >> gradle.properties
+            echo ${{ secrets.KEY_STORE }} | base64 --decode > key.jks
+          fi
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Configure Gradle properties
+        run: |
+          echo 'android.native.buildOutput=verbose' >> ~/.gradle/gradle.properties
+          echo 'org.gradle.parallel=true' >> ~/.gradle/gradle.properties
+          echo 'org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8 -XX:+UseParallelGC' >> ~/.gradle/gradle.properties
+          echo 'android.native.buildOutput=verbose' >> ~/.gradle/gradle.properties
+
+      - name: Setup ninja
+        uses: seanmiddleditch/gha-setup-ninja@v6
+        with:
+          version: 1.12.1
+
+      - name: Setup ccache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.ccache
+            ${{ github.workspace }}/.ccache
+          key: ${{ runner.os }}-ccache-${{ hashFiles('**/build.gradle') }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-ccache-
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Remove Android's cmake
+        shell: bash
+        run: rm -rf $ANDROID_HOME/cmake
+
+      - name: Build with Gradle
+        run: |
+          ./gradlew zipAll
+
+      - name: Prepare artifact
+        if: success()
+        id: prepareArtifact
+        run: |
+          zygiskReleaseName=`ls zygisk/release/Vector-v*-Release.zip | awk -F '(/|.zip)' '{print $3}'` && echo "zygiskReleaseName=$zygiskReleaseName" >> $GITHUB_OUTPUT
+          zygiskDebugName=`ls zygisk/release/Vector-v*-Debug.zip | awk -F '(/|.zip)' '{print $3}'` && echo "zygiskDebugName=$zygiskDebugName" >> $GITHUB_OUTPUT
+          unzip zygisk/release/Vector-v*-Release.zip -d Vector-Release
+          unzip zygisk/release/Vector-v*-Debug.zip -d Vector-Debug
+
+      - name: Upload zygisk release
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ steps.prepareArtifact.outputs.zygiskReleaseName }}
+          path: "./Vector-Release/*"
+
+      - name: Upload zygisk debug
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ steps.prepareArtifact.outputs.zygiskDebugName }}
+          path: "./Vector-Debug/*"
+
+      - name: Upload mappings
+        uses: actions/upload-artifact@v6
+        with:
+          name: mappings
+          path: |
+            zygisk/build/outputs/mapping
+            app/build/outputs/mapping
+
+      - name: Upload symbols
+        uses: actions/upload-artifact@v6
+        with:
+          name: symbols
+          path: build/symbols
+

@@ -1,0 +1,1607 @@
+{
+  "modules": [
+    {
+      "name": "com.my.televip",
+      "description": "TeleVip",
+      "summary": "TeleVip A module for modifying Telegram",
+      "sourceUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip",
+      "releases": [
+        {
+          "name": "TeleVip 3.6",
+          "tagName": "320-3.6",
+          "createdAt": "2026-07-06T12:47:22Z",
+          "publishedAt": "2026-07-06T12:47:14Z",
+          "releaseAssets": [
+            {
+              "name": "app-release.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/320-3.6/app-release.apk",
+              "size": 4743582
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 3.5",
+          "tagName": "315-3.5",
+          "createdAt": "2026-05-18T08:17:37Z",
+          "publishedAt": "2026-05-18T08:17:27Z",
+          "releaseAssets": [
+            {
+              "name": "app-release.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/315-3.5/app-release.apk",
+              "size": 4729802
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 3.4",
+          "tagName": "310-3.4",
+          "createdAt": "2026-05-06T11:18:38Z",
+          "publishedAt": "2026-05-06T11:18:21Z",
+          "releaseAssets": [
+            {
+              "name": "app-release.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/310-3.4/app-release.apk",
+              "size": 4721773
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 3.3",
+          "tagName": "305-3.3",
+          "createdAt": "2026-04-07T08:03:39Z",
+          "publishedAt": "2026-04-07T08:03:31Z",
+          "releaseAssets": [
+            {
+              "name": "app-release.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/305-3.3/app-release.apk",
+              "size": 210724
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 3.2",
+          "tagName": "300-3.2",
+          "createdAt": "2026-03-26T11:46:39Z",
+          "publishedAt": "2026-03-26T11:46:31Z",
+          "releaseAssets": [
+            {
+              "name": "app-release.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/300-3.2/app-release.apk",
+              "size": 209465
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 3.1",
+          "tagName": "250-3.1",
+          "createdAt": "2026-03-16T08:38:23Z",
+          "publishedAt": "2026-03-16T08:38:14Z",
+          "releaseAssets": [
+            {
+              "name": "TeleVip.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/250-3.1/TeleVip.apk",
+              "size": 5048016
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 3.0",
+          "tagName": "230-3.0",
+          "createdAt": "2026-03-03T07:52:51Z",
+          "publishedAt": "2026-03-03T07:52:41Z",
+          "releaseAssets": [
+            {
+              "name": "app-release.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/230-3.0/app-release.apk",
+              "size": 5043312
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 2.7",
+          "tagName": "190-2.7",
+          "createdAt": "2026-02-23T11:01:24Z",
+          "publishedAt": "2026-02-23T11:01:15Z",
+          "releaseAssets": [
+            {
+              "name": "app-release.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/190-2.7/app-release.apk",
+              "size": 5039632
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 2.6",
+          "tagName": "175-2.6",
+          "createdAt": "2026-02-14T10:22:34Z",
+          "publishedAt": "2026-02-14T10:22:26Z",
+          "releaseAssets": [
+            {
+              "name": "app-release.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/175-2.6/app-release.apk",
+              "size": 4881124
+            }
+          ]
+        },
+        {
+          "name": "Televip 2.5",
+          "tagName": "105-2.5",
+          "createdAt": "2026-02-11T13:08:49Z",
+          "publishedAt": "2026-02-11T13:08:41Z",
+          "releaseAssets": [
+            {
+              "name": "app-release.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/105-2.5/app-release.apk",
+              "size": 4876904
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 2.0",
+          "tagName": "1-2.0",
+          "createdAt": "2025-06-07T10:23:30Z",
+          "publishedAt": "2025-06-07T10:23:20Z",
+          "releaseAssets": [
+            {
+              "name": "app-release.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/1-2.0/app-release.apk",
+              "size": 4664727
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 1.5",
+          "tagName": "1-1.5",
+          "createdAt": "2025-04-27T12:17:39Z",
+          "publishedAt": "2025-04-27T12:17:30Z",
+          "releaseAssets": [
+            {
+              "name": "TeleVip_1.5.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/1-1.5/TeleVip_1.5.apk",
+              "size": 267060
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 1.4.6",
+          "tagName": "1-1.4.6",
+          "createdAt": "2025-01-10T11:06:30Z",
+          "publishedAt": "2025-01-10T10:38:34Z",
+          "releaseAssets": [
+            {
+              "name": "TeleVip_1.4.6.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/1-1.4.6/TeleVip_1.4.6.apk",
+              "size": 197370
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 1.4",
+          "tagName": "1-1.4",
+          "createdAt": "2025-01-04T10:01:31Z",
+          "publishedAt": "2025-01-04T10:01:18Z",
+          "releaseAssets": [
+            {
+              "name": "TeleVip_1.4.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/1-1.4/TeleVip_1.4.apk",
+              "size": 189175
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 1.3.5",
+          "tagName": "1-1.3.5",
+          "createdAt": "2025-01-01T09:11:36Z",
+          "publishedAt": "2025-01-01T09:11:23Z",
+          "releaseAssets": [
+            {
+              "name": "TeleVip_1.3.5.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/1-1.3.5/TeleVip_1.3.5.apk",
+              "size": 164600
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 1.3",
+          "tagName": "1-1.3",
+          "createdAt": "2024-12-28T10:22:07Z",
+          "publishedAt": "2024-12-28T10:21:54Z",
+          "releaseAssets": [
+            {
+              "name": "TeleVip_1.3.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/1-1.3/TeleVip_1.3.apk",
+              "size": 160505
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 1.2",
+          "tagName": "1-1.2",
+          "createdAt": "2024-12-22T17:03:28Z",
+          "publishedAt": "2024-12-22T17:03:17Z",
+          "releaseAssets": [
+            {
+              "name": "TeleVip_1.2.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/1-1.2/TeleVip_1.2.apk",
+              "size": 58046
+            }
+          ]
+        },
+        {
+          "name": "TeleVip 1.1",
+          "tagName": "1-1.1",
+          "createdAt": "2024-12-17T19:19:53Z",
+          "publishedAt": "2024-12-17T19:19:42Z",
+          "releaseAssets": [
+            {
+              "name": "TeleVip_1.1.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/1-1.1/TeleVip_1.1.apk",
+              "size": 62142
+            }
+          ]
+        },
+        {
+          "name": "TeleVip LSPosed 1.0",
+          "tagName": "1-1.0",
+          "createdAt": "2024-12-16T09:25:33Z",
+          "publishedAt": "2024-12-16T09:25:21Z",
+          "releaseAssets": [
+            {
+              "name": "TeleVip_1.0.apk",
+              "downloadUrl": "https://github.com/Xposed-Modules-Repo/com.my.televip/releases/download/1-1.0/TeleVip_1.0.apk",
+              "size": 78620
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "mba.vm.onhit",
+      "description": "onHit: NFC NDEF Replay Module",
+      "summary": "Trigger Android NFC events without a physical tag by Xposed.\n\n\u5728\u65e0\u7269\u7406\u6807\u7b7e\u7684\u60c5\u51b5\u4e0b\u89e6\u53d1Android\u7684NFC\u4e8b\u4ef6\u3002",
+      "sourceUrl": "https://github.com/0penPublic/onHit",
+      "releases": [
+        {
+          "name": "v1.1.7",
+          "tagName": "v1.1.7",
+          "createdAt": "2026-07-06T12:22:47Z",
+          "publishedAt": "2026-07-06T12:25:32Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.7/mapping.zip",
+              "size": 642872
+            },
+            {
+              "name": "onHit-1.1.7-4bef1a9-126-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.7/onHit-1.1.7-4bef1a9-126-debug.apk",
+              "size": 2943935
+            },
+            {
+              "name": "onHit-1.1.7-4bef1a9-126-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.7/onHit-1.1.7-4bef1a9-126-release.apk",
+              "size": 202815
+            }
+          ]
+        },
+        {
+          "name": "v1.1.6",
+          "tagName": "v1.1.6",
+          "createdAt": "2026-07-05T09:06:37Z",
+          "publishedAt": "2026-07-05T09:09:24Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.6/mapping.zip",
+              "size": 641963
+            },
+            {
+              "name": "onHit-1.1.6-796fcd8-123-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.6/onHit-1.1.6-796fcd8-123-debug.apk",
+              "size": 2942915
+            },
+            {
+              "name": "onHit-1.1.6-796fcd8-123-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.6/onHit-1.1.6-796fcd8-123-release.apk",
+              "size": 202499
+            }
+          ]
+        },
+        {
+          "name": "v1.1.5",
+          "tagName": "v1.1.5",
+          "createdAt": "2026-07-04T19:27:26Z",
+          "publishedAt": "2026-07-04T19:30:04Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.5/mapping.zip",
+              "size": 642537
+            },
+            {
+              "name": "onHit-1.1.5-d71a58d-121-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.5/onHit-1.1.5-d71a58d-121-debug.apk",
+              "size": 2943027
+            },
+            {
+              "name": "onHit-1.1.5-d71a58d-121-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.5/onHit-1.1.5-d71a58d-121-release.apk",
+              "size": 202607
+            }
+          ]
+        },
+        {
+          "name": "v1.1.4",
+          "tagName": "v1.1.4",
+          "createdAt": "2026-06-29T18:06:30Z",
+          "publishedAt": "2026-06-29T18:55:36Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.4/mapping.zip",
+              "size": 642501
+            },
+            {
+              "name": "onHit-1.1.4-06e6a8f-114-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.4/onHit-1.1.4-06e6a8f-114-debug.apk",
+              "size": 2941475
+            },
+            {
+              "name": "onHit-1.1.4-06e6a8f-114-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.4/onHit-1.1.4-06e6a8f-114-release.apk",
+              "size": 202071
+            }
+          ]
+        },
+        {
+          "name": "v1.1.3",
+          "tagName": "v1.1.3",
+          "createdAt": "2026-06-24T21:15:48Z",
+          "publishedAt": "2026-06-24T21:18:21Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.3/mapping.zip",
+              "size": 641846
+            },
+            {
+              "name": "onHit-1.1.3-f98779b-110-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.3/onHit-1.1.3-f98779b-110-debug.apk",
+              "size": 2941315
+            },
+            {
+              "name": "onHit-1.1.3-f98779b-110-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.3/onHit-1.1.3-f98779b-110-release.apk",
+              "size": 202111
+            }
+          ]
+        },
+        {
+          "name": "v1.1.2",
+          "tagName": "v1.1.2",
+          "createdAt": "2026-06-08T09:48:10Z",
+          "publishedAt": "2026-06-08T09:50:36Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.2/mapping.zip",
+              "size": 630058
+            },
+            {
+              "name": "onHit-1.1.2-ae193b4-105-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.2/onHit-1.1.2-ae193b4-105-debug.apk",
+              "size": 2918371
+            },
+            {
+              "name": "onHit-1.1.2-ae193b4-105-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.2/onHit-1.1.2-ae193b4-105-release.apk",
+              "size": 194047
+            }
+          ]
+        },
+        {
+          "name": "v1.1.1",
+          "tagName": "v1.1.1",
+          "createdAt": "2026-06-02T09:37:03Z",
+          "publishedAt": "2026-06-02T09:39:25Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.1/mapping.zip",
+              "size": 619000
+            },
+            {
+              "name": "onHit-1.1.1-e7ab1b5-102-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.1/onHit-1.1.1-e7ab1b5-102-debug.apk",
+              "size": 2891931
+            },
+            {
+              "name": "onHit-1.1.1-e7ab1b5-102-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.1/onHit-1.1.1-e7ab1b5-102-release.apk",
+              "size": 186695
+            }
+          ]
+        },
+        {
+          "name": "v1.1.0",
+          "tagName": "v1.1.0",
+          "createdAt": "2026-05-14T03:59:54Z",
+          "publishedAt": "2026-05-14T04:02:33Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.0/mapping.zip",
+              "size": 618437
+            },
+            {
+              "name": "onHit-1.1.0-922e3ba-99-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.0/onHit-1.1.0-922e3ba-99-debug.apk",
+              "size": 2891695
+            },
+            {
+              "name": "onHit-1.1.0-922e3ba-99-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.1.0/onHit-1.1.0-922e3ba-99-release.apk",
+              "size": 186695
+            }
+          ]
+        },
+        {
+          "name": "v1.0.8",
+          "tagName": "v1.0.8",
+          "createdAt": "2026-05-02T07:11:22Z",
+          "publishedAt": "2026-05-02T07:13:33Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.8/mapping.zip",
+              "size": 584957
+            },
+            {
+              "name": "onHit-1.0.8-8288a65-95-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.8/onHit-1.0.8-8288a65-95-debug.apk",
+              "size": 2879532
+            },
+            {
+              "name": "onHit-1.0.8-8288a65-95-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.8/onHit-1.0.8-8288a65-95-release.apk",
+              "size": 181891
+            }
+          ]
+        },
+        {
+          "name": "v1.0.7",
+          "tagName": "v1.0.7",
+          "createdAt": "2026-04-15T12:37:27Z",
+          "publishedAt": "2026-04-15T12:39:47Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.7/mapping.zip",
+              "size": 584731
+            },
+            {
+              "name": "onHit-1.0.7-13cbac5-88-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.7/onHit-1.0.7-13cbac5-88-debug.apk",
+              "size": 2849416
+            },
+            {
+              "name": "onHit-1.0.7-13cbac5-88-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.7/onHit-1.0.7-13cbac5-88-release.apk",
+              "size": 181931
+            }
+          ]
+        },
+        {
+          "name": "v1.0.6",
+          "tagName": "v1.0.6",
+          "createdAt": "2026-03-20T05:43:52Z",
+          "publishedAt": "2026-03-20T05:46:14Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.6/mapping.zip",
+              "size": 585238
+            },
+            {
+              "name": "onHit-1.0.6-2fed613-85-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.6/onHit-1.0.6-2fed613-85-debug.apk",
+              "size": 2851665
+            },
+            {
+              "name": "onHit-1.0.6-2fed613-85-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.6/onHit-1.0.6-2fed613-85-release.apk",
+              "size": 181631
+            }
+          ]
+        },
+        {
+          "name": "v1.0.5",
+          "tagName": "v1.0.5",
+          "createdAt": "2026-01-31T13:27:38Z",
+          "publishedAt": "2026-01-31T13:30:43Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.5/mapping.zip",
+              "size": 596653
+            },
+            {
+              "name": "onHit-1.0.5-d2cf281-75-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.5/onHit-1.0.5-d2cf281-75-debug.apk",
+              "size": 2856885
+            },
+            {
+              "name": "onHit-1.0.5-d2cf281-75-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.5/onHit-1.0.5-d2cf281-75-release.apk",
+              "size": 181951
+            }
+          ]
+        },
+        {
+          "name": "v1.0.4",
+          "tagName": "v1.0.4",
+          "createdAt": "2026-01-29T23:08:47Z",
+          "publishedAt": "2026-01-29T23:11:56Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.4/mapping.zip",
+              "size": 596201
+            },
+            {
+              "name": "onHit-1.0.4-13e57ea-55-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.4/onHit-1.0.4-13e57ea-55-debug.apk",
+              "size": 2856933
+            },
+            {
+              "name": "onHit-1.0.4-13e57ea-55-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.4/onHit-1.0.4-13e57ea-55-release.apk",
+              "size": 182151
+            }
+          ]
+        },
+        {
+          "name": "v1.0.3",
+          "tagName": "v1.0.3",
+          "createdAt": "2026-01-25T09:20:45Z",
+          "publishedAt": "2026-01-25T09:24:08Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.3/mapping.zip",
+              "size": 595748
+            },
+            {
+              "name": "onHit-1.0.3-12b2a8f-50-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.3/onHit-1.0.3-12b2a8f-50-debug.apk",
+              "size": 2855981
+            },
+            {
+              "name": "onHit-1.0.3-12b2a8f-50-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.3/onHit-1.0.3-12b2a8f-50-release.apk",
+              "size": 181739
+            }
+          ]
+        },
+        {
+          "name": "v1.0.2",
+          "tagName": "v1.0.2",
+          "createdAt": "2026-01-17T19:45:05Z",
+          "publishedAt": "2026-01-17T19:48:17Z",
+          "releaseAssets": [
+            {
+              "name": "mapping.zip",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.2/mapping.zip",
+              "size": 600908
+            },
+            {
+              "name": "onHit-1.0.2-d9610c7-44-debug.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.2/onHit-1.0.2-d9610c7-44-debug.apk",
+              "size": 2852583
+            },
+            {
+              "name": "onHit-1.0.2-d9610c7-44-release.apk",
+              "downloadUrl": "https://github.com/0penPublic/onHit/releases/download/v1.0.2/onHit-1.0.2-d9610c7-44-release.apk",
+              "size": 179955
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "eu.hxreborn.biometricapplock",
+      "description": "Biometric App Lock",
+      "summary": "Xposed module that intercepts app launches at the System Framework level. Activities are never created until you authenticate via fingerprint or face unlock.",
+      "sourceUrl": "https://github.com/hxreborn/biometric-app-lock",
+      "releases": [
+        {
+          "name": "v1.5.6",
+          "tagName": "v1.5.6",
+          "createdAt": "2026-07-06T09:51:42Z",
+          "publishedAt": "2026-07-06T09:57:53Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.5.6-debug.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.6/biometric-app-lock-v1.5.6-debug.apk",
+              "size": 65300651
+            },
+            {
+              "name": "biometric-app-lock-v1.5.6-release.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.6/biometric-app-lock-v1.5.6-release.apk",
+              "size": 3251628
+            }
+          ]
+        },
+        {
+          "name": "v1.5.5",
+          "tagName": "v1.5.5",
+          "createdAt": "2026-06-30T15:24:45Z",
+          "publishedAt": "2026-06-30T15:31:05Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.5.5-debug.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.5/biometric-app-lock-v1.5.5-debug.apk",
+              "size": 65300843
+            },
+            {
+              "name": "biometric-app-lock-v1.5.5-release.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.5/biometric-app-lock-v1.5.5-release.apk",
+              "size": 3251808
+            }
+          ]
+        },
+        {
+          "name": "v1.5.4",
+          "tagName": "v1.5.4",
+          "createdAt": "2026-06-13T16:14:54Z",
+          "publishedAt": "2026-06-13T16:21:17Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.5.4-debug.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.4/biometric-app-lock-v1.5.4-debug.apk",
+              "size": 65285183
+            },
+            {
+              "name": "biometric-app-lock-v1.5.4-release.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.4/biometric-app-lock-v1.5.4-release.apk",
+              "size": 3252448
+            }
+          ]
+        },
+        {
+          "name": "v1.5.3",
+          "tagName": "v1.5.3",
+          "createdAt": "2026-06-11T11:20:55Z",
+          "publishedAt": "2026-06-11T11:26:55Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.5.3-debug.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.3/biometric-app-lock-v1.5.3-debug.apk",
+              "size": 65266967
+            },
+            {
+              "name": "biometric-app-lock-v1.5.3-release.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.3/biometric-app-lock-v1.5.3-release.apk",
+              "size": 3250872
+            }
+          ]
+        },
+        {
+          "name": "v1.5.2",
+          "tagName": "v1.5.2",
+          "createdAt": "2026-06-11T10:00:54Z",
+          "publishedAt": "2026-06-11T10:07:02Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.5.2-debug.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.2/biometric-app-lock-v1.5.2-debug.apk",
+              "size": 65251623
+            },
+            {
+              "name": "biometric-app-lock-v1.5.2-release.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.2/biometric-app-lock-v1.5.2-release.apk",
+              "size": 3251784
+            }
+          ]
+        },
+        {
+          "name": "v1.5.1",
+          "tagName": "v1.5.1",
+          "createdAt": "2026-06-11T07:11:22Z",
+          "publishedAt": "2026-06-11T07:17:12Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.5.1-debug.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.1/biometric-app-lock-v1.5.1-debug.apk",
+              "size": 65251983
+            },
+            {
+              "name": "biometric-app-lock-v1.5.1-release.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.1/biometric-app-lock-v1.5.1-release.apk",
+              "size": 3252100
+            }
+          ]
+        },
+        {
+          "name": "v1.5.0",
+          "tagName": "v1.5.0",
+          "createdAt": "2026-06-10T19:06:35Z",
+          "publishedAt": "2026-06-10T19:04:47Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.5.0-debug.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.0/biometric-app-lock-v1.5.0-debug.apk",
+              "size": 65251927
+            },
+            {
+              "name": "biometric-app-lock-v1.5.0-release.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.5.0/biometric-app-lock-v1.5.0-release.apk",
+              "size": 3252068
+            }
+          ]
+        },
+        {
+          "name": "v1.4.0",
+          "tagName": "v1.4.0",
+          "createdAt": "2026-06-04T13:46:01Z",
+          "publishedAt": "2026-06-04T13:52:01Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.4.0-debug.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.4.0/biometric-app-lock-v1.4.0-debug.apk",
+              "size": 65180111
+            },
+            {
+              "name": "biometric-app-lock-v1.4.0-release.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.4.0/biometric-app-lock-v1.4.0-release.apk",
+              "size": 3229432
+            }
+          ]
+        },
+        {
+          "name": "v1.3.0",
+          "tagName": "v1.3.0",
+          "createdAt": "2026-06-03T22:15:26Z",
+          "publishedAt": "2026-06-03T22:21:41Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.3.0-debug.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.3.0/biometric-app-lock-v1.3.0-debug.apk",
+              "size": 65059431
+            },
+            {
+              "name": "biometric-app-lock-v1.3.0-release.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.3.0/biometric-app-lock-v1.3.0-release.apk",
+              "size": 3206992
+            }
+          ]
+        },
+        {
+          "name": "v1.2.1",
+          "tagName": "v1.2.1",
+          "createdAt": "2026-06-03T06:33:01Z",
+          "publishedAt": "2026-06-03T06:39:17Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.2.1-debug.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.2.1/biometric-app-lock-v1.2.1-debug.apk",
+              "size": 64938763
+            },
+            {
+              "name": "biometric-app-lock-v1.2.1-release.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.2.1/biometric-app-lock-v1.2.1-release.apk",
+              "size": 3168236
+            }
+          ]
+        },
+        {
+          "name": "v1.2.0",
+          "tagName": "v1.2.0",
+          "createdAt": "2026-06-02T21:01:17Z",
+          "publishedAt": "2026-06-02T21:07:08Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.2.0-debug.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.2.0/biometric-app-lock-v1.2.0-debug.apk",
+              "size": 64921595
+            },
+            {
+              "name": "biometric-app-lock-v1.2.0-release.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.2.0/biometric-app-lock-v1.2.0-release.apk",
+              "size": 3167508
+            }
+          ]
+        },
+        {
+          "name": "v1.1.0",
+          "tagName": "v1.1.0",
+          "createdAt": "2026-06-02T10:00:25Z",
+          "publishedAt": "2026-06-02T10:04:48Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.1.0.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.1.0/biometric-app-lock-v1.1.0.apk",
+              "size": 3145512
+            }
+          ]
+        },
+        {
+          "name": "v1.0.1",
+          "tagName": "v1.0.1",
+          "createdAt": "2026-05-29T14:46:48Z",
+          "publishedAt": "2026-05-29T14:51:26Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.0.1.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.0.1/biometric-app-lock-v1.0.1.apk",
+              "size": 3209888
+            }
+          ]
+        },
+        {
+          "name": "v1.0.0-rc6",
+          "tagName": "v1.0.0-rc6",
+          "createdAt": "2026-05-27T22:00:19Z",
+          "publishedAt": "2026-05-27T22:04:48Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.0.0-rc6.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.0.0-rc6/biometric-app-lock-v1.0.0-rc6.apk",
+              "size": 3212492
+            }
+          ]
+        },
+        {
+          "name": "v1.0.0-rc5",
+          "tagName": "v1.0.0-rc5",
+          "createdAt": "2026-05-27T15:21:10Z",
+          "publishedAt": "2026-05-27T15:20:50Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.0.0-rc5.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.0.0-rc5/biometric-app-lock-v1.0.0-rc5.apk",
+              "size": 3195868
+            }
+          ]
+        },
+        {
+          "name": "v1.0.0-rc4",
+          "tagName": "v1.0.0-rc4",
+          "createdAt": "2026-05-27T12:48:47Z",
+          "publishedAt": "2026-05-27T12:57:05Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.0.0-rc4.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.0.0-rc4/biometric-app-lock-v1.0.0-rc4.apk",
+              "size": 3195864
+            }
+          ]
+        },
+        {
+          "name": "v1.0.0-rc3",
+          "tagName": "v1.0.0-rc3",
+          "createdAt": "2026-05-27T10:17:40Z",
+          "publishedAt": "2026-05-27T10:37:49Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.0.0-rc3.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.0.0-rc3/biometric-app-lock-v1.0.0-rc3.apk",
+              "size": 3193976
+            }
+          ]
+        },
+        {
+          "name": "v1.0.0",
+          "tagName": "v1.0.0",
+          "createdAt": "2026-05-27T22:25:48Z",
+          "publishedAt": "2026-05-27T22:29:03Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.0.0.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.0.0/biometric-app-lock-v1.0.0.apk",
+              "size": 3212532
+            }
+          ]
+        },
+        {
+          "name": "v1.0.0-rc2",
+          "tagName": "v1.0.0-rc2",
+          "createdAt": "2026-05-26T22:24:42Z",
+          "publishedAt": "2026-05-26T22:29:03Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.0.0-rc2.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.0.0-rc2/biometric-app-lock-v1.0.0-rc2.apk",
+              "size": 3191740
+            }
+          ]
+        },
+        {
+          "name": "v1.0.0-rc1",
+          "tagName": "v1.0.0-rc1",
+          "createdAt": "2026-05-26T20:09:45Z",
+          "publishedAt": "2026-05-26T20:14:14Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v1.0.0-rc1.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v1.0.0-rc1/biometric-app-lock-v1.0.0-rc1.apk",
+              "size": 3191740
+            }
+          ]
+        },
+        {
+          "name": "v0.9.0",
+          "tagName": "v0.9.0",
+          "createdAt": "2026-05-26T13:25:29Z",
+          "publishedAt": "2026-05-26T13:29:51Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v0.9.0.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v0.9.0/biometric-app-lock-v0.9.0.apk",
+              "size": 3123044
+            }
+          ]
+        },
+        {
+          "name": "v0.8.1",
+          "tagName": "v0.8.1",
+          "createdAt": "2026-05-26T08:31:37Z",
+          "publishedAt": "2026-05-26T08:36:08Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v0.8.1.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v0.8.1/biometric-app-lock-v0.8.1.apk",
+              "size": 3106220
+            }
+          ]
+        },
+        {
+          "name": "v0.7.0",
+          "tagName": "v0.7.0",
+          "createdAt": "2026-05-26T06:51:05Z",
+          "publishedAt": "2026-05-26T06:55:18Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v0.7.0.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v0.7.0/biometric-app-lock-v0.7.0.apk",
+              "size": 3104169
+            }
+          ]
+        },
+        {
+          "name": "v0.6.0",
+          "tagName": "v0.6.0",
+          "createdAt": "2026-05-25T23:36:09Z",
+          "publishedAt": "2026-05-26T00:06:39Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v0.6.0.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v0.6.0/biometric-app-lock-v0.6.0.apk",
+              "size": 3105001
+            }
+          ]
+        },
+        {
+          "name": "v0.5.0-test",
+          "tagName": "v0.5.0-test",
+          "createdAt": "2026-05-25T21:12:55Z",
+          "publishedAt": "2026-05-25T21:16:57Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v0.5.0-test.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v0.5.0-test/biometric-app-lock-v0.5.0-test.apk",
+              "size": 3055209
+            }
+          ]
+        },
+        {
+          "name": "v0.4.0-test",
+          "tagName": "v0.4.0-test",
+          "createdAt": "2026-05-25T19:37:12Z",
+          "publishedAt": "2026-05-25T19:41:20Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v0.4.0-test.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v0.4.0-test/biometric-app-lock-v0.4.0-test.apk",
+              "size": 3055233
+            }
+          ]
+        },
+        {
+          "name": "v0.3.0-test",
+          "tagName": "v0.3.0-test",
+          "createdAt": "2026-05-25T19:19:56Z",
+          "publishedAt": "2026-05-25T19:24:07Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v0.3.0-test.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v0.3.0-test/biometric-app-lock-v0.3.0-test.apk",
+              "size": 3057961
+            }
+          ]
+        },
+        {
+          "name": "v0.2.0-test",
+          "tagName": "v0.2.0",
+          "createdAt": "2026-05-25T19:07:22Z",
+          "publishedAt": "2026-05-25T19:14:36Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v0.2.0.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v0.2.0/biometric-app-lock-v0.2.0.apk",
+              "size": 2918509
+            }
+          ]
+        },
+        {
+          "name": "v0.1.0 Dynamic scope",
+          "tagName": "v0.1.0",
+          "createdAt": "2026-05-24T17:52:38Z",
+          "publishedAt": "2026-05-25T19:38:24Z",
+          "releaseAssets": [
+            {
+              "name": "biometric-app-lock-v0.1.0.apk",
+              "downloadUrl": "https://github.com/hxreborn/biometric-app-lock/releases/download/v0.1.0/biometric-app-lock-v0.1.0.apk",
+              "size": 2917691
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "moe.lovefirefly.betterzuikey",
+      "description": "BetterZUIKey",
+      "summary": "\u9762\u5411\u8054\u60f3 ZUXOS \u7684 LSPosed \u952e\u76d8\u5feb\u6377\u952e\u8986\u5199\u6a21\u5757\uff1aWin/Meta \u8def\u7531\u3001\u8f93\u5165\u6cd5\u589e\u5f3a\u3001\u667a\u80fd\u952e\u547d\u4ee4\u4e0e\u5e94\u7528\u6a21\u677f\u3002",
+      "sourceUrl": "https://github.com/CommandPrompt-Wang/BetterZUIKey",
+      "releases": [
+        {
+          "name": "v1.4.1-beta1",
+          "tagName": "12-v1.4.1-beta1",
+          "createdAt": "2026-07-06T08:57:22Z",
+          "publishedAt": "2026-07-06T09:15:52Z",
+          "releaseAssets": [
+            {
+              "name": "app-debug.apk",
+              "downloadUrl": "https://github.com/CommandPrompt-Wang/BetterZUIKey/releases/download/12-v1.4.1-beta1/app-debug.apk",
+              "size": 14302988
+            }
+          ]
+        },
+        {
+          "name": "BetterZUIKey v1.4.0-beta1",
+          "tagName": "11-v1.4.0-beta1",
+          "createdAt": "2026-07-03T20:23:35Z",
+          "publishedAt": "2026-07-03T20:25:30Z",
+          "releaseAssets": [
+            {
+              "name": "app-debug.apk",
+              "downloadUrl": "https://github.com/CommandPrompt-Wang/BetterZUIKey/releases/download/11-v1.4.0-beta1/app-debug.apk",
+              "size": 14277304
+            }
+          ]
+        },
+        {
+          "name": "BetterZUIKey v1.3.0-beta3",
+          "tagName": "9-v1.3.0-beta3",
+          "createdAt": "2026-07-02T18:32:59Z",
+          "publishedAt": "2026-07-02T18:39:05Z",
+          "releaseAssets": [
+            {
+              "name": "app-debug.apk",
+              "downloadUrl": "https://github.com/CommandPrompt-Wang/BetterZUIKey/releases/download/9-v1.3.0-beta3/app-debug.apk",
+              "size": 14259236
+            }
+          ]
+        },
+        {
+          "name": "BetterZUIKey v1.3.0-beta2",
+          "tagName": "8-v1.3.0-beta2",
+          "createdAt": "2026-07-02T07:30:08Z",
+          "publishedAt": "2026-07-02T07:43:00Z",
+          "releaseAssets": [
+            {
+              "name": "app-debug.apk",
+              "downloadUrl": "https://github.com/CommandPrompt-Wang/BetterZUIKey/releases/download/8-v1.3.0-beta2/app-debug.apk",
+              "size": 14257880
+            }
+          ]
+        },
+        {
+          "name": "BetterZUIKey v1.3.0-beta1",
+          "tagName": "7-v1.3.0-beta1",
+          "createdAt": "2026-07-01T19:58:36Z",
+          "publishedAt": "2026-07-01T20:05:52Z",
+          "releaseAssets": [
+            {
+              "name": "app-debug.apk",
+              "downloadUrl": "https://github.com/CommandPrompt-Wang/BetterZUIKey/releases/download/7-v1.3.0-beta1/app-debug.apk",
+              "size": 14259392
+            }
+          ]
+        },
+        {
+          "name": "v1.2.0-beta1 Pre-release",
+          "tagName": "6-v1.2.0-beta1",
+          "createdAt": "2026-06-28T14:17:53Z",
+          "publishedAt": "2026-06-28T14:33:43Z",
+          "releaseAssets": [
+            {
+              "name": "app-debug.apk",
+              "downloadUrl": "https://github.com/CommandPrompt-Wang/BetterZUIKey/releases/download/6-v1.2.0-beta1/app-debug.apk",
+              "size": 14127882
+            }
+          ]
+        },
+        {
+          "name": "v1.1.0-beta1 Pre-release",
+          "tagName": "5-v1.1.0-beta1",
+          "createdAt": "2026-06-27T13:08:33Z",
+          "publishedAt": "2026-06-27T14:21:32Z",
+          "releaseAssets": [
+            {
+              "name": "app-debug.apk",
+              "downloadUrl": "https://github.com/CommandPrompt-Wang/BetterZUIKey/releases/download/5-v1.1.0-beta1/app-debug.apk",
+              "size": 14116301
+            }
+          ]
+        },
+        {
+          "name": "v1.0 Pre-release",
+          "tagName": "1-v1.0",
+          "createdAt": "2026-06-20T19:57:33Z",
+          "publishedAt": "2026-06-20T20:07:02Z",
+          "releaseAssets": [
+            {
+              "name": "app-debug.apk",
+              "downloadUrl": "https://github.com/CommandPrompt-Wang/BetterZUIKey/releases/download/1-v1.0/app-debug.apk",
+              "size": 13351351
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "com.hujiayucc.hook",
+      "description": "Fuck AD",
+      "summary": "\u53bb\u4ed6\u5988\u7684\u5e7f\u544a\nFuck Ads",
+      "sourceUrl": "https://github.com/hujiayucc/Fuck-AD",
+      "releases": [
+        {
+          "name": "3.0.2",
+          "tagName": "3.0.2",
+          "createdAt": "2026-07-06T07:40:23Z",
+          "publishedAt": "2026-07-06T08:02:04Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_3.0.2.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/3.0.2/Fuck.AD_3.0.2.apk",
+              "size": 4288462
+            }
+          ]
+        },
+        {
+          "name": "3.0.0",
+          "tagName": "3.0.0",
+          "createdAt": "2026-04-08T16:34:26Z",
+          "publishedAt": "2026-04-08T16:44:41Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_3.0.0.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/3.0.0/Fuck.AD_3.0.0.apk",
+              "size": 4165171
+            }
+          ]
+        },
+        {
+          "name": "2.0.8",
+          "tagName": "2.0.8",
+          "createdAt": "2026-01-14T22:41:56Z",
+          "publishedAt": "2026-01-14T22:48:34Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_2.0.8-debug.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.8/Fuck.AD_2.0.8-debug.apk",
+              "size": 7873144
+            },
+            {
+              "name": "Fuck.AD_2.0.8-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.8/Fuck.AD_2.0.8-release.apk",
+              "size": 5155095
+            }
+          ]
+        },
+        {
+          "name": "2.0.7",
+          "tagName": "2.0.7",
+          "createdAt": "2026-01-14T10:36:55Z",
+          "publishedAt": "2026-01-14T10:43:44Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_2.0.7-debug.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.7/Fuck.AD_2.0.7-debug.apk",
+              "size": 8446058
+            },
+            {
+              "name": "Fuck.AD_2.0.7-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.7/Fuck.AD_2.0.7-release.apk",
+              "size": 5612832
+            }
+          ]
+        },
+        {
+          "name": "2.0.6",
+          "tagName": "2.0.6",
+          "createdAt": "2025-10-06T03:29:45Z",
+          "publishedAt": "2025-10-06T03:40:09Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_2.0.6-debug.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.6/Fuck.AD_2.0.6-debug.apk",
+              "size": 7554746
+            },
+            {
+              "name": "Fuck.AD_2.0.6-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.6/Fuck.AD_2.0.6-release.apk",
+              "size": 5054912
+            }
+          ]
+        },
+        {
+          "name": "2.0.5",
+          "tagName": "2.0.5",
+          "createdAt": "2025-08-14T15:33:00Z",
+          "publishedAt": "2025-08-14T15:44:17Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_2.0.5-debug.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.5/Fuck.AD_2.0.5-debug.apk",
+              "size": 7514994
+            },
+            {
+              "name": "Fuck.AD_2.0.5-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.5/Fuck.AD_2.0.5-release.apk",
+              "size": 5054880
+            }
+          ]
+        },
+        {
+          "name": "2.0.4.1",
+          "tagName": "2.0.4.1",
+          "createdAt": "2025-08-05T17:40:49Z",
+          "publishedAt": "2025-08-05T17:48:06Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_2.0.4.1-debug.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.4.1/Fuck.AD_2.0.4.1-debug.apk",
+              "size": 7505674
+            },
+            {
+              "name": "Fuck.AD_2.0.4.1-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.4.1/Fuck.AD_2.0.4.1-release.apk",
+              "size": 5054796
+            }
+          ]
+        },
+        {
+          "name": "2.0.4",
+          "tagName": "2.0.4",
+          "createdAt": "2025-08-05T08:35:44Z",
+          "publishedAt": "2025-08-05T08:50:00Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_2.0.4-debug.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.4/Fuck.AD_2.0.4-debug.apk",
+              "size": 7508398
+            },
+            {
+              "name": "Fuck.AD_2.0.4-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.4/Fuck.AD_2.0.4-release.apk",
+              "size": 5054800
+            }
+          ]
+        },
+        {
+          "name": "2.0.3",
+          "tagName": "2.0.3",
+          "createdAt": "2025-08-02T01:36:26Z",
+          "publishedAt": "2025-08-02T01:46:01Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_2.0.3-debug.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.3/Fuck.AD_2.0.3-debug.apk",
+              "size": 20250090
+            },
+            {
+              "name": "Fuck.AD_2.0.3-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.3/Fuck.AD_2.0.3-release.apk",
+              "size": 5037772
+            }
+          ]
+        },
+        {
+          "name": "2.0.2",
+          "tagName": "2.0.2",
+          "createdAt": "2025-07-29T15:12:20Z",
+          "publishedAt": "2025-07-29T15:31:08Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_2.0.2-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.2/Fuck.AD_2.0.2-release.apk",
+              "size": 3475228
+            }
+          ]
+        },
+        {
+          "name": "2.0.1",
+          "tagName": "2.0.1",
+          "createdAt": "2025-07-28T12:45:14Z",
+          "publishedAt": "2025-07-28T13:07:58Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_2.0.1-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0.1/Fuck.AD_2.0.1-release.apk",
+              "size": 3487516
+            }
+          ]
+        },
+        {
+          "name": "2.0",
+          "tagName": "2.0",
+          "createdAt": "2025-07-27T18:25:48Z",
+          "publishedAt": "2025-07-27T19:12:20Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_2.0-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/2.0/Fuck.AD_2.0-release.apk",
+              "size": 3445020
+            }
+          ]
+        },
+        {
+          "name": "1.3.8",
+          "tagName": "1.3.8",
+          "createdAt": "2024-08-13T15:02:53Z",
+          "publishedAt": "2024-08-13T15:27:31Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_1.3.8-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.3.8/Fuck.AD_1.3.8-release.apk",
+              "size": 2642555
+            }
+          ]
+        },
+        {
+          "name": "1.3.7.1",
+          "tagName": "1.3.7.1",
+          "createdAt": "2024-08-12T13:57:56Z",
+          "publishedAt": "2024-08-12T14:12:10Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_1.3.7.1-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.3.7.1/Fuck.AD_1.3.7.1-release.apk",
+              "size": 2642555
+            }
+          ]
+        },
+        {
+          "name": "1.3.7",
+          "tagName": "1.3.7",
+          "createdAt": "2024-08-12T10:01:37Z",
+          "publishedAt": "2024-08-12T10:35:51Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_1.3.7-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.3.7/Fuck.AD_1.3.7-release.apk",
+              "size": 2638459
+            }
+          ]
+        },
+        {
+          "name": "1.3.6",
+          "tagName": "1.3.6",
+          "createdAt": "2024-08-10T17:27:39Z",
+          "publishedAt": "2024-08-10T17:28:26Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_1.3.6-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.3.6/Fuck.AD_1.3.6-release.apk",
+              "size": 2642555
+            }
+          ]
+        },
+        {
+          "name": "1.3.5",
+          "tagName": "1.3.5",
+          "createdAt": "2024-04-07T13:23:44Z",
+          "publishedAt": "2024-08-05T18:15:10Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_1.3.5-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.3.5/Fuck.AD_1.3.5-release.apk",
+              "size": 2663035
+            }
+          ]
+        },
+        {
+          "name": "1.3.4",
+          "tagName": "1.3.4",
+          "createdAt": "2024-04-07T13:23:44Z",
+          "publishedAt": "2024-04-07T14:15:57Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD_1.3.4-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.3.4/Fuck.AD_1.3.4-release.apk",
+              "size": 2669534
+            }
+          ]
+        },
+        {
+          "name": "1.3.3",
+          "tagName": "1.3.3",
+          "createdAt": "2024-02-01T11:43:23Z",
+          "publishedAt": "2024-02-04T11:50:03Z",
+          "releaseAssets": [
+            {
+              "name": "FuckAD_1.3.3-2024-happy-Chinese-new-year.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.3.3/FuckAD_1.3.3-2024-happy-Chinese-new-year.apk",
+              "size": 2649837
+            }
+          ]
+        },
+        {
+          "name": "1.3.2",
+          "tagName": "1.3.2",
+          "createdAt": "2024-01-03T22:41:25Z",
+          "publishedAt": "2024-01-03T23:51:05Z",
+          "releaseAssets": [
+            {
+              "name": "FuckAD_1.3.2-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.3.2/FuckAD_1.3.2-release.apk",
+              "size": 2715160
+            }
+          ]
+        },
+        {
+          "name": "1.2.4",
+          "tagName": "1.2.4",
+          "createdAt": "2023-04-05T17:46:30Z",
+          "publishedAt": "2023-04-06T04:01:35Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD.1.2.4-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.2.4/Fuck.AD.1.2.4-release.apk",
+              "size": 2006675
+            }
+          ]
+        },
+        {
+          "name": "1.2.3",
+          "tagName": "1.2.3",
+          "createdAt": "2023-04-03T08:51:35Z",
+          "publishedAt": "2023-04-03T09:07:17Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD.1.2.3-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.2.3/Fuck.AD.1.2.3-release.apk",
+              "size": 1977637
+            },
+            {
+              "name": "Fuck.AD.1.2.3-release_NoTip.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.2.3/Fuck.AD.1.2.3-release_NoTip.apk",
+              "size": 1985829
+            }
+          ]
+        },
+        {
+          "name": "1.2.2",
+          "tagName": "1.2.2",
+          "createdAt": "2023-03-31T22:03:25Z",
+          "publishedAt": "2023-03-31T22:17:07Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD.1.2.2-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.2.2/Fuck.AD.1.2.2-release.apk",
+              "size": 4442151
+            },
+            {
+              "name": "Fuck.AD.1.2.2-release_No_Hook_Tip.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.2.2/Fuck.AD.1.2.2-release_No_Hook_Tip.apk",
+              "size": 4442151
+            }
+          ]
+        },
+        {
+          "name": "1.2.1",
+          "tagName": "1.2.1",
+          "createdAt": "2023-03-30T17:04:19Z",
+          "publishedAt": "2023-03-30T17:27:30Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD.1.2.1-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.2.1/Fuck.AD.1.2.1-release.apk",
+              "size": 4438055
+            }
+          ]
+        },
+        {
+          "name": "1.2.0",
+          "tagName": "1.2.0",
+          "createdAt": "2023-03-28T23:51:11Z",
+          "publishedAt": "2023-03-29T00:08:52Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD.1.2.0-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.2.0/Fuck.AD.1.2.0-release.apk",
+              "size": 4446247
+            }
+          ]
+        },
+        {
+          "name": "1.1.9",
+          "tagName": "1.1.9",
+          "createdAt": "2023-03-28T09:48:37Z",
+          "publishedAt": "2023-03-28T10:00:05Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD.1.1.9-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.1.9/Fuck.AD.1.1.9-release.apk",
+              "size": 2127821
+            }
+          ]
+        },
+        {
+          "name": "1.1.8",
+          "tagName": "1.1.8",
+          "createdAt": "2023-03-27T16:00:57Z",
+          "publishedAt": "2023-03-27T16:20:20Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD.1.1.8-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.1.8/Fuck.AD.1.1.8-release.apk",
+              "size": 2521670
+            }
+          ]
+        },
+        {
+          "name": "1.1.7",
+          "tagName": "1.1.7",
+          "createdAt": "2023-03-26T19:07:46Z",
+          "publishedAt": "2023-03-26T19:13:39Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD.1.1.7-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.1.7/Fuck.AD.1.1.7-release.apk",
+              "size": 3967545
+            }
+          ]
+        },
+        {
+          "name": "1.1.6",
+          "tagName": "1.1.6",
+          "createdAt": "2023-03-24T07:14:34Z",
+          "publishedAt": "2023-03-24T07:24:42Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD.1.1.6-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.1.6/Fuck.AD.1.1.6-release.apk",
+              "size": 2521673
+            }
+          ]
+        },
+        {
+          "name": "1.1.5",
+          "tagName": "1.1.5",
+          "createdAt": "2023-03-23T16:42:03Z",
+          "publishedAt": "2023-03-23T16:54:07Z",
+          "releaseAssets": [
+            {
+              "name": "Fuck.AD.1.1.5-release.apk",
+              "downloadUrl": "https://github.com/hujiayucc/Fuck-AD/releases/download/1.1.5/Fuck.AD.1.1.5-release.apk",
+              "size": 2517578
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+name: Update Modules Repository
+
+on:
+  schedule:
+    - cron: '0 0,12 * * *' # Run twice a day
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-modules:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run update script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/update_modules.py
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./scripts
+          publish_branch: gh-pages
+          force_orphan: true
+          commit_message: "Auto-update modules.json"
