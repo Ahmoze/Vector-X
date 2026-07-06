@@ -29,7 +29,7 @@ pattern = re.compile(
 )
 
 modules = []
-matches = pattern.findall(html)[:5]
+matches = pattern.findall(html)
 print(f"Found {len(matches)} modules in HTML.")
 
 for friendly_name, pkg_name, summary, source_url in matches:

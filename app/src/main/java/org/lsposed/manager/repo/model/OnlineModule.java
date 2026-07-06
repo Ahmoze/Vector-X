@@ -208,8 +208,8 @@ public class OnlineModule {
         this.sourceUrl = sourceUrl;
     }
 
-    public Boolean isHide() {
-        return hide;
+    public boolean isHide() {
+        return hide != null && hide;
     }
 
     public void setHide(Boolean hide) {
