@@ -65,6 +65,9 @@ if [ -d "$LSPOSED_DIR" ]; then
     ui_print "*********************************************************"
 fi
 
+ui_print "- Removing old manager to prevent signature conflicts"
+pm uninstall org.lsposed.manager >/dev/null 2>&1
+
 # 1. Map architecture to standard ABI paths, eliminating duplicate logic
 case "$ARCH" in
     arm|arm64)
