@@ -23,11 +23,12 @@ abstract class GitCommitCountValueSource : ValueSource<String, ValueSourceParame
         val output = ByteArrayOutputStream()
         val result =
             execOperations.exec {
-                commandLine("git", "rev-list", "--count", "refs/remotes/origin/master")
+                commandLine("git", "rev-list", "--count", "HEAD")
                 standardOutput = output
                 isIgnoreExitValue = true
             }
-        return "3030"
+        val count = output.toString().trim().toIntOrNull() ?: 0
+        return (count + 3018).toString() // Compensate for truncated git history (3031 for current HEAD)
     }
 }
 
@@ -43,7 +44,7 @@ abstract class GitLatestTagValueSource : ValueSource<String, ValueSourceParamete
                 standardOutput = output
                 isIgnoreExitValue = true
             }
-        return "2.0.3"
+        return output.toString().lines().firstOrNull { it.isNotBlank() }?.trim()?.removePrefix("v") ?: "2.0.3"
     }
 }
 
