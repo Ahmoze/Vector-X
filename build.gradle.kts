@@ -27,7 +27,7 @@ abstract class GitCommitCountValueSource : ValueSource<String, ValueSourceParame
                 standardOutput = output
                 isIgnoreExitValue = true
             }
-        return "3029"
+        return "3030"
     }
 }
 
@@ -43,7 +43,7 @@ abstract class GitLatestTagValueSource : ValueSource<String, ValueSourceParamete
                 standardOutput = output
                 isIgnoreExitValue = true
             }
-        return "2.0.2"
+        return "2.0.3"
     }
 }
 
