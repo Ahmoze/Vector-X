@@ -626,9 +626,62 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
             }
             var repoItemFragment = (RepoItemFragment) parent;
             binding = ItemRepoReadmeBinding.inflate(getLayoutInflater(), container, false);
-            repoItemFragment.renderGithubMarkdown(binding.readme, repoItemFragment.module.getReadmeHTML());
+            
+            if (repoItemFragment.module.getReadmeHTML() == null) {
+                fetchReadmeFromGithub(repoItemFragment);
+                repoItemFragment.renderGithubMarkdown(binding.readme, "<center>Loading...</center>");
+            } else {
+                repoItemFragment.renderGithubMarkdown(binding.readme, repoItemFragment.module.getReadmeHTML());
+            }
+            
             borderView = binding.scrollView;
             return binding.getRoot();
+        }
+
+        private void fetchReadmeFromGithub(RepoItemFragment repoItemFragment) {
+            String sourceUrl = repoItemFragment.module.getSourceUrl();
+            if (sourceUrl == null || !sourceUrl.startsWith("https://github.com/")) {
+                repoItemFragment.renderGithubMarkdown(binding.readme, null);
+                return;
+            }
+            String[] parts = sourceUrl.split("/");
+            if (parts.length < 5) {
+                repoItemFragment.renderGithubMarkdown(binding.readme, null);
+                return;
+            }
+            String owner = parts[3];
+            String repo = parts[4].replace(".git", "");
+            String apiUrl = "https://api.github.com/repos/" + owner + "/" + repo + "/readme";
+
+            App.getOkHttpClient().newCall(new okhttp3.Request.Builder()
+                    .url(apiUrl)
+                    .header("Accept", "application/vnd.github.v3.html")
+                    .header("User-Agent", "Vector-App")
+                    .build()).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onFailure(@NonNull okhttp3.Call call, @NonNull java.io.IOException e) {
+                    if (!isAdded() || getActivity() == null) return;
+                    getActivity().runOnUiThread(() -> {
+                        repoItemFragment.renderGithubMarkdown(binding.readme, null);
+                    });
+                }
+
+                @Override
+                public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws java.io.IOException {
+                    if (!isAdded() || getActivity() == null) return;
+                    if (response.isSuccessful() && response.body() != null) {
+                        String html = response.body().string();
+                        repoItemFragment.module.setReadmeHTML(html);
+                        getActivity().runOnUiThread(() -> {
+                            repoItemFragment.renderGithubMarkdown(binding.readme, html);
+                        });
+                    } else {
+                        getActivity().runOnUiThread(() -> {
+                            repoItemFragment.renderGithubMarkdown(binding.readme, null);
+                        });
+                    }
+                }
+            });
         }
 
         @Override

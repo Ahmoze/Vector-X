@@ -102,7 +102,7 @@ public class OnlineModule {
     @SerializedName("stargazerCount")
     @Expose
     private Integer stargazerCount;
-    public boolean releasesLoaded = false;
+    public boolean releasesLoaded = true;
 
     @Nullable
     public String getName() {
