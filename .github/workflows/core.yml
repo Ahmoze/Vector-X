@@ -78,6 +78,7 @@ jobs:
 
       - name: Build with Gradle
         run: |
+          chmod +x ./gradlew
           ./gradlew zipAll
 
       - name: Prepare artifact
