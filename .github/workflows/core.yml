@@ -69,9 +69,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Remove Android's cmake
-        shell: bash
-        run: rm -rf $ANDROID_HOME/cmake
+
 
       - name: Build with Gradle
         run: |
