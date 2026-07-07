@@ -397,7 +397,26 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                     .setTitle(R.string.module_release_view_assets)
                     .setPositiveButton(android.R.string.cancel, null)
                     .setAdapter(new ArrayAdapter<>(requireActivity(), R.layout.dialog_item, args.getCharSequenceArray("names")),
-                            (dialog, which) -> NavUtil.startURL(requireActivity(), args.getStringArrayList("urls").get(which)))
+                            (dialog, which) -> {
+                                String url = args.getStringArrayList("urls").get(which);
+                                String name = args.getStringArrayList("raw_names").get(which);
+                                if (url != null && !url.trim().isEmpty()) {
+                                    try {
+                                        android.app.DownloadManager.Request req = new android.app.DownloadManager.Request(android.net.Uri.parse(url));
+                                        req.setTitle(name);
+                                        req.setDescription(requireActivity().getString(R.string.app_name) + " Download");
+                                        req.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                                        req.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, name);
+                                        android.app.DownloadManager manager = (android.app.DownloadManager) requireActivity().getSystemService(android.content.Context.DOWNLOAD_SERVICE);
+                                        if (manager != null) {
+                                            manager.enqueue(req);
+                                            android.widget.Toast.makeText(requireActivity(), "Download started...", android.widget.Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (Exception e) {
+                                        android.widget.Toast.makeText(requireActivity(), "Download failed: " + e.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            })
                     .create();
         }
 
@@ -406,9 +425,11 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
             var bundle = new Bundle();
 
             var displayNames = new CharSequence[assets.size()];
+            var rawNames = new ArrayList<String>();
             for (int i = 0; i < assets.size(); i++) {
                 String assetName = assets.get(i).getName();
-                if (assetName == null || assetName.isEmpty()) assetName = "Unknown Asset";
+                if (assetName == null || assetName.isEmpty()) assetName = "Unknown_Asset.apk";
+                rawNames.add(assetName);
                 var sb = new SpannableStringBuilder(assetName);
                 var count = assets.get(i).getDownloadCount();
                 var countStr = activity.getResources().getQuantityString(R.plurals.module_release_assets_download_count, count, count);
@@ -421,6 +442,7 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                 displayNames[i] = sb;
             }
             bundle.putCharSequenceArray("names", displayNames);
+            bundle.putStringArrayList("raw_names", rawNames);
             bundle.putStringArrayList("urls", assets.stream().map(a -> {
                 String u = a.getDownloadUrl();
                 return (u != null) ? u : "";
@@ -495,6 +517,12 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                 renderGithubMarkdown(holder.description, release.getDescriptionHTML());
                 holder.openInBrowser.setOnClickListener(v -> {
                     String url = release.getUrl();
+                    if (url == null || url.trim().isEmpty()) {
+                        url = module.getSourceUrl();
+                    }
+                    if (url == null || url.trim().isEmpty()) {
+                        url = module.getHomepageUrl();
+                    }
                     if (url != null && !url.trim().isEmpty()) {
                         NavUtil.startURL(requireActivity(), url);
                     } else {
