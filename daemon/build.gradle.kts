@@ -55,19 +55,19 @@ android.applicationVariants.all {
   val signInfoTask =
       tasks.register("generate${variantCapped}SignInfo") {
         dependsOn(":app:validateSigning${variantCapped}")
-        val sign =
-            rootProject
-                .project(":app")
-                .extensions
-                .getByType(ApplicationExtension::class.java)
-                .buildTypes
-                .named(variantLowered)
-                .get()
-                .signingConfig
-        val outSrc = file("$outSrcDir/org/matrix/vector/daemon/utils/SignInfo.kt")
+        val outSrc = file("$outSrcDir/org/ahmoze/vector/daemon/utils/SignInfo.kt")
         outputs.file(outSrc)
         doLast {
           outSrc.parentFile.mkdirs()
+          val sign =
+              rootProject
+                  .project(":app")
+                  .extensions
+                  .getByType(ApplicationExtension::class.java)
+                  .buildTypes
+                  .named(variantLowered)
+                  .get()
+                  .signingConfig
           val certificateInfo =
               KeystoreHelper.getCertificateInfo(
                   sign?.storeType,
