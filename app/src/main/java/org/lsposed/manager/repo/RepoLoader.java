@@ -61,14 +61,20 @@ public class RepoLoader {
     public static class ModuleVersion {
         public String versionName;
         public long versionCode;
+        public boolean hasValidCode;
 
-        private ModuleVersion(long versionCode, String versionName) {
+        private ModuleVersion(long versionCode, String versionName, boolean hasValidCode) {
             this.versionName = versionName;
             this.versionCode = versionCode;
+            this.hasValidCode = hasValidCode;
         }
 
         public boolean upgradable(long versionCode, String versionName) {
-            return this.versionCode > versionCode || (this.versionCode == versionCode && !versionName.replace(' ', '_').equals(this.versionName));
+            if (hasValidCode && this.versionCode > 0 && versionCode > 0) {
+                return this.versionCode > versionCode || (this.versionCode == versionCode && !versionName.replace(' ', '_').equals(this.versionName));
+            } else {
+                return !versionName.replace(' ', '_').equals(this.versionName);
+            }
         }
 
     }
@@ -213,17 +219,20 @@ public class RepoLoader {
             }
             if (release == null || release.isEmpty()) continue;
             var splits = release.split("-", 2);
-            if (splits.length < 2) continue;
-            long verCode;
-            String verName;
-            try {
-                verCode = Long.parseLong(splits[0]);
-                verName = splits[1];
-            } catch (NumberFormatException ignored) {
-                continue;
+            long verCode = 0;
+            String verName = release;
+            boolean validCode = false;
+            
+            if (splits.length == 2) {
+                try {
+                    verCode = Long.parseLong(splits[0]);
+                    verName = splits[1];
+                    validCode = true;
+                } catch (NumberFormatException ignored) {}
             }
+            
             String pkgName = module.getName();
-            versions.put(pkgName, new ModuleVersion(verCode, verName));
+            versions.put(pkgName, new ModuleVersion(verCode, verName, validCode));
         }
         latestVersion = versions;
         repoLoaded = true;
