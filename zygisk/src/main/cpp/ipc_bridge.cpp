@@ -97,8 +97,8 @@ constexpr jint HashPackageName(const char* str) {
     return static_cast<jint>(hash);
 }
 constexpr jint kBridgeTransactionCode = HashPackageName(MANAGER_PACKAGE_NAME);
-constexpr jint kDexTransactionCode = ('_' << 24) | ('D' << 16) | ('E' << 8) | 'X';
-constexpr jint kObfuscationMapTransactionCode = ('_' << 24) | ('O' << 16) | ('B' << 8) | 'F';
+constexpr jint kDexTransactionCode = HashPackageName("vector.dex");
+constexpr jint kObfuscationMapTransactionCode = HashPackageName("vector.obf");
 
 // Action codes sent within a kBridgeTransactionCode transaction.
 constexpr jint kActionGetBinder = 2;

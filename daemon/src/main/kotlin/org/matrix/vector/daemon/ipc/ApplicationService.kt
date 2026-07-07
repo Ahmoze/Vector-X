@@ -26,10 +26,8 @@ fun hashPackageName(str: String): Int {
 }
 
 val BRIDGE_TRANSACTION_CODE = hashPackageName(BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME)
-const val DEX_TRANSACTION_CODE =
-    ('_'.code shl 24) or ('D'.code shl 16) or ('E'.code shl 8) or 'X'.code
-const val OBFUSCATION_MAP_TRANSACTION_CODE =
-    ('_'.code shl 24) or ('O'.code shl 16) or ('B'.code shl 8) or 'F'.code
+const val DEX_TRANSACTION_CODE = hashPackageName("vector.dex")
+const val OBFUSCATION_MAP_TRANSACTION_CODE = hashPackageName("vector.obf")
 
 object ApplicationService : ILSPApplicationService.Stub() {
 
