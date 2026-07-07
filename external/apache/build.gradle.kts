@@ -16,7 +16,7 @@ java {
 }
 
 val lang3Src = "commons-lang/src/main/java/org/apache/commons/lang3"
-val localDir = "local/generated"
+val localDir = "local/org/apache/commons/lang3"
 
 tasks.register<Copy>("ClassUtilsX") {
     from("$lang3Src/ClassUtils.java")
