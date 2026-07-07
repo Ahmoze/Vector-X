@@ -407,7 +407,9 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
 
             var displayNames = new CharSequence[assets.size()];
             for (int i = 0; i < assets.size(); i++) {
-                var sb = new SpannableStringBuilder(assets.get(i).getName());
+                String assetName = assets.get(i).getName();
+                if (assetName == null || assetName.isEmpty()) assetName = "Unknown Asset";
+                var sb = new SpannableStringBuilder(assetName);
                 var count = assets.get(i).getDownloadCount();
                 var countStr = activity.getResources().getQuantityString(R.plurals.module_release_assets_download_count, count, count);
                 var sizeStr = Formatter.formatShortFileSize(activity, assets.get(i).getSize());
@@ -419,7 +421,10 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                 displayNames[i] = sb;
             }
             bundle.putCharSequenceArray("names", displayNames);
-            bundle.putStringArrayList("urls", assets.stream().map(ReleaseAsset::getDownloadUrl).collect(Collectors.toCollection(ArrayList::new)));
+            bundle.putStringArrayList("urls", assets.stream().map(a -> {
+                String u = a.getDownloadUrl();
+                return (u != null) ? u : "";
+            }).collect(Collectors.toCollection(ArrayList::new)));
             f.setArguments(bundle);
             f.show(fm, "download");
         }
@@ -488,7 +493,14 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                         .withLocale(App.getLocale()).withZone(ZoneId.systemDefault());
                 holder.publishedTime.setText(String.format(getString(R.string.module_repo_published_time), formatter.format(instant)));
                 renderGithubMarkdown(holder.description, release.getDescriptionHTML());
-                holder.openInBrowser.setOnClickListener(v -> NavUtil.startURL(requireActivity(), release.getUrl()));
+                holder.openInBrowser.setOnClickListener(v -> {
+                    String url = release.getUrl();
+                    if (url != null && !url.trim().isEmpty()) {
+                        NavUtil.startURL(requireActivity(), url);
+                    } else {
+                        Toast.makeText(requireActivity(), R.string.not_supported, Toast.LENGTH_SHORT).show();
+                    }
+                });
                 List<ReleaseAsset> assets = release.getReleaseAssets();
                 if (assets != null && !assets.isEmpty()) {
                     holder.viewAssets.setOnClickListener(v -> DownloadDialog.create(requireActivity(), getParentFragmentManager(), assets));
