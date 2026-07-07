@@ -38,11 +38,19 @@ Vector-X supports devices running **Android 8.1 through Android 15**.
 
 ### Installation
 
-1. Download the latest release as a system module.
-2. Install the module via your root manager (Magisk/KernelSU).
-3. Ensure a Zygisk environment (e.g., [NeoZygisk](https://github.com/JingMatrix/NeoZygisk)).
-4. Reboot the device.
-5. Access management settings via the system notification.
+**For New Users:**
+1. Download the latest release ZIP.
+2. Flash the module via your root manager (Magisk / KernelSU).
+3. Reboot your device.
+4. Open Magisk/KernelSU and click the **Action** button on the Vector-X module (or open the Vector-X manager from the app drawer once it appears).
+
+> [!WARNING]
+> **Updating from pre-v2.0.8 or JingMatrix versions:**
+> Because the Application ID was changed for ultimate stealth, you **MUST manually uninstall the old Manager APK** from your phone before or after flashing. If you don't, you will have duplicate manager icons.
+
+> [!NOTE]
+> **Updating from v2.0.8+:**
+> Normally, flashing the new ZIP automatically overwrites the old module. If for some reason the manager doesn't update, uninstall the old module in Magisk, reboot, and flash the new Vector-X ZIP again.
 
 ---
 
