@@ -11,7 +11,7 @@ The daemon is organized into discrete packages handling IPC, state management, O
 ```text
 src/main/
 ├── jni/                      # Native C++ implementations (dex2oat wrapper, logcat parser)
-└── kotlin/org/matrix/vector/daemon/
+└── kotlin/org/ahmoze/vector/daemon/
     ├── data/                 # SQLite schema, immutable state cache, and file operations
     ├── env/                  # UNIX domain socket servers and native process monitors
     ├── ipc/                  # AIDL endpoints (Application, Manager, Module, SystemServer)

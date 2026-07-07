@@ -12,7 +12,7 @@ android {
         }
     }
 
-    aidlPackagedList += "org/matrix/vector/lspd/models/Module.aidl"
+    aidlPackagedList += "org/ahmoze/vector/lspd/models/Module.aidl"
     namespace = "org.ahmoze.vector.lspd.daemonservice"
 }
 

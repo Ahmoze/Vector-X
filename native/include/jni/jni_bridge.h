@@ -37,7 +37,7 @@ template <typename T, size_t N>
  * It reads the obfuscation map to find the correct, potentially obfuscated,
  * package name for the native bridge classes.
  *
- * @return The JNI signature prefix (e.g., "org/matrix/vector/nativebridge/").
+ * @return The JNI signature prefix (e.g., "org/ahmoze/vector/nativebridge/").
  */
 inline std::string GetNativeBridgeSignature() {
     auto *bridge = ConfigBridge::GetInstance();
@@ -50,7 +50,7 @@ inline std::string GetNativeBridgeSignature() {
         }
     }
     // Fallback or default value if not found.
-    return "org/matrix/vector/nativebridge/";
+    return "org/ahmoze/vector/nativebridge/";
 }
 
 /**

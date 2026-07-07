@@ -25,8 +25,8 @@ std::once_flag init_flag;
 std::map<std::string, std::string> signatures = {
     {"Lde/robv/android/xposed/", ""},         {"Landroid/app/AndroidApp", ""},
     {"Landroid/content/res/XRes", ""},        {"Landroid/content/res/XModule", ""},
-    {"Lio/github/libxposed/api/Xposed", ""},  {"Lorg/matrix/vector/core/", ""},
-    {"Lorg/matrix/vector/nativebridge/", ""}, {"Lorg/matrix/vector/service/", ""},
+    {"Lio/github/libxposed/api/Xposed", ""},  {"Lorg/ahmoze/vector/core/", ""},
+    {"Lorg/ahmoze/vector/nativebridge/", ""}, {"Lorg/ahmoze/vector/service/", ""},
 };
 
 jclass class_file_descriptor = nullptr;
