@@ -16,6 +16,8 @@
 
 **Vector-X** (developed by Ahmoze) is a massively enhanced Zygisk module providing an ART hooking framework that maintains API consistency with the original Xposed. Built upon native LSPlant instrumentation, Vector-X pushes the boundaries of modern Android modding.
 
+> **Acknowledgments:** Vector-X is a heavily modified and modernized fork of the original [Vector](https://github.com/JingMatrix/Vector) project by JingMatrix, which itself evolved from the legendary LSPosed framework. We extend our deepest gratitude to JingMatrix and the original LSPosed developers for laying the groundwork for this project.
+
 **✨ What makes Vector-X special?**
 * **Advanced Stealth (Phase 3):** Uses mathematical dynamic Binder Transaction Code randomization to evade modern Anti-Cheat memory scanners (PUBG, Genshin, Bank apps).
 * **Modern Material 3 GUI:** Features a stunning "Glassmorphism" UI with beautifully rounded cards, dynamic Monet colors, and fluid micro-animations.
