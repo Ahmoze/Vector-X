@@ -1,0 +1,61 @@
+name: Sync Magisk OTA
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  update-ota:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update OTA files
+        run: |
+          # Get release tag (e.g., v2.0.12)
+          TAG_NAME="${{ github.event.release.tag_name }}"
+          # Get version code from commit count
+          COUNT=$(git rev-list --count HEAD)
+          VERSION_CODE=$((COUNT + 3019))
+          
+          # Update update.json using jq
+          jq --arg ver "$TAG_NAME" \
+             --argjson vcode "$VERSION_CODE" \
+             --arg url "https://github.com/${{ github.repository }}/releases/download/${TAG_NAME}/Vector-${TAG_NAME}-Release.zip" \
+             '.version = $ver | .versionCode = $vcode | .zipUrl = $url' \
+             zygisk/update.json > tmp.json && mv tmp.json zygisk/update.json
+
+          # Prepare new changelog section
+          echo "🚀 **What's New in ${TAG_NAME}** 🚀" > new_changelog.md
+          echo "" >> new_changelog.md
+          cat << 'EOF' >> new_changelog.md
+${{ github.event.release.body }}
+EOF
+          echo "" >> new_changelog.md
+          echo "---" >> new_changelog.md
+          echo "" >> new_changelog.md
+          
+          # Append the old changelog to the new one
+          cat zygisk/changelog.md >> new_changelog.md
+          mv new_changelog.md zygisk/changelog.md
+          
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add zygisk/update.json zygisk/changelog.md
+          
+          # Check if there are any changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          git commit -m "Auto-update Magisk OTA files for ${TAG_NAME} [skip ci]"
+          git push origin HEAD:master
