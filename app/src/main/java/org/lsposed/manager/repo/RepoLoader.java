@@ -106,7 +106,9 @@ public class RepoLoader {
     }
 
     private static class ModuleListResponse {
+        @com.google.gson.annotations.SerializedName("modules")
         public List<OnlineModule> modules;
+        @com.google.gson.annotations.SerializedName("pageCount")
         public int pageCount;
     }
 
