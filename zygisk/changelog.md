@@ -1,3 +1,11 @@
+🚀 **What's New in v2.0.12** 🚀
+
+🔹 **Native Downloader Engine**: Completely removed the unreliable Custom Tabs downloader. Module assets (APKs, ZIPs) are now downloaded perfectly in the background using the native Android Download Manager.
+🔹 **UI Bug Fix (Light Theme)**: Fixed an issue where text within the Repository and Modules tabs became invisible/unreadable when the system was set to Light Theme (Monet colors now strictly enforced).
+🔹 **Intelligent URL Fallback**: Fixed the "URL not available" error when opening repositories; the manager now seamlessly falls back to source/homepage URLs if a specific release link is missing.
+
+---
+
 🚀 **What's New in v2.0.10** 🚀
 
 🔹 **UI Bug Fix (HyperOS/MIUI)**: Fixed a critical freeze/ANR that occurred when opening the "Assets" dialog in the module repository on Xiaomi devices with HyperOS.
