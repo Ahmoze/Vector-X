@@ -89,27 +89,9 @@ object NotificationManager {
   }
 
   fun notifyStatusNotification() {
-    val context = FakeContext()
-    val intent = Intent(openManagerAction).apply { setPackage("android") }
-    val pi =
-        PendingIntent.getBroadcast(
-            context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-    val notif =
-        Notification.Builder(context, STATUS_CHANNEL_ID)
-            .setContentTitle(context.getString(R.string.vector_running_notification_title))
-            .setContentText(context.getString(R.string.vector_running_notification_content))
-            .setSmallIcon(getNotificationIcon())
-            .setContentIntent(pi)
-            .setVisibility(Notification.VISIBILITY_SECRET)
-            .setOngoing(true)
-            .build()
-            .apply { extras.putString("android.substName", BuildConfig.FRAMEWORK_NAME) }
-
     createChannels()
-    runCatching {
-      nm?.enqueueNotificationWithTag("android", opPkg, null, STATUS_NOTIF_ID, notif, 0)
-    }
+    // Intentionally left empty to completely disable the annoying "Vector loaded" system notification.
+    // The notification channels are still created for other important events (like scope requests).
   }
 
   fun cancelStatusNotification() {
