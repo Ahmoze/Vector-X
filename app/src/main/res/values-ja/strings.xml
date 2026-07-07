@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ This file is part of LSPosed.
+  ~ This file is part of Vector-X.
   ~
-  ~ LSPosed is free software: you can redistribute it and/or modify
+  ~ Vector-X is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ LSPosed is distributed in the hope that it will be useful,
+  ~ Vector-X is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License
-  ~ along with LSPosed.  If not, see <https://www.gnu.org/licenses/>.
+  ~ along with Vector-X.  If not, see <https://www.gnu.org/licenses/>.
   ~
-  ~ Copyright (C) 2021 LSPosed Contributors
+  ~ Copyright (C) 2021 Vector-X Contributors
   -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/xposed_module_updated_notification_*,@string/module_is_not_activated_*">
     <!-- MainActivity -->
@@ -39,19 +39,19 @@
     <string name="about_view_source_code"><![CDATA[ソースコードを閲覧するにはこちら: %1$s<br/>チャンネルに参加するにはこちら: %2$s]]></string>
     <string name="translators" comment="Dear translators, please add your home page here following the format. There can be more than one translator. So feel free to append yourself.">yoshi818, a1678991, りお(koko0628)</string>
     <string name="install">インストール</string>
-    <string name="install_summary">タップして LSPosed をインストールします</string>
+    <string name="install_summary">タップして Vector-X をインストールします</string>
     <string name="not_installed">インストールされていません</string>
-    <string name="not_install_summary">LSPosed はインストールされていません</string>
+    <string name="not_install_summary">Vector-X はインストールされていません</string>
     <string name="activated">有効化済み</string>
     <string name="partial_activated">部分的に有効化済み</string>
     <string name="selinux_policy_not_loaded_summary">SEPolicy が正しく読み込まれていません</string>
     <string name="selinux_policy_not_loaded"><![CDATA[一部の機能は動作しません。<br/>これを<a href="https://github.com/topjohnwu/Magisk/issues"><b>Magisk</b></a>の開発者に報告してください。]]></string>
     <string name="system_inject_fail_summary">システムフレームワークへのパッチに失敗しました</string>
-    <string name="system_inject_fail"><![CDATA[これは稀な現象であり、<b>Magisk</b>または低品質のMagiskモジュールが原因である可能性があります。<br/>LSPosed以外のMagiskモジュールを一時的に無効化してみるか、完全なログを開発者に送信してください。]]></string>
+    <string name="system_inject_fail"><![CDATA[これは稀な現象であり、<b>Magisk</b>または低品質のMagiskモジュールが原因である可能性があります。<br/>Vector-X以外のMagiskモジュールを一時的に無効化してみるか、完全なログを開発者に送信してください。]]></string>
     <string name="system_prop_incorrect_summary">システム設定が正しくありません</string>
     <string name="system_prop_incorrect"><![CDATA[必須のシステム設定が変更もしくは削除されています。<br/>モジュールが無効化される場合があります。]]></string>
     <string name="need_update">更新が必要です</string>
-    <string name="please_update_summary">最新バージョンの LSPosed をインストールして下さい</string>
+    <string name="please_update_summary">最新バージョンの Vector-X をインストールして下さい</string>
     <string name="developer_warning_title">モジュール開発者向けのヒント</string>
     <string name="developer_warning_summary">Android Studio でデプロイの最適化を無効にするか、「gradlew installDebug」コマンドを使用してインストールしてください。この操作を行わないとモジュールの apk は更新できません。</string>
     <string name="info_api_version">API バージョン</string>
@@ -70,17 +70,17 @@
     <string name="mount_failed">マウントに失敗しました</string>
     <string name="selinux_permissive">SELinux は Permissive です</string>
     <string name="sepolicy_incorrect">SELinux のポリシーが正しくありません</string>
-    <string name="update_lsposed">LSPosed を更新</string>
-    <string name="update_lsposed_msg">LSPosed を更新してもよろしいですか？更新の完了後、このデバイスは再起動します</string>
+    <string name="update_lsposed">Vector-X を更新</string>
+    <string name="update_lsposed_msg">Vector-X を更新してもよろしいですか？更新の完了後、このデバイスは再起動します</string>
     <string name="info_copied">クリップボードにコピーされました</string>
     <!-- WelcomeDialog -->
-    <string name="parasitic_welcome">LSPosed へようこそ</string>
+    <string name="parasitic_welcome">Vector-X へようこそ</string>
     <string name="parasitic_welcome_summary">パラサイトマネージャーを使用しています。これにより、ショートカットを作成したり、通知から開いたりできます。</string>
     <string name="parasitic_welcome_summary_no_shortcut_support">通知から開くことができるパラサイトマネージャーを使用しています。</string>
     <string name="create_shortcut">ショートカットを作成</string>
     <string name="never_show">再度表示しない</string>
     <string name="app_welcome">パラサイトマネージャーを使用することを推奨します</string>
-    <string name="app_welcome_summary">LSPosed は検出を回避するためのシステムパラサイトに対応し、通知からパラサイトマネージャーを開くことができるようになりました。現在のアプリケーションをアンインストールすることをおすすめします。</string>
+    <string name="app_welcome_summary">Vector-X は検出を回避するためのシステムパラサイトに対応し、通知からパラサイトマネージャーを開くことができるようになりました。現在のアプリケーションをアンインストールすることをおすすめします。</string>
     <!-- LogsActivity -->
     <string name="menuSaveToSd">保存</string>
     <string name="nav_item_logs_verbose">詳細ログ</string>
@@ -115,7 +115,7 @@
     <string name="module_installed">%1$s をユーザー %2$s へ追加</string>
     <string name="module_install_failed">モジュールの追加に失敗しました</string>
     <string name="install_to_user">ユーザー %s へインストール</string>
-    <string name="install_to_user_message">ユーザー %2$s へ %1$s をインストールしますか？LSPosed 経由での強制インストールは問題が発生する場合があるため、手動でインストールすることをおすすめします。</string>
+    <string name="install_to_user_message">ユーザー %2$s へ %1$s をインストールしますか？Vector-X 経由での強制インストールは問題が発生する場合があるため、手動でインストールすることをおすすめします。</string>
     <string name="expand">開く</string>
     <string name="collapse">閉じる</string>
     <!-- AppListActivity -->

@@ -23,6 +23,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.os.Build;
 import android.os.Bundle;
+
+import org.lsposed.manager.App;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
@@ -112,10 +114,30 @@ public class HomeFragment extends BaseFragment implements MenuProvider {
         if (binderAlive) {
             if (needUpdate) {
                 binding.updateTitle.setText(R.string.need_update);
-                binding.updateSummary.setText(getString(R.string.please_update_summary));
+                String notes = App.getPreferences().getString("release_notes", getString(R.string.please_update_summary));
+                binding.updateSummary.setText(notes);
                 binding.statusIcon.setImageResource(R.drawable.ic_round_update_24);
                 binding.updateBtn.setOnClickListener(v -> {
-                    NavUtil.startURL(activity, getString(R.string.latest_url));
+                    String zipPath = App.getPreferences().getString("zip_file", null);
+                    if (zipPath != null && new java.io.File(zipPath).exists()) {
+                        new org.lsposed.manager.ui.dialog.BlurBehindDialogBuilder(activity)
+                            .setTitle(R.string.install)
+                            .setMessage(notes + "\n\nDo you want to flash it via Root and reboot? Root access is required.")
+                            .setPositiveButton("Install & Reboot", (dialog, which) -> {
+                                new Thread(() -> {
+                                    try {
+                                        Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "ksud module install '" + zipPath + "' || apmod install '" + zipPath + "' || magisk --install-module '" + zipPath + "'; reboot"});
+                                        p.waitFor();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }).start();
+                            })
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show();
+                    } else {
+                        NavUtil.startURL(activity, getString(R.string.latest_url));
+                    }
                 });
                 binding.updateCard.setVisibility(View.VISIBLE);
             } else {

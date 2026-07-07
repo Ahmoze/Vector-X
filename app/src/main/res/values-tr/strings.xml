@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ This file is part of LSPosed.
+  ~ This file is part of Vector-X.
   ~
-  ~ LSPosed is free software: you can redistribute it and/or modify
+  ~ Vector-X is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ LSPosed is distributed in the hope that it will be useful,
+  ~ Vector-X is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License
-  ~ along with LSPosed.  If not, see <https://www.gnu.org/licenses/>.
+  ~ along with Vector-X.  If not, see <https://www.gnu.org/licenses/>.
   ~
-  ~ Copyright (C) 2021 LSPosed Contributors
+  ~ Copyright (C) 2021 Vector-X Contributors
   -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/xposed_module_updated_notification_*,@string/module_is_not_activated_*">
     <!-- MainActivity -->
@@ -41,19 +41,19 @@
     <string name="about_view_source_code"><![CDATA[%1$s adresinden kaynak kodu görüntüleyin<br/>%2$s kanalımıza katılın]]></string>
     <string name="translators" comment="Dear translators, please add your home page here following the format. There can be more than one translator. So feel free to append yourself.">Bedircan AYAYDIN, Furkan KARCIOĞLU, Ahmet AÇIKGÖZ, Sir-C</string>
     <string name="install">Yükle</string>
-    <string name="install_summary">LSPosed\'i yüklemek için dokunun</string>
+    <string name="install_summary">Vector-X\'i yüklemek için dokunun</string>
     <string name="not_installed">Yüklenmedi</string>
-    <string name="not_install_summary">LSPosed Kurulu değil</string>
+    <string name="not_install_summary">Vector-X Kurulu değil</string>
     <string name="activated">Aktif edildi</string>
     <string name="partial_activated">Kısmen etkinleştirildi</string>
     <string name="selinux_policy_not_loaded_summary">SEPolicy düzgün yüklenmemiş</string>
     <string name="selinux_policy_not_loaded"><![CDATA[Bazı özellikler çalışmayacaktır.<br/>Lütfen bunu <a href="https://github.com/topjohnwu/Magisk/issues"><b>Magisk</b></a> geliştiricisine bildirin.]]></string>
     <string name="system_inject_fail_summary">Sistem Çerçevesi enjeksiyonu başarısız oldu</string>
-    <string name="system_inject_fail"><![CDATA[Bu nadiren yaşanır ve <b>Magisk</b> veya düşük kaliteli modüller yüzünden olabilir.<br/>Lütfen Riru ve LSPosed dışında bütün modülleri devre dışı bırakmayı deneyin veya geliştiricilere tam bir hata kaydı gönderin.]]></string>
+    <string name="system_inject_fail"><![CDATA[Bu nadiren yaşanır ve <b>Magisk</b> veya düşük kaliteli modüller yüzünden olabilir.<br/>Lütfen Riru ve Vector-X dışında bütün modülleri devre dışı bırakmayı deneyin veya geliştiricilere tam bir hata kaydı gönderin.]]></string>
     <string name="system_prop_incorrect_summary">Sistem desteği yanlış</string>
     <string name="system_prop_incorrect"><![CDATA[Bazı gerekli sistem özellikleri silindi veya değiştirildi.<br/>Modüller zaman zaman düzgün çalışmayabilir.]]></string>
     <string name="need_update">Güncelleme gerekiyor</string>
-    <string name="please_update_summary">Lütfen LSPosed\'in en son sürümünü yükleyin</string>
+    <string name="please_update_summary">Lütfen Vector-X\'in en son sürümünü yükleyin</string>
     <string name="developer_warning_title">Modül geliştiricisi için ipuçları</string>
     <string name="developer_warning_summary">Lütfen Android Studio\'da dağıtım optimizasyonlarını devre dışı bırakın veya yüklemek için `gradlew installDebug` komutunu kullanın. Aksi takdirde modül apk\'sı güncellenmeyecektir.</string>
     <string name="info_api_version">API sürümü</string>
@@ -72,17 +72,17 @@
     <string name="mount_failed">Bağlama başarısız</string>
     <string name="selinux_permissive">SELinux\'a izin verildi</string>
     <string name="sepolicy_incorrect">SELinux politikası yanlış</string>
-    <string name="update_lsposed">LSPosed\'ı güncelle</string>
-    <string name="update_lsposed_msg">LSPosed\'ı güncellemek istediğinize emin misiniz? Bu cihaz güncelleme tamamlandıktan sonra yeniden başlatılacak</string>
+    <string name="update_lsposed">Vector-X\'ı güncelle</string>
+    <string name="update_lsposed_msg">Vector-X\'ı güncellemek istediğinize emin misiniz? Bu cihaz güncelleme tamamlandıktan sonra yeniden başlatılacak</string>
     <string name="info_copied">Panoya kopyalandı</string>
     <!-- WelcomeDialog -->
-    <string name="parasitic_welcome">LSPosed\'a hoş geldiniz</string>
+    <string name="parasitic_welcome">Vector-X\'a hoş geldiniz</string>
     <string name="parasitic_welcome_summary">Parazit yöneticiyi kullanıyorsunuz, bu da kısayol oluşturabileceğinizi veya hala bildirimden açabileceğinizi gösterir.</string>
     <string name="parasitic_welcome_summary_no_shortcut_support">Parazit yöneticiyi kullanıyorsunuz ve bu da hala bildirimden açabileceğinizi gösterir.</string>
     <string name="create_shortcut">Kısayol oluştur</string>
     <string name="never_show">Asla gösterme</string>
     <string name="app_welcome">Parazit Yönetici Önerilir</string>
-    <string name="app_welcome_summary">LSPosed tespit edilmeyi önlemek için sistem parazitlemeyi destekliyor, parazit yöneticiyi bildirimden açabilirsiniz. Şu anki uygulamayı kaldırmanız önerilir.</string>
+    <string name="app_welcome_summary">Vector-X tespit edilmeyi önlemek için sistem parazitlemeyi destekliyor, parazit yöneticiyi bildirimden açabilirsiniz. Şu anki uygulamayı kaldırmanız önerilir.</string>
     <!-- LogsActivity -->
     <string name="menuSaveToSd">Kaydet</string>
     <string name="nav_item_logs_verbose">Ayrıntılı Günlükler</string>
@@ -117,7 +117,7 @@
     <string name="module_installed">Kullanıcıya %1$s eklendi %2$s</string>
     <string name="module_install_failed">Modül eklenemedi</string>
     <string name="install_to_user">Kullanıcıya yükle %s</string>
-    <string name="install_to_user_message">%2$s kullanıcısına %1$s yüklemek ister misiniz? Elle kurulum yapılması tavsiye edilir, LSPosed ile kurulumu zorlamak sorunlara neden olabilir.</string>
+    <string name="install_to_user_message">%2$s kullanıcısına %1$s yüklemek ister misiniz? Elle kurulum yapılması tavsiye edilir, Vector-X ile kurulumu zorlamak sorunlara neden olabilir.</string>
     <string name="expand">genişlet</string>
     <string name="collapse">daralt</string>
     <!-- AppListActivity -->

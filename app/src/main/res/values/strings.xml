@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ This file is part of LSPosed.
+  ~ This file is part of Vector-X.
   ~
-  ~ LSPosed is free software: you can redistribute it and/or modify
+  ~ Vector-X is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ LSPosed is distributed in the hope that it will be useful,
+  ~ Vector-X is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License
-  ~ along with LSPosed.  If not, see <https://www.gnu.org/licenses/>.
+  ~ along with Vector-X.  If not, see <https://www.gnu.org/licenses/>.
   ~
-  ~ Copyright (C) 2021 LSPosed Contributors
+  ~ Copyright (C) 2021 Vector-X Contributors
   -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/xposed_module_updated_notification_*,@string/module_is_not_activated_*">
     <!-- MainActivity -->
@@ -41,19 +41,19 @@
     <string name="about_view_source_code"><![CDATA[View source code at %1$s<br/>Join our %2$s channel]]></string>
     <string name="translators" comment="Dear translators, please add your home page here following the format. There can be more than one translator. So feel free to append yourself.">null</string>
     <string name="install">Install</string>
-    <string name="install_summary">Tap to install LSPosed</string>
+    <string name="install_summary">Tap to install Vector-X</string>
     <string name="not_installed">Not installed</string>
-    <string name="not_install_summary">LSPosed is not Installed</string>
+    <string name="not_install_summary">Vector-X is not Installed</string>
     <string name="activated">Activated</string>
     <string name="partial_activated">Partially activated</string>
     <string name="selinux_policy_not_loaded_summary">SEPolicy is not loaded properly</string>
     <string name="selinux_policy_not_loaded"><![CDATA[Some features will not work.<br/>Please report this to <a href="https://github.com/topjohnwu/Magisk/issues"><b>Magisk</b></a> developer.]]></string>
     <string name="system_inject_fail_summary">System Framework injection failed</string>
-    <string name="system_inject_fail"><![CDATA[This is rare and may be caused by <b>Magisk</b> or some low-quality Magisk modules.<br/>Please try to disable Magisk modules other than Riru and LSPosed or submit full log to developers.]]></string>
+    <string name="system_inject_fail"><![CDATA[This is rare and may be caused by <b>Magisk</b> or some low-quality Magisk modules.<br/>Please try to disable Magisk modules other than Riru and Vector-X or submit full log to developers.]]></string>
     <string name="system_prop_incorrect_summary">System prop incorrect</string>
     <string name="system_prop_incorrect"><![CDATA[Some necessary system properties deleted or modified.<br/>Modules may invalidate occasionally.]]></string>
     <string name="need_update">Need to update</string>
-    <string name="please_update_summary">Please install the latest version of LSPosed</string>
+    <string name="please_update_summary">Please install the latest version of Vector-X</string>
     <string name="developer_warning_title">Tips for module developer</string>
     <string name="developer_warning_summary">Please disable deploy optimizations on Android Studio, or use `gradlew installDebug` command to install. Otherwise the module apk will not be updated.</string>
     <string name="info_api_version">API version</string>
@@ -72,17 +72,17 @@
     <string name="mount_failed">Mount failed</string>
     <string name="selinux_permissive">SELinux is permissive</string>
     <string name="sepolicy_incorrect">SELinux policy is incorrect</string>
-    <string name="update_lsposed">Update LSPosed</string>
-    <string name="update_lsposed_msg">Confirm to update LSPosed? This device will reboot after update completion</string>
+    <string name="update_lsposed">Update Vector-X</string>
+    <string name="update_lsposed_msg">Confirm to update Vector-X? This device will reboot after update completion</string>
     <string name="info_copied">Copied to clipboard</string>
     <!-- WelcomeDialog -->
-    <string name="parasitic_welcome">Welcome to LSPosed</string>
+    <string name="parasitic_welcome">Welcome to Vector-X</string>
     <string name="parasitic_welcome_summary">You are using the parasitic manager, which can create shortcut or still open from notification.</string>
     <string name="parasitic_welcome_summary_no_shortcut_support">You are using the parasitic manager, which can open from notification.</string>
     <string name="create_shortcut">Create shortcut</string>
     <string name="never_show">Never show</string>
     <string name="app_welcome">Parasitic Manager Recommended</string>
-    <string name="app_welcome_summary">LSPosed now supports system parasitization to avoid detection, you can open parasitic manager from notification. It is recommended to uninstall the current application.</string>
+    <string name="app_welcome_summary">Vector-X now supports system parasitization to avoid detection, you can open parasitic manager from notification. It is recommended to uninstall the current application.</string>
     <!-- LogsActivity -->
     <string name="menuSaveToSd">Save</string>
     <string name="nav_item_logs_verbose">Verbose Logs</string>
@@ -117,7 +117,7 @@
     <string name="module_installed">Added %1$s to user %2$s</string>
     <string name="module_install_failed">Adding module failed</string>
     <string name="install_to_user">Install to user %s</string>
-    <string name="install_to_user_message">Want to install %1$s to user %2$s? It is recommended to install manually, forcing installation via LSPosed may cause problems.</string>
+    <string name="install_to_user_message">Want to install %1$s to user %2$s? It is recommended to install manually, forcing installation via Vector-X may cause problems.</string>
     <string name="expand">expand</string>
     <string name="collapse">collapse</string>
     <!-- AppListActivity -->

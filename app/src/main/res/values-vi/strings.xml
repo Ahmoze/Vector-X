@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ This file is part of LSPosed.
+  ~ This file is part of Vector-X.
   ~
-  ~ LSPosed is free software: you can redistribute it and/or modify
+  ~ Vector-X is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ LSPosed is distributed in the hope that it will be useful,
+  ~ Vector-X is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License
-  ~ along with LSPosed.  If not, see <https://www.gnu.org/licenses/>.
+  ~ along with Vector-X.  If not, see <https://www.gnu.org/licenses/>.
   ~
-  ~ Copyright (C) 2021 LSPosed Contributors
+  ~ Copyright (C) 2021 Vector-X Contributors
   -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/xposed_module_updated_notification_*,@string/module_is_not_activated_*">
     <!-- MainActivity -->
@@ -39,19 +39,19 @@
     <string name="about_view_source_code"><![CDATA[Xem mã nguồn tại %1$s<br/>Tham gia kênh %2$s của chúng tôi]]></string>
     <string name="translators" comment="Dear translators, please add your home page here following the format. There can be more than one translator. So feel free to append yourself.">The Primal Pea, Tuyen Nguyen (tuyennn)</string>
     <string name="install">Cài đặt</string>
-    <string name="install_summary">Ấn vào đây để cài đặt LSPosed</string>
+    <string name="install_summary">Ấn vào đây để cài đặt Vector-X</string>
     <string name="not_installed">Chưa được cài đặt</string>
-    <string name="not_install_summary">LSPosed chưa được cài đặt</string>
+    <string name="not_install_summary">Vector-X chưa được cài đặt</string>
     <string name="activated">Đã được kích hoạt</string>
     <string name="partial_activated">Một phần đã được kích hoạt</string>
     <string name="selinux_policy_not_loaded_summary">Chính sách SELinux không được nạp đúng cách</string>
     <string name="selinux_policy_not_loaded"><![CDATA[Vài tính năng không hoạt động.<br/>Vui lòng báo cáo đến <a href="https://github.com/topjohnwu/Magisk/issues"><b>nhà phát triển</b></a>.]]></string>
     <string name="system_inject_fail_summary">Không thể nhúng vào khung hệ thống</string>
-    <string name="system_inject_fail"><![CDATA[Trường hợp này khá hiếm khi xảy ra và có thể lý do bởi <b>Magisk</b> hoặc 1 số mô-đun Magisk kém chất lượng.<br/>Hãy thử vô hiệu hóa những mô-đun Magisk đó, thử chạy riêng Riru và LSPosed mà thôi hoặc thông báo nhật ký tới những nhà phát triển.]]></string>
+    <string name="system_inject_fail"><![CDATA[Trường hợp này khá hiếm khi xảy ra và có thể lý do bởi <b>Magisk</b> hoặc 1 số mô-đun Magisk kém chất lượng.<br/>Hãy thử vô hiệu hóa những mô-đun Magisk đó, thử chạy riêng Riru và Vector-X mà thôi hoặc thông báo nhật ký tới những nhà phát triển.]]></string>
     <string name="system_prop_incorrect_summary">Thông tin hệ thống không đúng</string>
     <string name="system_prop_incorrect"><![CDATA[Một số thuộc tính hệ thống cần thiết đã bị xóa hoặc sửa đổi.<br/> Đôi khi, các mô-đun có thể sẽ mất hiệu lực.]]></string>
     <string name="need_update">Cần được cập nhật</string>
-    <string name="please_update_summary">Vui lòng cài đặt phiên bản mới nhất của LSPosed</string>
+    <string name="please_update_summary">Vui lòng cài đặt phiên bản mới nhất của Vector-X</string>
     <string name="developer_warning_title">Mẹo cho module developer</string>
     <string name="developer_warning_summary">Vui lòng tắt tối ưu hóa triển khai trên Android Studio hoặc sử dụng lệnh `gradlew installDebug` để cài đặt. Nếu không, apk mô-đun sẽ không được cập nhật.</string>
     <string name="info_api_version">Phiên bản API</string>
@@ -70,8 +70,8 @@
     <string name="mount_failed">Mount thất bại</string>
     <string name="selinux_permissive">Cho phép SELinux</string>
     <string name="sepolicy_incorrect">Chính sách SELinux không chính xác</string>
-    <string name="update_lsposed">Cập nhật LSPosed</string>
-    <string name="update_lsposed_msg">Xác nhận cập nhật LSPosed? Thiết bị này sẽ khởi động lại sau khi hoàn tất cập nhật</string>
+    <string name="update_lsposed">Cập nhật Vector-X</string>
+    <string name="update_lsposed_msg">Xác nhận cập nhật Vector-X? Thiết bị này sẽ khởi động lại sau khi hoàn tất cập nhật</string>
     <string name="info_copied">Đã sao chép vào bảng nhớ tạm</string>
     <!-- WelcomeDialog -->
     <string name="parasitic_welcome">Chào mừng</string>
@@ -116,7 +116,7 @@ Nên gỡ cài đặt ứng dụng hiện tại.</string>
     <string name="module_installed">Đã thêm %1$s tới người dùng %2$s</string>
     <string name="module_install_failed">Thêm mô-đun thất bại</string>
     <string name="install_to_user">Cài đặt tới người dùng %s</string>
-    <string name="install_to_user_message">Muốn cài %1$s tới người dùng %2$s? Khuyến cáo bạn nên cài đặt thủ công, buộc cài đặt qua LSPosed có thể xảy ra vấn đề không mong muốn.</string>
+    <string name="install_to_user_message">Muốn cài %1$s tới người dùng %2$s? Khuyến cáo bạn nên cài đặt thủ công, buộc cài đặt qua Vector-X có thể xảy ra vấn đề không mong muốn.</string>
     <string name="expand">mở</string>
     <string name="collapse">đóng</string>
     <!-- AppListActivity -->

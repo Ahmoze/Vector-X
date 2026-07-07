@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ This file is part of LSPosed.
+  ~ This file is part of Vector-X.
   ~
-  ~ LSPosed is free software: you can redistribute it and/or modify
+  ~ Vector-X is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ LSPosed is distributed in the hope that it will be useful,
+  ~ Vector-X is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License
-  ~ along with LSPosed.  If not, see <https://www.gnu.org/licenses/>.
+  ~ along with Vector-X.  If not, see <https://www.gnu.org/licenses/>.
   ~
-  ~ Copyright (C) 2021 LSPosed Contributors
+  ~ Copyright (C) 2021 Vector-X Contributors
   -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/xposed_module_updated_notification_*,@string/module_is_not_activated_*">
     <!-- MainActivity -->
@@ -45,19 +45,19 @@
     <string name="about_view_source_code"><![CDATA[Перегляньте вихідний код на %1$s<br/>Приєднуйтесь до нашого каналу в %2$s]]></string>
     <string name="translators" comment="Dear translators, please add your home page here following the format. There can be more than one translator. So feel free to append yourself.">AlexPechkin</string>
     <string name="install">Встановити</string>
-    <string name="install_summary">Натисніть, щоб встановити LSPosed</string>
+    <string name="install_summary">Натисніть, щоб встановити Vector-X</string>
     <string name="not_installed">Не встановлено</string>
-    <string name="not_install_summary">LSPosed не встановлено</string>
+    <string name="not_install_summary">Vector-X не встановлено</string>
     <string name="activated">Активовано</string>
     <string name="partial_activated">Частково активовано</string>
     <string name="selinux_policy_not_loaded_summary">SEPolicy не завантажено належним чином</string>
     <string name="selinux_policy_not_loaded"><![CDATA[Деякі функції не працюватимуть.<br/>Будь ласка, повідомте про це на <a href="https://github.com/topjohnwu/Magisk/issues"><b>Magisk</b></a> розробнику.]]></string>
     <string name="system_inject_fail_summary">Помилка ін\'єкції System Framework</string>
-    <string name="system_inject_fail"><![CDATA[Це рідкісна проблема, яка може бути спричинена <b>Magisk</b> або деякими неякісними модулями Magisk.<br/>Спробуйте вимкнути всі модулі Magisk, крім Riru та LSPosed, або надішліть повний звіт розробникам.]]></string>
+    <string name="system_inject_fail"><![CDATA[Це рідкісна проблема, яка може бути спричинена <b>Magisk</b> або деякими неякісними модулями Magisk.<br/>Спробуйте вимкнути всі модулі Magisk, крім Riru та Vector-X, або надішліть повний звіт розробникам.]]></string>
     <string name="system_prop_incorrect_summary">Неправильні системні налаштування</string>
     <string name="system_prop_incorrect"><![CDATA[Деякі необхідні параметри системи видалені або змінені.<br/>Модулі можуть не працювати належним чином.]]></string>
     <string name="need_update">Потрібно оновити</string>
-    <string name="please_update_summary">Будь ласка, встановіть останню версію LSPosed</string>
+    <string name="please_update_summary">Будь ласка, встановіть останню версію Vector-X</string>
     <string name="developer_warning_title">Поради розробнику модулів</string>
     <string name="developer_warning_summary">Будь ласка, відключіть оптимізацію розгортання в Android Studio або використовуйте команду `gradlew installDebug` для встановлення. В іншому випадку apk-модуль не оновиться.</string>
     <string name="info_api_version">Версія API</string>
@@ -76,17 +76,17 @@
     <string name="mount_failed">Не вдалося під\'єднати</string>
     <string name="selinux_permissive">SELinux є дозволеним</string>
     <string name="sepolicy_incorrect">Політика SELinux неправильна</string>
-    <string name="update_lsposed">Оновити LSPosed</string>
-    <string name="update_lsposed_msg">Підтвердити оновлення LSPosed? Цей пристрій перезавантажиться після завершення оновлення</string>
+    <string name="update_lsposed">Оновити Vector-X</string>
+    <string name="update_lsposed_msg">Підтвердити оновлення Vector-X? Цей пристрій перезавантажиться після завершення оновлення</string>
     <string name="info_copied">Скопійовано до буфера обміну</string>
     <!-- WelcomeDialog -->
-    <string name="parasitic_welcome">Ласкаво просимо до LSPosed</string>
+    <string name="parasitic_welcome">Ласкаво просимо до Vector-X</string>
     <string name="parasitic_welcome_summary">Ви використовуєте паразитний менеджер, який може створювати ярлик або все одно відкриватися з повідомлення.</string>
     <string name="parasitic_welcome_summary_no_shortcut_support">Ви використовуєте паразитний менеджер, який може відкриватися з повідомлення.</string>
     <string name="create_shortcut">Створити ярлик</string>
     <string name="never_show">Ніколи не показувати</string>
     <string name="app_welcome">Рекомендується менеджер-паразит</string>
-    <string name="app_welcome_summary">LSPosed тепер підтримує паразитування системи, щоб уникнути виявлення, ви можете відкрити диспетчер паразитів з повідомлення. Рекомендується видалити поточну програму.</string>
+    <string name="app_welcome_summary">Vector-X тепер підтримує паразитування системи, щоб уникнути виявлення, ви можете відкрити диспетчер паразитів з повідомлення. Рекомендується видалити поточну програму.</string>
     <!-- LogsActivity -->
     <string name="menuSaveToSd">Зберегти</string>
     <string name="nav_item_logs_verbose">Детальні звіти</string>
@@ -121,7 +121,7 @@
     <string name="module_installed">Додано %1$s до користувача %2$s</string>
     <string name="module_install_failed">Не вдалося додати модуль</string>
     <string name="install_to_user">Встановити користувачу %s</string>
-    <string name="install_to_user_message">Бажаєте встановити %1$s користувачу %2$s? Рекомендується встановлювати вручну. Примусове встановлення за допомогою LSPosed може спричинити проблеми.</string>
+    <string name="install_to_user_message">Бажаєте встановити %1$s користувачу %2$s? Рекомендується встановлювати вручну. Примусове встановлення за допомогою Vector-X може спричинити проблеми.</string>
     <string name="expand">розгорнути</string>
     <string name="collapse">згорнути</string>
     <!-- AppListActivity -->
@@ -151,7 +151,7 @@
     <string name="menu_select_all">Усі</string>
     <string name="menu_select_none">Немає</string>
     <string name="menu_auto_include">Автовключення</string>
-    <string name="module_is_not_activated_yet">Модуль LSPosed ще не активований</string>
+    <string name="module_is_not_activated_yet">Модуль Vector-X ще не активований</string>
     <string name="requested_by_module">Рекомендовано</string>
     <string name="update_available">Доступне оновлення: %1$s</string>
     <string name="module_disabled_no_selection">Модуль %s вимкнено, оскільки жодна програма не вибрана.</string>

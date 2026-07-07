@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ This file is part of LSPosed.
+  ~ This file is part of Vector-X.
   ~
-  ~ LSPosed is free software: you can redistribute it and/or modify
+  ~ Vector-X is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ LSPosed is distributed in the hope that it will be useful,
+  ~ Vector-X is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License
-  ~ along with LSPosed.  If not, see <https://www.gnu.org/licenses/>.
+  ~ along with Vector-X.  If not, see <https://www.gnu.org/licenses/>.
   ~
-  ~ Copyright (C) 2021 LSPosed Contributors
+  ~ Copyright (C) 2021 Vector-X Contributors
   -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/xposed_module_updated_notification_*,@string/module_is_not_activated_*">
     <!-- MainActivity -->
@@ -41,19 +41,19 @@
     <string name="about_view_source_code"><![CDATA[دیدن سورس کد در %1$s<br/>عضو کانال %2$s شوید]]></string>
     <string name="translators" comment="Dear translators, please add your home page here following the format. There can be more than one translator. So feel free to append yourself.">null</string>
     <string name="install">نصب</string>
-    <string name="install_summary">برای نصب LSPosed لمس کنید</string>
+    <string name="install_summary">برای نصب Vector-X لمس کنید</string>
     <string name="not_installed">نصب نشده</string>
-    <string name="not_install_summary">LSPosed نصب نشده</string>
+    <string name="not_install_summary">Vector-X نصب نشده</string>
     <string name="activated">فعال شده</string>
     <string name="partial_activated">نیمه فعال</string>
     <string name="selinux_policy_not_loaded_summary">سیاست SELinux به درستی بارگذاری نشده</string>
     <string name="selinux_policy_not_loaded"><![CDATA[برخی قابلیت ها کار نمی کنند.<br/>لطفاً این موضوع را به توسعه دهنده <a href="https://github.com/topjohnwu/Magisk/issues"><b>Magisk</b></a> گزارش دهید.]]></string>
     <string name="system_inject_fail_summary">تزریق به چارچوب سیستم ناموفق بود</string>
-    <string name="system_inject_fail"><![CDATA[این مشکل نادر است و ممکن است به خاطر <b>Magisk</b> یا برخی ماژول های بی کیفیت Magisk باشد.<br/>لطفاً ماژول های Magisk به جز Riru و LSPosed را غیرفعال کنید یا لاگ کامل را برای توسعه دهندگان بفرستید.]]></string>
+    <string name="system_inject_fail"><![CDATA[این مشکل نادر است و ممکن است به خاطر <b>Magisk</b> یا برخی ماژول های بی کیفیت Magisk باشد.<br/>لطفاً ماژول های Magisk به جز Riru و Vector-X را غیرفعال کنید یا لاگ کامل را برای توسعه دهندگان بفرستید.]]></string>
     <string name="system_prop_incorrect_summary">ویژگی های سیستم نادرست است</string>
     <string name="system_prop_incorrect"><![CDATA[برخی ویژگی های ضروری سیستم حذف یا تغییر کرده اند.<br/>ماژول ها ممکن است گاهی کار نکنند.]]></string>
     <string name="need_update">نیاز به بروزرسانی</string>
-    <string name="please_update_summary">LSPosedLSPosed</string>
+    <string name="please_update_summary">Vector-XVector-X</string>
     <string name="developer_warning_title">نکات برای توسعه دهنده ماژول</string>
     <string name="developer_warning_summary">لطفاً بهینه‌سازی‌های استقرار را در اندروید استودیو خاموش کنید یا از دستور `gradlew installDebug` استفاده کنید. در غیر این صورت APK ماژول آپدیت نمی‌شود.</string>
     <string name="info_api_version">نسخه API</string>
@@ -72,17 +72,17 @@
     <string name="mount_failed">مونت ناموفق بود</string>
     <string name="selinux_permissive">SELinux در حالت Permissive است</string>
     <string name="sepolicy_incorrect">سیاست SELinux نادرست است</string>
-    <string name="update_lsposed">بروزرسانی LSPosed</string>
-    <string name="update_lsposed_msg">آیا بروزرسانی LSPosed را تأیید می کنید؟ بعد از پایان، دستگاه ری استارت می شود</string>
+    <string name="update_lsposed">بروزرسانی Vector-X</string>
+    <string name="update_lsposed_msg">آیا بروزرسانی Vector-X را تأیید می کنید؟ بعد از پایان، دستگاه ری استارت می شود</string>
     <string name="info_copied">کپی شد</string>
     <!-- WelcomeDialog -->
-    <string name="parasitic_welcome">به LSPosed خوش آمدید</string>
+    <string name="parasitic_welcome">به Vector-X خوش آمدید</string>
     <string name="parasitic_welcome_summary">شما از مدیر Parasitic استفاده می کنید که می تواند شورتکات بسازد یا از نوتیفیکیشن باز شود.</string>
     <string name="parasitic_welcome_summary_no_shortcut_support">شما از مدیر Parasitic استفاده می کنید که فقط از نوتیفیکیشن باز می شود.</string>
     <string name="create_shortcut">ساخت شورتکات</string>
     <string name="never_show">هرگز نمایش نده</string>
     <string name="app_welcome">مدیر Parasitic توصیه شده</string>
-    <string name="app_welcome_summary">LSPosed حالا از سیستم Parasitic پشتیبانی می کند تا شناسایی نشود، می توانید از نوتیفیکیشن مدیر Parasitic را باز کنید. بهتر است برنامه فعلی را حذف کنید.</string>
+    <string name="app_welcome_summary">Vector-X حالا از سیستم Parasitic پشتیبانی می کند تا شناسایی نشود، می توانید از نوتیفیکیشن مدیر Parasitic را باز کنید. بهتر است برنامه فعلی را حذف کنید.</string>
     <!-- LogsActivity -->
     <string name="menuSaveToSd">ذخیره</string>
     <string name="nav_item_logs_verbose">لاگ های مفصل</string>
@@ -117,7 +117,7 @@
     <string name="module_installed">اضافه شد %1$s به کاربر %2$s</string>
     <string name="module_install_failed">اضافه کردن ماژول موفق نبود</string>
     <string name="install_to_user">نصب برای کاربر %s</string>
-    <string name="install_to_user_message">می خواهید %1$s را برای کاربر %2$s نصب کنید؟ توصیه می شود دستی نصب کنید، نصب با LSPosed ممکن است مشکل ایجاد کند.</string>
+    <string name="install_to_user_message">می خواهید %1$s را برای کاربر %2$s نصب کنید؟ توصیه می شود دستی نصب کنید، نصب با Vector-X ممکن است مشکل ایجاد کند.</string>
     <string name="expand">باز کن</string>
     <string name="collapse">ببند</string>
     <!-- AppListActivity -->
