@@ -17,8 +17,6 @@ import org.lsposed.lspd.util.Utils.Log
  * [Binder.execTransact] and redirects calls with the [TRANSACTION_CODE] to this class.
  */
 object BridgeService {
-    private const val TRANSACTION_CODE =
-        ('_'.code shl 24) or ('V'.code shl 16) or ('E'.code shl 8) or 'C'.code
     private const val TAG = "VectorZygiskBridge"
 
     /** Actions supported by the manual IPC bridge. */
@@ -139,8 +137,8 @@ object BridgeService {
      */
     @JvmStatic
     fun execTransact(obj: IBinder, code: Int, dataObj: Long, replyObj: Long, flags: Int): Boolean {
-        if (code != TRANSACTION_CODE) return false
-
+        // The check for the correct transaction code is already handled securely 
+        // by the C++ native hook (IPCBridge::ExecTransact_Replace).
         val data = dataObj.asParcel()
         val reply = replyObj.asParcel()
 

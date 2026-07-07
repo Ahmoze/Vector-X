@@ -86,7 +86,17 @@ private:
 constexpr auto kBridgeServiceName = "activity"sv;
 
 // Transaction codes for specific actions.
-constexpr jint kBridgeTransactionCode = ('_' << 24) | ('V' << 16) | ('E' << 8) | 'C';
+// We use a compile-time hash of the manager package name to avoid hardcoding a static signature
+// like '_VEC' which is easily detectable by anti-cheat engines scanning the binary.
+constexpr jint HashPackageName(const char* str) {
+    jint hash = 0;
+    while (*str) {
+        hash = hash * 31 + *str;
+        str++;
+    }
+    return hash;
+}
+const jint kBridgeTransactionCode = HashPackageName(MANAGER_PACKAGE_NAME);
 constexpr jint kDexTransactionCode = ('_' << 24) | ('D' << 16) | ('E' << 8) | 'X';
 constexpr jint kObfuscationMapTransactionCode = ('_' << 24) | ('O' << 16) | ('B' << 8) | 'F';
 

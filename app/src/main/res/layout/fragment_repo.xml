@@ -62,7 +62,6 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -74,7 +73,6 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:animateLayoutChanges="true"
                 android:clipToPadding="false"
                 android:fadeScrollbars="true"
                 android:scrollbarStyle="insideOverlay"
