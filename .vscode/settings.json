@@ -1,0 +1,13 @@
+{
+    "java.jdt.ls.androidSupport.enabled": true,
+    "java.import.gradle.enabled": true,
+    "java.project.resourceFilters": ["external", "hiddenapi", "build", ".gradle"],
+    "java.import.exclusions": ["**/external/**", "**/hiddenapi/**"],
+    "java.compile.nullAnalysis.mode": "disabled",
+    "files.exclude": {
+        "**/.gradle": true,
+        "**/build": true
+    },
+    "cmake.configureOnOpen": false,
+    "cmake.autoSelectActiveFolder": false
+}
