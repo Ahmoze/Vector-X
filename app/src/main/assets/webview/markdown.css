@@ -585,3 +585,9 @@ input[type="checkbox"] {
 .Box {
   border-radius: 6px;
 }
+
+.markdown-body img {
+  max-width: 100%;
+  box-sizing: content-box;
+  background-color: transparent;
+}

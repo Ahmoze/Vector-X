@@ -204,30 +204,51 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                 public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                     if (!request.getUrl().getScheme().startsWith("http")) return null;
                     var client = App.getOkHttpClient();
-                    var call = client.newCall(
-                            new Request.Builder()
-                                    .url(request.getUrl().toString())
-                                    .method(request.getMethod(), null)
-                                    .headers(Headers.of(request.getRequestHeaders()))
-                                    .build());
+                    Request.Builder reqBuilder = new Request.Builder()
+                            .url(request.getUrl().toString())
+                            .method(request.getMethod(), null);
+
+                    if (request.getRequestHeaders() != null) {
+                        for (java.util.Map.Entry<String, String> entry : request.getRequestHeaders().entrySet()) {
+                            try {
+                                if (entry.getKey() != null && entry.getValue() != null) {
+                                    reqBuilder.addHeader(entry.getKey(), entry.getValue());
+                                }
+                            } catch (Exception ignored) { }
+                        }
+                    }
+
+                    var call = client.newCall(reqBuilder.build());
                     try {
                         Response reply = call.execute();
-                        var header = reply.header("content-type", "image/*;charset=utf-8");
-                        String[] contentTypes = new String[0];
+                        var header = reply.header("content-type", "image/*");
+                        String mimeType = "image/*";
+                        String charset = "";
+                        
                         if (header != null) {
-                            contentTypes = header.split(";\\s*");
+                            String[] parts = header.split(";\\s*");
+                            if (parts.length > 0) {
+                                mimeType = parts[0];
+                            }
+                            if (parts.length > 1) {
+                                String[] charsetParts = parts[1].split("=\\s*");
+                                if (charsetParts.length > 1) {
+                                    charset = charsetParts[1];
+                                }
+                            }
                         }
-                        var mimeType = contentTypes.length > 0 ? contentTypes[0] : "image/*";
-                        var charset = contentTypes.length > 1 ? contentTypes[1].split("=\\s*")[1] : "utf-8";
+                        
                         var body = reply.body();
                         if (body == null) return null;
+                        
                         return new WebResourceResponse(
                                 mimeType,
-                                charset,
+                                charset.isEmpty() ? null : charset,
                                 body.byteStream()
                         );
                     } catch (Throwable e) {
-                        return new WebResourceResponse("text/html", "utf-8", new ByteArrayInputStream(Log.getStackTraceString(e).getBytes(StandardCharsets.UTF_8)));
+                        // If it fails, fallback to letting WebView try to load it natively instead of returning text/html for an image.
+                        return null;
                     }
                 }
             });
