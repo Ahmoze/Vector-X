@@ -1,13 +1,12 @@
 <div align="center">
 
-# Vector Framework
+# Vector-X Framework
 
-**A high-performance ART hooking framework for modern Android**
+**A high-performance, stealth-focused ART hooking framework for modern Android**
 
-[![Build](https://img.shields.io/github/actions/workflow/status/JingMatrix/Vector/core.yml?branch=master&event=push&logo=github&label=Build)](https://github.com/JingMatrix/Vector/actions/workflows/core.yml?query=event%3Apush+branch%3Amaster+is%3Acompleted)
-[![Crowdin](https://img.shields.io/badge/Localization-Crowdin-blueviolet?logo=Crowdin)](https://crowdin.com/project/lsposed_jingmatrix)
-[![Download](https://img.shields.io/github/v/release/JingMatrix/Vector?color=orange&logoColor=orange&label=Download&logo=DocuSign)](https://github.com/JingMatrix/Vector/releases/latest)
-[![Total](https://shields.io/github/downloads/JingMatrix/Vector/total?logo=Bookmeter&label=Counts&logoColor=yellow&color=yellow)](https://github.com/JingMatrix/Vector/releases)
+[![Build](https://img.shields.io/github/actions/workflow/status/Ahmoze/Vector-X/core.yml?branch=master&event=push&logo=github&label=Build)](https://github.com/Ahmoze/Vector-X/actions/workflows/core.yml?query=event%3Apush+branch%3Amaster+is%3Acompleted)
+[![Download](https://img.shields.io/github/v/release/Ahmoze/Vector-X?color=orange&logoColor=orange&label=Download&logo=DocuSign)](https://github.com/Ahmoze/Vector-X/releases/latest)
+[![Total](https://shields.io/github/downloads/Ahmoze/Vector-X/total?logo=Bookmeter&label=Counts&logoColor=yellow&color=yellow)](https://github.com/Ahmoze/Vector-X/releases)
 
 </div>
 
@@ -15,7 +14,12 @@
 
 ### Introduction
 
-Vector is a Zygisk module providing an ART hooking framework that maintains API consistency with the original Xposed. It is engineered on top of [LSPlant](https://github.com/JingMatrix/LSPlant) to deliver a stable, native-level instrumentation environment.
+**Vector-X** (developed by Ahmoze) is a massively enhanced Zygisk module providing an ART hooking framework that maintains API consistency with the original Xposed. Built upon native LSPlant instrumentation, Vector-X pushes the boundaries of modern Android modding.
+
+**✨ What makes Vector-X special?**
+* **Advanced Stealth (Phase 3):** Uses mathematical dynamic Binder Transaction Code randomization to evade modern Anti-Cheat memory scanners (PUBG, Genshin, Bank apps).
+* **Modern Material 3 GUI:** Features a stunning "Glassmorphism" UI with beautifully rounded cards, dynamic Monet colors, and fluid micro-animations.
+* **Fully Restored Repository:** Flawlessly fetches and parses over 800+ online Xposed modules.
 
 The framework allows modules to modify system and application behavior in-memory. Because no APK files are modified, changes are non-destructive, easily reversible via reboot, and compatible across various ROMs and Android versions.
 
@@ -23,7 +27,7 @@ The framework allows modules to modify system and application behavior in-memory
 
 ### Compatibility
 
-Vector supports devices running **Android 8.1 through Android 17 Beta**.
+Vector-X supports devices running **Android 8.1 through Android 15**.
 
 > [!TIP]
 > This framework requires a recent installation of Magisk or KernelSU with Zygisk enabled.
