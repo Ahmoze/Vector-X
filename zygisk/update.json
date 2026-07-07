@@ -1,6 +1,6 @@
 {
-	"version": "v2.0",
-	"versionCode": 3021,
-	"zipUrl": "https://github.com/JingMatrix/LSPosed/releases/download/v2.0/Vector-v2.0-Release.zip",
-	"changelog": "https://raw.githubusercontent.com/JingMatrix/LSPosed/master/zygisk/changelog.md"
+	"version": "v2.0.6",
+	"versionCode": 3050,
+	"zipUrl": "https://github.com/Ahmoze/Vector-X/releases/download/v2.0.6/Vector-v2.0.6-Release.zip",
+	"changelog": "https://raw.githubusercontent.com/Ahmoze/Vector-X/master/zygisk/changelog.md"
 }

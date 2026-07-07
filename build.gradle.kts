@@ -44,7 +44,8 @@ abstract class GitLatestTagValueSource : ValueSource<String, ValueSourceParamete
                 standardOutput = output
                 isIgnoreExitValue = true
             }
-        return output.toString().lines().firstOrNull { it.isNotBlank() }?.trim()?.removePrefix("v") ?: "2.0.3"
+        val tag = output.toString().lines().firstOrNull { it.isNotBlank() }?.trim()?.removePrefix("v") ?: "2.0.3"
+        return tag.substringBefore("-")
     }
 }
 
