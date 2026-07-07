@@ -24,4 +24,4 @@ else
 fi
 
 # Launch the cli
-exec /system/bin/app_process $java_options /system/bin --nice-name=VectorCli org.matrix.vector.daemon.Cli "$@"
+exec /system/bin/app_process $java_options /system/bin --nice-name=VectorCli org.ahmoze.vector.daemon.Cli "$@"
