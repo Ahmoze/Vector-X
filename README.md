@@ -48,8 +48,8 @@ Vector-X supports devices running **Android 8.1 through Android 15**.
 
 | Channel | Source |
 | :--- | :--- |
-| **Stable Releases** | [GitHub Releases](https://github.com/JingMatrix/Vector/releases) |
-| **Canary (CI) Builds** | [GitHub Actions](https://github.com/JingMatrix/Vector/actions/workflows/core.yml?query=branch%3Amaster) |
+| **Stable Releases** | [GitHub Releases](https://github.com/Ahmoze/Vector-X/releases) |
+| **Canary (CI) Builds** | [GitHub Actions](https://github.com/Ahmoze/Vector-X/actions/workflows/core.yml?query=branch%3Amaster) |
 
 > [!NOTE]
 > Debug builds are recommended for users encountering issues or performing troubleshooting.
@@ -67,9 +67,9 @@ Vector-X supports devices running **Android 8.1 through Android 15**.
 
 If you encounter issues or wish to help improve the project, please refer to the resources below.
 
-*   **Troubleshooting:** Consult the [guide](https://github.com/JingMatrix/Vector/issues/123) before reporting bugs.
-*   **Discussions:** Join our community on [GitHub Discussions](https://github.com/JingMatrix/Vector/discussions).
-*   **Localization:** Help translate the project via [Crowdin](https://crowdin.com/project/lsposed_jingmatrix).
+*   **Troubleshooting:** Consult the [guide](https://github.com/Ahmoze/Vector-X/issues/123) before reporting bugs.
+*   **Discussions:** Join our community on [GitHub Discussions](https://github.com/Ahmoze/Vector-X/discussions).
+*   **Localization:** Help translate the project via [Crowdin](https://crowdin.com/project/Ahmoze/Vector-X).
 
 > [!IMPORTANT]
 > Bug reports are only accepted if they are based on the **latest debug build**.
@@ -91,7 +91,7 @@ Vector supports both legacy and modern hooking standards to ensure broad module 
 > [!NOTE]
 > Vector supports the `libxposed` API via two git submodules: the [module API](./xposed/) and the [service API](./services/).
 >
-> A successful GitHub Actions build of the [master](https://github.com/JingMatrix/Vector/tree/master) branch indicates that Vector fully supports these APIs at those specific commits.
+> A successful GitHub Actions build of the [master](https://github.com/Ahmoze/Vector-X/tree/master) branch indicates that Vector fully supports these APIs at those specific commits.
 > Developers are suggested to check out the same commits as Vector.
 
 ---
