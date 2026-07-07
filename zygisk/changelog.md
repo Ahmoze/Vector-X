@@ -1,8 +1,9 @@
-🚀 **What's New in v2.0.6 (Build 3050)** 🚀
+🚀 **What's New in v2.0.7 (Build 3054)** 🚀
 
-### 🆕 New Features
-* **In-App Direct Installation (Root):** Vector-X now supports downloading and flashing updates directly from within the Manager app using Root! You no longer need to open Magisk or KernelSU to manually flash the ZIP.
-* **Dynamic Release Notes:** The update dialog now fetches and displays live release notes directly from GitHub, so you always know exactly what's new before you hit update.
+🔹 **Stealth Architecture (Phase 3)**: Dodat napredni C++ mehanizam za potpuno skrivanje memorije (Anonymous Remapping) od svih anti-cheat sistema.
+🔹 **UI Optimizacija**: Aplikacija više ne "mrzne" (ANR fiks) prilikom pretrage udaljenih modula na Repository tabu.
+🔹 **Update Sistem**: Magisk i aplikacija sada vuku ažuriranja direktno sa tvog (`Ahmoze`) repozitorijuma.
+🔹 **Build Sistem**: Zip paketi sada imaju čist naziv, bez suvišnih build brojeva (e.g., `Vector-v2.0.7-Release.zip`).
 
 ### 🛠️ Fixes & Improvements
 * **Rebranding Cleanup:** Deeply cleaned up and replaced all remaining legacy strings with "Vector-X" across all language translations and UI elements.
