@@ -498,7 +498,7 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                     if (url != null && !url.trim().isEmpty()) {
                         NavUtil.startURL(requireActivity(), url);
                     } else {
-                        Toast.makeText(requireActivity(), R.string.not_supported, Toast.LENGTH_SHORT).show();
+                        android.widget.Toast.makeText(requireActivity(), "URL not available", android.widget.Toast.LENGTH_SHORT).show();
                     }
                 });
                 List<ReleaseAsset> assets = release.getReleaseAssets();
