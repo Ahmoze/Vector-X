@@ -1,3 +1,13 @@
+🚀 **What's New in v2.0.13** 🚀
+
+🔹 **CMake & AGP Synchronization Fixes**: Fully resolved Native C++ build failures in continuous integration pipelines. CMake versions are now strictly enforced (v3.31.6) natively through the project structure, preventing fallback errors.
+🔹 **Deep IDE Integration (Eclipse JDT / Language Server)**: Cleared all false-positive syntax errors and "Unsupported class file major version 69" issues. The Gradle internal JDK has been explicitly pinned to JDK 21 across all workspaces.
+🔹 **Apache Commons Architecture**: Refactored the internal code generation paths for `ClassUtilsX` and `SerializationUtilsX` to comply with strict Java package guidelines (`org.apache.commons.lang3`), eliminating missing class exceptions.
+🔹 **Internationalization (i18n)**: Introduced full UI translation and localization for Serbian (Latin) language in the Manager App, greatly expanding accessibility.
+🔹 **GitHub Actions Stability**: GitHub pipelines have been stabilized by pinning tools to explicit paths and downloading official CMake distributions when the Android SDK falls short.
+
+---
+
 🚀 **What's New in v2.0.12** 🚀
 
 🔹 **Native Downloader Engine**: Completely removed the unreliable Custom Tabs downloader. Module assets (APKs, ZIPs) are now downloaded perfectly in the background using the native Android Download Manager.
