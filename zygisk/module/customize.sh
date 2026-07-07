@@ -54,7 +54,14 @@ extract() {
 # =========================================================
 
 VERSION=$(grep_prop version "${TMPDIR}/module.prop")
-ui_print "- Vector version ${VERSION}"
+ui_print "*********************************************************"
+ui_print "*                                                       *"
+ui_print "*               V E C T O R   P R O J E C T             *"
+ui_print "*               ( The Ghost Protocol Edition )          *"
+ui_print "*                                                       *"
+ui_print "*********************************************************"
+ui_print " "
+ui_print "  [*] Initializing Vector-X (v${VERSION})"
 
 # Disable existing LSPosed installation
 LSPOSED_DIR="/data/adb/modules/zygisk_lsposed"
@@ -65,7 +72,7 @@ if [ -d "$LSPOSED_DIR" ]; then
     ui_print "*********************************************************"
 fi
 
-ui_print "- Removing old manager to prevent signature conflicts"
+ui_print "  [*] Removing legacy traces (org.matrix.vector.manager)"
 pm uninstall org.matrix.vector.manager >/dev/null 2>&1
 
 # 1. Map architecture to standard ABI paths, eliminating duplicate logic
@@ -82,14 +89,14 @@ case "$ARCH" in
         abort "! Unsupported platform: $ARCH"
         ;;
 esac
-ui_print "- Device platform: $ARCH ($ABI32 / $ABI64)"
+ui_print "  [*] Device Platform Detected: $ARCH ($ABI32 / $ABI64)"
 
-ui_print "- Extracting root module files"
+ui_print "  [+] Extracting Core Zygisk Files..."
 for file in module.prop action.sh service.sh uninstall.sh sepolicy.rule framework/lspd.dex cli daemon.apk daemon manager.apk; do
     extract "$ZIPFILE" "$file" "$MODPATH"
 done
 
-ui_print "- Extracting Zygisk libraries"
+ui_print "  [+] Extracting Native Bridge Libraries..."
 mkdir -p "$MODPATH/zygisk"
 
 # Extract 32-bit lib
@@ -103,7 +110,7 @@ if [ "$IS64BIT" = true ]; then
 fi
 
 if [ "$API" -ge 29 ]; then
-    ui_print "- Extracting dex2oat binaries"
+    ui_print "  [+] Extracting Android Runtime (dex2oat) binaries..."
     mkdir -p "$MODPATH/bin"
 
     # Extract 32-bit binaries
@@ -120,7 +127,7 @@ if [ "$API" -ge 29 ]; then
         mv "$MODPATH/bin/liboat_hook.so" "$MODPATH/bin/liboat_hook64.so"
     fi
 
-    ui_print "- Patching binaries for anti-detection"
+    ui_print "  [+] Deploying Anti-Detection Failsafes..."
     DEV_PATH=$(tr -dc 'a-z0-9' </dev/urandom | head -c 32)
     # Patch only if the file successfully exists
     [ -f "$MODPATH/daemon.apk" ] && sed -i "s/5291374ceda0aef7c5d86cd2a4f6a3ac/$DEV_PATH/g" "$MODPATH/daemon.apk"
@@ -130,7 +137,7 @@ else
     extract "$ZIPFILE" 'system.prop' "$MODPATH"
 fi
 
-ui_print "- Setting permissions"
+ui_print "  [+] Configuring Strict File Permissions..."
 set_perm_recursive "$MODPATH" 0 0 0755 0644
 [ -d "$MODPATH/bin" ] && set_perm_recursive "$MODPATH/bin" 0 2000 0755 0755 u:object_r:xposed_file:s0
 
@@ -138,17 +145,21 @@ set_perm "$MODPATH/daemon" 0 0 0744
 set_perm "$MODPATH/cli" 0 0 0744
 
 if [ "$(grep_prop ro.maple.enable)" = "1" ]; then
-    ui_print "- Add ro.maple.enable=0"
+    ui_print "  [+] Applying System Property Tweaks (ro.maple.enable=0)"
     echo "ro.maple.enable=0" >>"$MODPATH/system.prop"
 fi
 
-ui_print "- Clearing old repository cache"
+ui_print "  [*] Purging old repository caches..."
 rm -f /data/user*/0/org.matrix.vector.manager/files/repo.json
 
 if [ "$BOOTMODE" = true ]; then
-    ui_print "- Installing Vector Manager APK..."
+    ui_print "  [+] Executing Automatic Manager Installation..."
     pm install -r -d "$MODPATH/manager.apk" >/dev/null 2>&1
 fi
 
-ui_print "- Welcome to Vector!"
+ui_print " "
+ui_print "*********************************************************"
+ui_print "*         System Successfully Patched & Secured         *"
+ui_print "*               Please Reboot Your Device               *"
+ui_print "*********************************************************"
 
