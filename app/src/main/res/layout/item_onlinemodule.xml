@@ -18,18 +18,20 @@
   ~ Copyright (C) 2021 LSPosed Contributors
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?selectableItemBackground"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="8dp"
     android:clickable="true"
     android:focusable="true"
+    style="?attr/materialCardViewElevatedStyle"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
     android:minHeight="?attr/listPreferredItemHeight"
-    android:paddingVertical="16dp"
-    android:paddingStart="16dp"
-    android:paddingEnd="24dp">
+    app:contentPadding="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/item_root"
@@ -126,4 +128,4 @@
             tools:text="@tools:sample/lorem" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</FrameLayout>
+</com.google.android.material.card.MaterialCardView>
