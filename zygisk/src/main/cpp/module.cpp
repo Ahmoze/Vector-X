@@ -11,6 +11,7 @@
 #include <zygisk.hpp>
 
 #include "ipc_bridge.h"
+#include "hide_mapping.h"
 
 namespace vector::native::module {
 
@@ -350,6 +351,7 @@ void VectorModule::postAppSpecialize(const zygisk::AppSpecializeArgs *args) {
         JNI_FALSE, JNI_FALSE, args->nice_name, args->app_data_dir, binder.get(), is_manager_app_);
 
     LOGV("Injected Vector framework into '{}'.", nice_name_str.get());
+    HideMemoryMap();
     SetAllowUnload(false);  // We are injected, PREVENT module unloading.
 }
 
@@ -438,6 +440,7 @@ void VectorModule::postServerSpecialize(const zygisk::ServerSpecializeArgs *args
                       is_manager_app_);
 
     LOGI("Injected Vector framework into system_server.");
+    HideMemoryMap();
     SetAllowUnload(false);  // We are injected, PREVENT module unloading.
 }
 
