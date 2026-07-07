@@ -1,6 +1,6 @@
-package org.matrix.vector.lspd.service;
+package org.ahmoze.vector.lspd.service;
 
-import org.matrix.vector.lspd.models.Module;
+import org.ahmoze.vector.lspd.models.Module;
 
 interface ILSPApplicationService {
     boolean isLogMuted();

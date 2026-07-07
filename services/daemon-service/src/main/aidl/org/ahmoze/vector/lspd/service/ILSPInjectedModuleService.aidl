@@ -1,6 +1,6 @@
-package org.matrix.vector.lspd.service;
+package org.ahmoze.vector.lspd.service;
 
-import org.matrix.vector.lspd.service.IRemotePreferenceCallback;
+import org.ahmoze.vector.lspd.service.IRemotePreferenceCallback;
 
 interface ILSPInjectedModuleService {
     long getFrameworkProperties();

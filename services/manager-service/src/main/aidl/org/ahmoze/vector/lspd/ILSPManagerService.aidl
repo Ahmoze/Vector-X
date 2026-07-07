@@ -1,8 +1,8 @@
-package org.matrix.vector.lspd;
+package org.ahmoze.vector.lspd;
 
 import rikka.parcelablelist.ParcelableListSlice;
-import org.matrix.vector.lspd.models.UserInfo;
-import org.matrix.vector.lspd.models.Application;
+import org.ahmoze.vector.lspd.models.UserInfo;
+import org.ahmoze.vector.lspd.models.Application;
 
 
 interface ILSPManagerService {

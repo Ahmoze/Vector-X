@@ -1,4 +1,4 @@
-package org.matrix.vector.lspd.models;
+package org.ahmoze.vector.lspd.models;
 
 parcelable PreLoadedApk {
     List<SharedMemory> preLoadedDexes;

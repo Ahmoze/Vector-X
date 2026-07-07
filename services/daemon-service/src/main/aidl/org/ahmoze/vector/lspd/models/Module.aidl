@@ -1,6 +1,6 @@
-package org.matrix.vector.lspd.models;
-import org.matrix.vector.lspd.models.PreLoadedApk;
-import org.matrix.vector.lspd.service.ILSPInjectedModuleService;
+package org.ahmoze.vector.lspd.models;
+import org.ahmoze.vector.lspd.models.PreLoadedApk;
+import org.ahmoze.vector.lspd.service.ILSPInjectedModuleService;
 
 parcelable Module {
     String packageName;

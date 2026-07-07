@@ -1,6 +1,6 @@
-package org.matrix.vector.lspd.service;
+package org.ahmoze.vector.lspd.service;
 
-import org.matrix.vector.lspd.service.ILSPApplicationService;
+import org.ahmoze.vector.lspd.service.ILSPApplicationService;
 
 interface ILSPSystemServerService {
     ILSPApplicationService requestApplicationService(int uid, int pid, String processName, IBinder heartBeat);
