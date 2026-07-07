@@ -22,7 +22,7 @@
     app:startDestination="@id/modules_fragment">
     <fragment
         android:id="@+id/modules_fragment"
-        android:name="org.matrix.vector.manager.ui.fragment.ModulesFragment"
+        android:name="org.ahmoze.vector.manager.ui.fragment.ModulesFragment"
         android:label="modules">
         <action
             android:id="@+id/action_modules_fragment_to_app_list_fragment"
@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/app_list_fragment"
-        android:name="org.matrix.vector.manager.ui.fragment.AppListFragment"
+        android:name="org.ahmoze.vector.manager.ui.fragment.AppListFragment"
         android:label="app_list">
         <argument
             android:name="modulePackageName"

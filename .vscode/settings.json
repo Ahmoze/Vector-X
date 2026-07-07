@@ -9,5 +9,6 @@
         "**/build": true
     },
     "cmake.configureOnOpen": false,
-    "cmake.autoSelectActiveFolder": false
+    "cmake.autoSelectActiveFolder": false,
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

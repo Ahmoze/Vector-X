@@ -44,7 +44,7 @@ android {
 
   externalNativeBuild { cmake { path("src/main/jni/CMakeLists.txt") } }
 
-  namespace = "org.matrix.vector.daemon"
+  namespace = "org.ahmoze.vector.daemon"
 }
 
 android.applicationVariants.all {
@@ -80,7 +80,7 @@ android.applicationVariants.all {
           PrintStream(outSrc)
               .print(
                   """
-                |package org.matrix.vector.daemon.utils
+                |package org.ahmoze.vector.daemon.utils
                 |
                 |object SignInfo {
                 |    @JvmField

@@ -101,7 +101,7 @@
             app:layout_constraintWidth_max="wrap"
             tools:text="Version :1.8.1" />
 
-        <org.matrix.vector.manager.ui.widget.ExpandableTextView
+        <org.ahmoze.vector.manager.ui.widget.ExpandableTextView
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

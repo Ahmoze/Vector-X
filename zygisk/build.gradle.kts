@@ -17,7 +17,7 @@ val injectedPackageUid: Int by rootProject.extra
 val defaultManagerPackageName: String by rootProject.extra
 
 android {
-    namespace = "org.matrix.vector"
+    namespace = "org.ahmoze.vector"
 
     defaultConfig {
         multiDexEnabled = false

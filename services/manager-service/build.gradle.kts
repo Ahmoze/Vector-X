@@ -5,7 +5,7 @@ android {
 
     buildTypes { release { isMinifyEnabled = false } }
 
-    namespace = "org.matrix.vector.lspd.managerservice"
+    namespace = "org.ahmoze.vector.lspd.managerservice"
 }
 
 dependencies { api(libs.rikkax.parcelablelist) }

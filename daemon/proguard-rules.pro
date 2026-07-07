@@ -1,17 +1,17 @@
 -keepclasseswithmembers,includedescriptorclasses class * {
     native <methods>;
 }
--keepclasseswithmembers class org.matrix.vector.daemon.VectorDaemon {
+-keepclasseswithmembers class org.ahmoze.vector.daemon.VectorDaemon {
     public static void main(java.lang.String[]);
 }
--keepclasseswithmembers class org.matrix.vector.daemon.Cli {
+-keepclasseswithmembers class org.ahmoze.vector.daemon.Cli {
     public static void main(java.lang.String[]);
 }
 
 
 # Keep IPC data models intact so Gson serializes the correct JSON keys
--keep class org.matrix.vector.daemon.CliRequest { *; }
--keep class org.matrix.vector.daemon.CliResponse { *; }
+-keep class org.ahmoze.vector.daemon.CliRequest { *; }
+-keep class org.ahmoze.vector.daemon.CliResponse { *; }
 
 # Preserve annotations, generic signatures, and inner classes (critical for picocli reflection)
 -keepattributes *Annotation*, Signature, InnerClasses, EnclosingMethod
@@ -31,7 +31,7 @@
 }
 
 
--keepclasseswithmembers class org.matrix.vector.daemon.env.LogcatMonitor {
+-keepclasseswithmembers class org.ahmoze.vector.daemon.env.LogcatMonitor {
     private int refreshFd(boolean);
 }
 -keepclassmembers class ** implements android.content.ContextWrapper {

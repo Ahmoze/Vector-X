@@ -75,7 +75,7 @@ android {
 autoResConfig {
     generateClass = true
     generateRes = false
-    generatedClassFullName = "org.matrix.vector.manager.util.LangList"
+    generatedClassFullName = "org.ahmoze.vector.manager.util.LangList"
     generatedArrayFirstItem = "SYSTEM"
 }
 

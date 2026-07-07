@@ -146,7 +146,7 @@ static jobject stringMapToJavaHashMap(JNIEnv *env, const std::map<std::string, s
 }
 
 extern "C" JNIEXPORT jobject JNICALL
-Java_org_matrix_vector_daemon_utils_ObfuscationManager_getSignatures(
+Java_org_ahmoze_vector_daemon_utils_ObfuscationManager_getSignatures(
     JNIEnv *env, [[maybe_unused]] jclass clazz) {
     ensureInitialized(env);
 
@@ -192,7 +192,7 @@ static int obfuscateDexBuffer(const void *dex_data, size_t size) {
 }
 
 extern "C" JNIEXPORT jobject JNICALL
-Java_org_matrix_vector_daemon_utils_ObfuscationManager_obfuscateDex(JNIEnv *env,
+Java_org_ahmoze_vector_daemon_utils_ObfuscationManager_obfuscateDex(JNIEnv *env,
                                                                     [[maybe_unused]] jclass clazz,
                                                                     jobject memory) {
     ensureInitialized(env);

@@ -240,7 +240,7 @@ void Logcat::Run() {
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_org_matrix_vector_daemon_env_LogcatMonitor_runLogcat(JNIEnv* env, jobject thiz) {
+Java_org_ahmoze_vector_daemon_env_LogcatMonitor_runLogcat(JNIEnv* env, jobject thiz) {
     jclass clazz = env->GetObjectClass(thiz);
     jmethodID method = env->GetMethodID(clazz, "refreshFd", "(Z)I");
     Logcat daemon(env, thiz, method);

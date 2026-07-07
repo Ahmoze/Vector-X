@@ -37,7 +37,7 @@ import com.google.android.material.internal.DescendantOffsetUtils;
 import com.google.android.material.internal.SubtitleCollapsingTextHelper;
 import com.google.android.material.internal.ThemeEnforcement;
 
-import org.matrix.vector.manager.R;
+import org.ahmoze.vector.manager.R;
 
 /**
  * @see CollapsingToolbarLayout

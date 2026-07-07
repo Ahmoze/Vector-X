@@ -5,10 +5,10 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.util.Log;
 
-import org.matrix.vector.impl.hooks.VectorNativeHooker;
-import org.matrix.vector.impl.hooks.VectorLegacyCallback;
-import org.matrix.vector.nativebridge.HookBridge;
-import org.matrix.vector.nativebridge.ResourcesHook;
+import org.ahmoze.vector.impl.hooks.VectorNativeHooker;
+import org.ahmoze.vector.impl.hooks.VectorLegacyCallback;
+import org.ahmoze.vector.nativebridge.HookBridge;
+import org.ahmoze.vector.nativebridge.ResourcesHook;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Executable;

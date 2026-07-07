@@ -20,7 +20,7 @@ struct UniqueFd {
     operator int() const { return fd; }
 };
 
-extern "C" JNIEXPORT void JNICALL Java_org_matrix_vector_daemon_env_Dex2OatServer_doMountNative(
+extern "C" JNIEXPORT void JNICALL Java_org_ahmoze_vector_daemon_env_Dex2OatServer_doMountNative(
     JNIEnv *env, jobject, jboolean enabled, jstring r32, jstring d32, jstring r64, jstring d64) {
     char dex2oat32[PATH_MAX], dex2oat64[PATH_MAX];
     if (realpath("bin/dex2oat32", dex2oat32) == nullptr) {
@@ -103,7 +103,7 @@ static int setsockcreatecon_raw(const char *context) {
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_org_matrix_vector_daemon_env_Dex2OatServer_setSockCreateContext(JNIEnv *env, jclass,
+Java_org_ahmoze_vector_daemon_env_Dex2OatServer_setSockCreateContext(JNIEnv *env, jclass,
                                                                      jstring contextStr) {
     const char *context = contextStr ? env->GetStringUTFChars(contextStr, nullptr) : nullptr;
     int ret = setsockcreatecon_raw(context);
@@ -112,6 +112,6 @@ Java_org_matrix_vector_daemon_env_Dex2OatServer_setSockCreateContext(JNIEnv *env
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_org_matrix_vector_daemon_env_Dex2OatServer_getSockPath(JNIEnv *env, jobject) {
+Java_org_ahmoze_vector_daemon_env_Dex2OatServer_getSockPath(JNIEnv *env, jobject) {
     return env->NewStringUTF("5291374ceda0aef7c5d86cd2a4f6a3ac\0");
 }

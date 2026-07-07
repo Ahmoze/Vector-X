@@ -1,7 +1,7 @@
 plugins { alias(libs.plugins.agp.lib) }
 
 android {
-    namespace = "org.matrix.vector.legacy"
+    namespace = "org.ahmoze.vector.legacy"
 
     androidResources { enable = false }
 

@@ -23,7 +23,7 @@
     <fragment
         android:id="@+id/repo_fragment"
         android:label="repo"
-        android:name="org.matrix.vector.manager.ui.fragment.RepoFragment">
+        android:name="org.ahmoze.vector.manager.ui.fragment.RepoFragment">
         <action
             android:id="@+id/action_repo_fragment_to_repo_item_fragment"
             app:destination="@id/repo_item_fragment"
@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/repo_item_fragment"
-        android:name="org.matrix.vector.manager.ui.fragment.RepoItemFragment"
+        android:name="org.ahmoze.vector.manager.ui.fragment.RepoItemFragment"
         android:label="repo_item">
         <argument
             android:name="modulePackageName"

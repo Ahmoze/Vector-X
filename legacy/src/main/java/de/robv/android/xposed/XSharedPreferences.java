@@ -6,10 +6,10 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
-import org.matrix.vector.lspd.util.Utils.Log;
-import org.matrix.vector.impl.core.VectorServiceClient;
-import org.matrix.vector.impl.utils.VectorMetaDataReader;
-import org.matrix.vector.legacy.BuildConfig;
+import org.ahmoze.vector.lspd.util.Utils.Log;
+import org.ahmoze.vector.impl.core.VectorServiceClient;
+import org.ahmoze.vector.impl.utils.VectorMetaDataReader;
+import org.ahmoze.vector.legacy.BuildConfig;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;

@@ -34,7 +34,7 @@
         app:borderTopDrawable="@null"
         app:borderTopVisibility="whenTop">
 
-        <org.matrix.vector.manager.ui.widget.ScrollWebView
+        <org.ahmoze.vector.manager.ui.widget.ScrollWebView
             android:id="@+id/readme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

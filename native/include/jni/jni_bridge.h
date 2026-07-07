@@ -44,7 +44,7 @@ inline std::string GetNativeBridgeSignature() {
     if (bridge) {
         const auto &obfs_map = bridge->obfuscation_map();
         // The key must match what the Java build script places in the map.
-        auto it = obfs_map.find("org.matrix.vector.nativebridge.");
+        auto it = obfs_map.find("org.ahmoze.vector.nativebridge.");
         if (it != obfs_map.end()) {
             return it->second;
         }
@@ -90,7 +90,7 @@ inline bool RegisterNativeMethodsInternal(JNIEnv *env, std::string_view class_na
  */
 #define VECTOR_NATIVE_METHOD(className, functionName, signature)                                   \
     {#functionName, signature,                                                                     \
-     VECTOR_JNI_CAST(void *)(Java_org_matrix_vector_nativebridge_##className##_##functionName)}
+     VECTOR_JNI_CAST(void *)(Java_org_ahmoze_vector_nativebridge_##className##_##functionName)}
 
 /**
  * @def JNI_START
@@ -107,7 +107,7 @@ inline bool RegisterNativeMethodsInternal(JNIEnv *env, std::string_view class_na
  */
 #define VECTOR_DEF_NATIVE_METHOD(ret, className, functionName, ...)                                \
     extern "C" JNIEXPORT ret JNICALL                                                               \
-        Java_org_matrix_vector_nativebridge_##className##_##functionName(JNI_START, ##__VA_ARGS__)
+        Java_org_ahmoze_vector_nativebridge_##className##_##functionName(JNI_START, ##__VA_ARGS__)
 
 /**
  * @def REGISTER_VECTOR_NATIVE_METHODS(class_name)

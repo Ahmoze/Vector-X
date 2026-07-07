@@ -207,7 +207,7 @@ void VectorModule::SetupEntryClass(JNIEnv *env) {
     // Use the obfuscation map from the config to get the real class name.
     const auto &obfs_map = ConfigBridge::GetInstance()->obfuscation_map();
     std::string entry_class_name;
-    entry_class_name = obfs_map.at("org.matrix.vector.core.") + "Main";
+    entry_class_name = obfs_map.at("org.ahmoze.vector.core.") + "Main";
 
     // We must find the class through our custom ClassLoader.
     auto entry_class = this->FindClassFromLoader(env, inject_class_loader_, entry_class_name);

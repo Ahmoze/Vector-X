@@ -18,14 +18,14 @@ import android.os.IBinder;
 import android.os.Process;
 import android.util.ArrayMap;
 
-import org.matrix.vector.impl.core.VectorDeopter;
-import org.matrix.vector.impl.core.VectorModuleManager;
-import org.matrix.vector.impl.core.VectorServiceClient;
-import org.matrix.vector.impl.utils.VectorModuleClassLoader;
-import org.matrix.vector.nativebridge.NativeAPI;
-import org.matrix.vector.nativebridge.ResourcesHook;
-import org.matrix.vector.lspd.models.PreLoadedApk;
-import org.matrix.vector.lspd.util.Utils.Log;
+import org.ahmoze.vector.impl.core.VectorDeopter;
+import org.ahmoze.vector.impl.core.VectorModuleManager;
+import org.ahmoze.vector.impl.core.VectorServiceClient;
+import org.ahmoze.vector.impl.utils.VectorModuleClassLoader;
+import org.ahmoze.vector.nativebridge.NativeAPI;
+import org.ahmoze.vector.nativebridge.ResourcesHook;
+import org.ahmoze.vector.lspd.models.PreLoadedApk;
+import org.ahmoze.vector.lspd.util.Utils.Log;
 
 import java.io.File;
 import java.lang.ref.WeakReference;

@@ -527,7 +527,7 @@ void IPCBridge::HookBridge(JNIEnv *env) {
     // Get framework-specific Java classes and methods ---
     const auto &obfs_map = ConfigBridge::GetInstance()->obfuscation_map();
     std::string bridge_service_class_name;
-    bridge_service_class_name = obfs_map.at("org.matrix.vector.service.") + "BridgeService";
+    bridge_service_class_name = obfs_map.at("org.ahmoze.vector.service.") + "BridgeService";
 
     auto bridge_class_ref =
         Context::GetInstance()->FindClassFromCurrentLoader(env, bridge_service_class_name);

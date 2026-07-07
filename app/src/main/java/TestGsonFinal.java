@@ -3,7 +3,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.matrix.vector.manager.repo.model.OnlineModule;
+import org.ahmoze.vector.manager.repo.model.OnlineModule;
 
 public class TestGsonFinal {
     private static class ModuleListResponse {

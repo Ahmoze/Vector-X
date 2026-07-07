@@ -10,7 +10,7 @@ plugins {
 ktfmt { kotlinLangStyle() }
 
 android {
-    namespace = "org.matrix.vector.impl"
+    namespace = "org.ahmoze.vector.impl"
 
     androidResources { enable = false }
 

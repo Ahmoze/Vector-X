@@ -18,7 +18,7 @@
  * Copyright (C) 2021 LSPosed Contributors
  */
 
-package org.matrix.vector.manager.repo.model;
+package org.ahmoze.vector.manager.repo.model;
 
 
 import com.google.gson.annotations.Expose;

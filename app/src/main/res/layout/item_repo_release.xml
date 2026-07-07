@@ -67,7 +67,7 @@
             app:layout_constraintWidth_max="wrap"
             tools:text="@tools:sample/lorem" />
 
-        <org.matrix.vector.manager.ui.widget.ScrollWebView
+        <org.ahmoze.vector.manager.ui.widget.ScrollWebView
             android:id="@+id/description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

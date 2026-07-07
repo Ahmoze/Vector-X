@@ -1,4 +1,4 @@
--keep class org.matrix.vector.manager.Constants {
+-keep class org.ahmoze.vector.manager.Constants {
     public static boolean setBinder(android.os.IBinder);
 }
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {

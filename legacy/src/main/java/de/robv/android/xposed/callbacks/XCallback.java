@@ -2,7 +2,7 @@ package de.robv.android.xposed.callbacks;
 
 import android.os.Bundle;
 
-import org.matrix.vector.impl.core.VectorDeopter;
+import org.ahmoze.vector.impl.core.VectorDeopter;
 
 import java.io.Serializable;
 
