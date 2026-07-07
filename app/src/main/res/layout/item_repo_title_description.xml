@@ -51,7 +51,7 @@
             app:layout_constraintWidth_max="wrap"
             tools:text="@tools:sample/lorem" />
 
-        <org.lsposed.manager.ui.widget.LinkifyTextView
+        <org.matrix.vector.manager.ui.widget.LinkifyTextView
             android:id="@+id/description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

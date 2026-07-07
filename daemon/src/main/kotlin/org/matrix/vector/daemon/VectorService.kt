@@ -16,9 +16,9 @@ import android.util.Log
 import hidden.HiddenApiBridge
 import io.github.libxposed.service.IXposedScopeCallback
 import kotlinx.coroutines.launch
-import org.lsposed.lspd.models.Application
-import org.lsposed.lspd.service.IDaemonService
-import org.lsposed.lspd.service.ILSPApplicationService
+import org.matrix.vector.lspd.models.Application
+import org.matrix.vector.lspd.service.IDaemonService
+import org.matrix.vector.lspd.service.ILSPApplicationService
 import org.matrix.vector.daemon.data.ConfigCache
 import org.matrix.vector.daemon.data.ModuleDatabase
 import org.matrix.vector.daemon.data.PreferenceStore

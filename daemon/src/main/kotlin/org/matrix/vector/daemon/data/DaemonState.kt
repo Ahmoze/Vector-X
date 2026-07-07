@@ -1,7 +1,7 @@
 package org.matrix.vector.daemon.data
 
 import java.nio.file.Path
-import org.lsposed.lspd.models.Module
+import org.matrix.vector.lspd.models.Module
 import org.matrix.vector.daemon.BuildConfig
 
 data class ProcessScope(val processName: String, val uid: Int)

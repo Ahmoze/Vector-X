@@ -4,7 +4,7 @@ import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedInterface.Chain
 import io.github.libxposed.api.XposedInterface.ExceptionMode
 import java.lang.reflect.Executable
-import org.lsposed.lspd.util.Utils
+import org.matrix.vector.lspd.util.Utils
 
 /** Represents a registered hook configuration, stored natively by [HookBridge]. */
 data class VectorHookRecord(

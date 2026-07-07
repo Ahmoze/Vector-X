@@ -3,7 +3,7 @@ package org.matrix.vector.daemon.ipc
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
-import org.lsposed.lspd.models.Application
+import org.matrix.vector.lspd.models.Application
 import org.matrix.vector.daemon.BuildConfig
 import org.matrix.vector.daemon.CliRequest
 import org.matrix.vector.daemon.CliResponse

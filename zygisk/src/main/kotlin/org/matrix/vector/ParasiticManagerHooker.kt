@@ -22,8 +22,8 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
-import org.lsposed.lspd.ILSPManagerService
-import org.lsposed.lspd.util.Utils
+import org.matrix.vector.lspd.ILSPManagerService
+import org.matrix.vector.lspd.util.Utils
 import org.matrix.vector.impl.core.VectorServiceClient
 
 /** The "Parasite" logic. Injects the LSPosed Manager APK into a host process (shell). */

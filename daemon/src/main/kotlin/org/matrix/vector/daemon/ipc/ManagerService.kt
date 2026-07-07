@@ -23,9 +23,9 @@ import hidden.HiddenApiBridge
 import io.github.libxposed.service.IXposedService
 import java.io.File
 import java.util.concurrent.CountDownLatch
-import org.lsposed.lspd.ILSPManagerService
-import org.lsposed.lspd.models.Application
-import org.lsposed.lspd.models.UserInfo
+import org.matrix.vector.lspd.ILSPManagerService
+import org.matrix.vector.lspd.models.Application
+import org.matrix.vector.lspd.models.UserInfo
 import org.matrix.vector.daemon.BuildConfig
 import org.matrix.vector.daemon.data.ConfigCache
 import org.matrix.vector.daemon.data.FileSystem
@@ -137,7 +137,7 @@ object ManagerService : ILSPManagerService.Stub() {
           }
 
           intent.categories?.clear()
-          intent.addCategory("org.lsposed.manager.LAUNCH_MANAGER")
+          intent.addCategory("org.matrix.vector.manager.LAUNCH_MANAGER")
           intent.setPackage(BuildConfig.MANAGER_INJECTED_PKG_NAME)
           managerIntent = Intent(intent)
         }

@@ -32,7 +32,7 @@ import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
-import org.lsposed.lspd.models.PreLoadedApk
+import org.matrix.vector.lspd.models.PreLoadedApk
 import org.matrix.vector.daemon.BuildConfig
 import org.matrix.vector.daemon.utils.ObfuscationManager
 

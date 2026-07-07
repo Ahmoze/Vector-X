@@ -3,7 +3,7 @@ package org.matrix.vector.daemon.data
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
-import org.lsposed.lspd.models.Application
+import org.matrix.vector.lspd.models.Application
 
 private const val TAG = "VectorModuleDatabase"
 

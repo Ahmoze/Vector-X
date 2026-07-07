@@ -12,8 +12,8 @@ android {
         }
     }
 
-    aidlPackagedList += "org/lsposed/lspd/models/Module.aidl"
-    namespace = "org.lsposed.lspd.daemonservice"
+    aidlPackagedList += "org/matrix/vector/lspd/models/Module.aidl"
+    namespace = "org.matrix.vector.lspd.daemonservice"
 }
 
 dependencies {

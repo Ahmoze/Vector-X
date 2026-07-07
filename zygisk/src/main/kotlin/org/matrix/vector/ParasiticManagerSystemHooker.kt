@@ -3,7 +3,7 @@ package org.matrix.vector
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import org.lsposed.lspd.util.Utils
+import org.matrix.vector.lspd.util.Utils
 import org.matrix.vector.impl.hookers.HandleSystemServerProcessHooker
 import org.matrix.vector.impl.hooks.VectorHookBuilder
 import org.matrix.vector.service.BridgeService

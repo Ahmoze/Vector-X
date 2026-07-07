@@ -3,7 +3,7 @@ package org.matrix.vector.impl.core
 import android.os.Build
 import android.os.IBinder
 import dalvik.system.DexFile
-import org.lsposed.lspd.service.ILSPApplicationService
+import org.matrix.vector.lspd.service.ILSPApplicationService
 import org.matrix.vector.impl.hookers.*
 import org.matrix.vector.impl.hooks.VectorHookBuilder
 

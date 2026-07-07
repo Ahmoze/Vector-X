@@ -7,8 +7,8 @@ import android.os.IBinder.DeathRecipient
 import android.os.Parcel
 import hidden.HiddenApiBridge.Binder_allowBlocking
 import hidden.HiddenApiBridge.Context_getActivityToken
-import org.lsposed.lspd.service.IDaemonService
-import org.lsposed.lspd.util.Utils.Log
+import org.matrix.vector.lspd.service.IDaemonService
+import org.matrix.vector.lspd.util.Utils.Log
 
 /**
  * Manages manual Binder transactions for the Vector framework.

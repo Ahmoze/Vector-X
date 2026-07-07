@@ -8,8 +8,8 @@ import android.util.Log
 import io.github.libxposed.service.IXposedService
 import java.io.Serializable
 import java.util.concurrent.ConcurrentHashMap
-import org.lsposed.lspd.service.ILSPInjectedModuleService
-import org.lsposed.lspd.service.IRemotePreferenceCallback
+import org.matrix.vector.lspd.service.ILSPInjectedModuleService
+import org.matrix.vector.lspd.service.IRemotePreferenceCallback
 import org.matrix.vector.daemon.data.ConfigCache
 import org.matrix.vector.daemon.data.FileSystem
 import org.matrix.vector.daemon.data.PreferenceStore

@@ -6,8 +6,8 @@ import android.os.IServiceCallback
 import android.os.Parcel
 import android.os.ServiceManager
 import android.util.Log
-import org.lsposed.lspd.service.ILSPApplicationService
-import org.lsposed.lspd.service.ILSPSystemServerService
+import org.matrix.vector.lspd.service.ILSPApplicationService
+import org.matrix.vector.lspd.service.ILSPSystemServerService
 import org.matrix.vector.daemon.*
 import org.matrix.vector.daemon.system.getSystemServiceManager
 

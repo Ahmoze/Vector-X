@@ -7,8 +7,8 @@ import android.os.Process
 import android.os.RemoteException
 import android.util.Log
 import java.util.concurrent.ConcurrentHashMap
-import org.lsposed.lspd.models.Module
-import org.lsposed.lspd.service.ILSPApplicationService
+import org.matrix.vector.lspd.models.Module
+import org.matrix.vector.lspd.service.ILSPApplicationService
 import org.matrix.vector.daemon.data.ConfigCache
 import org.matrix.vector.daemon.data.FileSystem
 import org.matrix.vector.daemon.utils.InstallerVerifier

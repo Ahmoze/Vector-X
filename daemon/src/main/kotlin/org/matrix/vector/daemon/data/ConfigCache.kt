@@ -12,8 +12,8 @@ import java.nio.file.attribute.PosixFilePermissions
 import java.util.UUID
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import org.lsposed.lspd.models.Application
-import org.lsposed.lspd.models.Module
+import org.matrix.vector.lspd.models.Application
+import org.matrix.vector.lspd.models.Module
 import org.matrix.vector.daemon.BuildConfig
 import org.matrix.vector.daemon.VectorDaemon
 import org.matrix.vector.daemon.ipc.InjectedModuleService

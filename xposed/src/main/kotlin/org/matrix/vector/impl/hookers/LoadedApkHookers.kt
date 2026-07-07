@@ -7,7 +7,7 @@ import io.github.libxposed.api.XposedInterface
 import java.util.Collections
 import java.util.WeakHashMap
 import java.util.concurrent.ConcurrentHashMap
-import org.lsposed.lspd.util.Utils
+import org.matrix.vector.lspd.util.Utils
 import org.matrix.vector.impl.VectorLifecycleManager
 import org.matrix.vector.impl.di.LegacyPackageInfo
 import org.matrix.vector.impl.di.VectorBootstrap

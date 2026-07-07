@@ -2,9 +2,9 @@ package org.matrix.vector.impl.core
 
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
-import org.lsposed.lspd.models.Module
-import org.lsposed.lspd.service.ILSPApplicationService
-import org.lsposed.lspd.util.Utils.Log
+import org.matrix.vector.lspd.models.Module
+import org.matrix.vector.lspd.service.ILSPApplicationService
+import org.matrix.vector.lspd.util.Utils.Log
 
 /**
  * Singleton client for managing IPC communication with the injected manager service. Handles Binder

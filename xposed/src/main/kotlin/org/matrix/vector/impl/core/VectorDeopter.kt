@@ -1,7 +1,7 @@
 package org.matrix.vector.impl.core
 
 import java.lang.reflect.Executable
-import org.lsposed.lspd.util.Utils
+import org.matrix.vector.lspd.util.Utils
 import org.matrix.vector.nativebridge.HookBridge
 
 /**

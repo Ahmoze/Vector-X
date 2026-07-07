@@ -10,8 +10,8 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
-import org.lsposed.lspd.service.ILSPInjectedModuleService
-import org.lsposed.lspd.util.Utils.Log
+import org.matrix.vector.lspd.service.ILSPInjectedModuleService
+import org.matrix.vector.lspd.util.Utils.Log
 import org.matrix.vector.impl.hooks.VectorCtorInvoker
 import org.matrix.vector.impl.hooks.VectorHookBuilder
 import org.matrix.vector.impl.hooks.VectorMethodInvoker

@@ -2,8 +2,8 @@ package org.matrix.vector.core
 
 import android.os.IBinder
 import android.os.Process
-import org.lsposed.lspd.service.ILSPApplicationService
-import org.lsposed.lspd.util.Utils
+import org.matrix.vector.lspd.service.ILSPApplicationService
+import org.matrix.vector.lspd.util.Utils
 import org.matrix.vector.BuildConfig
 import org.matrix.vector.ParasiticManagerHooker
 import org.matrix.vector.ParasiticManagerSystemHooker
