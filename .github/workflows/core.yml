@@ -59,7 +59,7 @@ jobs:
       - name: Setup CMake
         uses: jwlawson/actions-setup-cmake@v2
         with:
-          cmake-version: '3.29.8'
+          cmake-version: '3.22.1'
 
       - name: Setup ccache
         uses: actions/cache@v5
