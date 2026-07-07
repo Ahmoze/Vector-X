@@ -145,4 +145,10 @@ fi
 ui_print "- Clearing old repository cache"
 rm -f /data/user*/0/org.matrix.vector.manager/files/repo.json
 
+if [ "$BOOTMODE" = true ]; then
+    ui_print "- Installing Vector Manager APK..."
+    pm install -r -d "$MODPATH/manager.apk" >/dev/null 2>&1
+fi
+
 ui_print "- Welcome to Vector!"
+
