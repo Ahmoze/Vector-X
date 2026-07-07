@@ -24,8 +24,8 @@ import org.matrix.vector.impl.core.VectorServiceClient;
 import org.matrix.vector.impl.utils.VectorModuleClassLoader;
 import org.matrix.vector.nativebridge.NativeAPI;
 import org.matrix.vector.nativebridge.ResourcesHook;
-import org.lsposed.lspd.models.PreLoadedApk;
-import org.lsposed.lspd.util.Utils.Log;
+import org.matrix.vector.lspd.models.PreLoadedApk;
+import org.matrix.vector.lspd.util.Utils.Log;
 
 import java.io.File;
 import java.lang.ref.WeakReference;

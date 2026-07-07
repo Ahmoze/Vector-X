@@ -1,7 +1,7 @@
 package org.matrix.vector;
 
-import org.lsposed.lspd.service.ILSPApplicationService;
-import org.lsposed.lspd.util.Utils;
+import org.matrix.vector.lspd.service.ILSPApplicationService;
+import org.matrix.vector.lspd.util.Utils;
 import org.matrix.vector.impl.core.VectorStartup;
 import org.matrix.vector.impl.di.VectorBootstrap;
 import org.matrix.vector.legacy.LegacyDelegateImpl;
