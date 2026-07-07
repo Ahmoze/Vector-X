@@ -82,7 +82,7 @@ public class RepoLoader {
     private final Path repoFile = Paths.get(App.getInstance().getFilesDir().getAbsolutePath(), "repo.json");
     private final Set<RepoListener> listeners = ConcurrentHashMap.newKeySet();
     private volatile boolean repoLoaded = false;
-    private static final String originRepoUrl = "https://raw.githubusercontent.com/Ahmoze/Vector-X/gh-pages/";
+    private static final String originRepoUrl = "https://raw.githubusercontent.com/Ahmoze/Vector/gh-pages/";
     private static final String backupRepoUrl = "https://modules-blogcdn.lsposed.org/";
 
     private static final String secondBackupRepoUrl = "https://modules-cloudflare.lsposed.org/";
