@@ -13,12 +13,19 @@ import org.matrix.vector.daemon.data.ConfigCache
 import org.matrix.vector.daemon.data.FileSystem
 import org.matrix.vector.daemon.utils.InstallerVerifier
 import org.matrix.vector.daemon.utils.ObfuscationManager
+import org.matrix.vector.daemon.BuildConfig
 
 private const val TAG = "VectorAppService"
 
-// Hardcoded transaction code from BridgeService
-const val BRIDGE_TRANSACTION_CODE =
-    ('_'.code shl 24) or ('V'.code shl 16) or ('E'.code shl 8) or 'C'.code
+fun hashPackageName(str: String): Int {
+    var hash = 0L
+    for (char in str) {
+        hash = (hash * 31 + char.code) % 100000000L
+    }
+    return hash.toInt()
+}
+
+val BRIDGE_TRANSACTION_CODE = hashPackageName(BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME)
 const val DEX_TRANSACTION_CODE =
     ('_'.code shl 24) or ('D'.code shl 16) or ('E'.code shl 8) or 'X'.code
 const val OBFUSCATION_MAP_TRANSACTION_CODE =

@@ -89,14 +89,14 @@ constexpr auto kBridgeServiceName = "activity"sv;
 // We use a compile-time hash of the manager package name to avoid hardcoding a static signature
 // like '_VEC' which is easily detectable by anti-cheat engines scanning the binary.
 constexpr jint HashPackageName(const char* str) {
-    jint hash = 0;
+    uint64_t hash = 0;
     while (*str) {
-        hash = hash * 31 + *str;
+        hash = (hash * 31 + static_cast<uint64_t>(*str)) % 100000000ULL;
         str++;
     }
-    return hash;
+    return static_cast<jint>(hash);
 }
-const jint kBridgeTransactionCode = HashPackageName(MANAGER_PACKAGE_NAME);
+constexpr jint kBridgeTransactionCode = HashPackageName(MANAGER_PACKAGE_NAME);
 constexpr jint kDexTransactionCode = ('_' << 24) | ('D' << 16) | ('E' << 8) | 'X';
 constexpr jint kObfuscationMapTransactionCode = ('_' << 24) | ('O' << 16) | ('B' << 8) | 'F';
 
