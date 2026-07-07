@@ -245,8 +245,6 @@ public class App extends Application {
     public static OkHttpClient getOkHttpClient() {
         if (okHttpClient != null) return okHttpClient;
         var builder = new OkHttpClient.Builder()
-            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-            .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
             .cache(getOkHttpCache())
             .dns(new CloudflareDNS());
         if (BuildConfig.DEBUG) {
