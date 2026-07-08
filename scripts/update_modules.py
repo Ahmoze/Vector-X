@@ -13,7 +13,7 @@ if GITHUB_TOKEN:
 print("Loading existing modules.json cache...")
 cache_modules = {}
 try:
-    cache_req = urllib.request.Request('https://raw.githubusercontent.com/Ahmoze/Vector/gh-pages/modules.json', headers={'User-Agent': 'Mozilla/5.0'})
+    cache_req = urllib.request.Request('https://raw.githubusercontent.com/Ahmoze/Vector-X/gh-pages/modules.json', headers={'User-Agent': 'Mozilla/5.0'})
     cache_data = json.loads(urllib.request.urlopen(cache_req).read().decode('utf-8'))
     for m in cache_data.get('modules', []):
         cache_modules[m['name']] = m

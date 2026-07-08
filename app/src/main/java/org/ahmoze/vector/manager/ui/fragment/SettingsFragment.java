@@ -293,7 +293,7 @@ public class SettingsFragment extends BaseFragment {
             Preference translation = findPreference("translation");
             if (translation != null) {
                 translation.setOnPreferenceClickListener(preference -> {
-                    NavUtil.startURL(requireActivity(), "https://github.com/Ahmoze/Vector");
+                    NavUtil.startURL(requireActivity(), "https://github.com/Ahmoze/Vector-X");
                     return true;
                 });
                 translation.setSummary(getString(R.string.settings_translation_summary, getString(R.string.app_name)));
