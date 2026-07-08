@@ -16,6 +16,24 @@ No more manual APK extractions, no more "Not Installed" errors due to AIDL misma
 
 ---
 
+🚀 **What's New in v2.0.17** 🚀
+
+🚀 **New Feature Highlight: Smart Daemon Auto-Installer (Self-Healing)**
+Tired of seeing "Not Installed" after a framework update? We've completely overhauled how the Vector-X Daemon handles the Manager application! 
+
+The `VectorDaemon` (running with `system_server` privileges) now features an **autonomous Smart Auto-Installer**. Upon every system boot, the daemon verifies the installed Manager's `versionCode` against its own internal version. If the Manager is missing, outdated, or if the Magisk ZIP failed to install it properly (a common issue on Android 14+), the Daemon will **silently extract and install the correct Manager APK directly from the module** in the background. 
+
+No more manual APK extractions, no more "Not Installed" errors due to AIDL mismatches, and a fully automated update experience!
+
+### Changelog:
+- **[Feature]** Introduced a robust, Daemon-level silent background APK installer for the Vector-X Manager.
+- **[Enhancement]** The framework is now completely "Self-Healing": if `customize.sh` is blocked from installing the APK during a module flash, the Daemon will automatically fix it upon boot.
+- **[Under-the-Hood]** Safely fetches and compares `longVersionCode` (with strict backward compatibility for older Android versions) to trigger isolated `pm install` executions via the native root shell.
+- **[Under-the-Hood]** Refactored `ConfigCache.kt` state management to instantly refresh IPC scopes post-installation, activating the Manager immediately without requiring an additional reboot.
+
+
+---
+
 🚀 **What's New in v2.0.16** 🚀
 
 ### ⚠️ Critical Hotfix (v2.0.16)
