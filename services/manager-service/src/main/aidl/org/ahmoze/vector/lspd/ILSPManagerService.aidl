@@ -62,7 +62,7 @@ interface ILSPManagerService {
 
     boolean dex2oatFlagsLoaded() = 32;
 
-    void setHiddenIcon(boolean hide) = 33;
+
 
     void getLogs(in ParcelFileDescriptor zipFd) = 34;
 

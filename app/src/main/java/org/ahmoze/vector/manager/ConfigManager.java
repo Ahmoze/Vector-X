@@ -307,16 +307,6 @@ public class ConfigManager {
         return list;
     }
 
-    public static boolean setHiddenIcon(boolean hide) {
-        try {
-            LSPManagerServiceHolder.getService().setHiddenIcon(hide);
-            return true;
-        } catch (RemoteException e) {
-            Log.e(App.TAG, Log.getStackTraceString(e));
-            return false;
-        }
-    }
-
     public static int getDex2OatWrapperCompatibility() {
         try {
             return LSPManagerServiceHolder.getService().getDex2OatWrapperCompatibility();

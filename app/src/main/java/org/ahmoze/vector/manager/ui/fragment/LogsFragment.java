@@ -178,7 +178,7 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
 
     private void save() {
         LocalDateTime now = LocalDateTime.now();
-        String filename = String.format(LocaleDelegate.getDefaultLocale(), "LSPosed_%s.zip", now.toString());
+        String filename = String.format(LocaleDelegate.getDefaultLocale(), "Vector-X_%s.zip", now.toString());
         try {
             saveLogsLauncher.launch(filename);
         } catch (ActivityNotFoundException e) {
@@ -228,7 +228,7 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                     List<CharSequence> tmp;
                     try (var parcelFileDescriptor = ConfigManager.getLog(verbose);
                          var br = new BufferedReader(new InputStreamReader(new FileInputStream(parcelFileDescriptor != null ? parcelFileDescriptor.getFileDescriptor() : null)))) {
-                        tmp = br.lines().parallel().collect(Collectors.toList());
+                        tmp = br.lines().parallel().map(LogFragment.this::formatLogLine).collect(Collectors.toList());
                     } catch (Throwable e) {
                         tmp = Arrays.asList(Log.getStackTraceString(e).split("\n"));
                     }
@@ -249,6 +249,49 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                     item = binding.logItem;
                 }
             }
+        }
+        
+        protected CharSequence formatLogLine(String line) {
+            if (line == null) return "";
+            try {
+                int endPrefix = -1;
+                if (line.startsWith("[ ") && line.contains(" ]")) {
+                    endPrefix = line.indexOf(" ]") + 2;
+                } else if (line.matches("^[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}.*")) {
+                    int tagEnd = line.indexOf(": ");
+                    if (tagEnd != -1) {
+                        endPrefix = tagEnd + 2;
+                    }
+                }
+                
+                if (endPrefix != -1) {
+                    String prefix = line.substring(0, endPrefix);
+                    String message = line.substring(endPrefix);
+                    
+                    android.text.SpannableStringBuilder ssb = new android.text.SpannableStringBuilder();
+                    
+                    android.text.SpannableString prefixSpan = new android.text.SpannableString(prefix);
+                    prefixSpan.setSpan(new android.text.style.ForegroundColorSpan(0xFF888888), 0, prefix.length(), android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    ssb.append(prefixSpan);
+                    
+                    boolean isError = prefix.contains(" E /") || prefix.contains(" E ") || prefix.contains(" F /") || prefix.contains(" F ");
+                    boolean isWarn = prefix.contains(" W /") || prefix.contains(" W ");
+                    
+                    if (isError) {
+                        android.text.SpannableString msgSpan = new android.text.SpannableString(message);
+                        msgSpan.setSpan(new android.text.style.ForegroundColorSpan(0xFFE53935), 0, message.length(), android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        ssb.append(msgSpan);
+                    } else if (isWarn) {
+                        android.text.SpannableString msgSpan = new android.text.SpannableString(message);
+                        msgSpan.setSpan(new android.text.style.ForegroundColorSpan(0xFFFB8C00), 0, message.length(), android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        ssb.append(msgSpan);
+                    } else {
+                        ssb.append(message);
+                    }
+                    return ssb;
+                }
+            } catch (Exception ignored) {}
+            return line;
         }
 
         protected LogAdaptor createAdaptor() {

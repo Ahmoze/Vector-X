@@ -394,21 +394,7 @@ object ManagerService : ILSPManagerService.Stub() {
   override fun dex2oatFlagsLoaded() =
       SystemProperties.get("dalvik.vm.dex2oat-flags").contains("--inline-max-code-units=0")
 
-  override fun setHiddenIcon(hide: Boolean) {
-    val args =
-        Bundle().apply {
-          putString("value", if (hide) "0" else "1")
-          putString("_user", "0")
-        }
-    runCatching {
-          val provider =
-              activityManager
-                  ?.getContentProviderExternal("settings", 0, SystemContext.token, null)
-                  ?.provider
-          provider?.call("android", "settings", "PUT_global", "show_hidden_icon_apps_enabled", args)
-        }
-        .onFailure { Log.w(TAG, "setHiddenIcon failed", it) }
-  }
+
 
   override fun getLogs(zipFd: ParcelFileDescriptor) {
     FileSystem.getLogs(zipFd)

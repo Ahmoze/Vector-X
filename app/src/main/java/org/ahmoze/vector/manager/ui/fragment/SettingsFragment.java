@@ -211,14 +211,7 @@ public class SettingsFragment extends BaseFragment {
                 });
             }
 
-            MaterialSwitchPreference prefShowHiddenIcons = findPreference("show_hidden_icon_apps_enabled");
-            if (prefShowHiddenIcons != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                if (ConfigManager.isBinderAlive()) {
-                    prefShowHiddenIcons.setEnabled(true);
-                    prefShowHiddenIcons.setOnPreferenceChangeListener((preference, newValue) -> ConfigManager.setHiddenIcon(!(boolean) newValue));
-                }
-                prefShowHiddenIcons.setChecked(Settings.Global.getInt(requireActivity().getContentResolver(), "show_hidden_icon_apps_enabled", 1) != 0);
-            }
+
 
             MaterialSwitchPreference prefFollowSystemAccent = findPreference("follow_system_accent");
             if (prefFollowSystemAccent != null && DynamicColors.isDynamicColorAvailable()) {

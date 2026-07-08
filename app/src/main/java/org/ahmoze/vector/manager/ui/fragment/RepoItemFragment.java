@@ -518,7 +518,19 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                 holder.openInBrowser.setOnClickListener(v -> {
                     String url = release.getUrl();
                     if (url == null || url.trim().isEmpty()) {
-                        url = module.getSourceUrl();
+                        String sourceUrl = module.getSourceUrl();
+                        if (sourceUrl != null && sourceUrl.startsWith("https://github.com/")) {
+                            if (sourceUrl.endsWith("/")) sourceUrl = sourceUrl.substring(0, sourceUrl.length() - 1);
+                            if (sourceUrl.endsWith(".git")) sourceUrl = sourceUrl.substring(0, sourceUrl.length() - 4);
+                            
+                            if (release.getTagName() != null && !release.getTagName().isEmpty()) {
+                                url = sourceUrl + "/releases/tag/" + release.getTagName();
+                            } else {
+                                url = sourceUrl + "/releases";
+                            }
+                        } else {
+                            url = sourceUrl;
+                        }
                     }
                     if (url == null || url.trim().isEmpty()) {
                         url = module.getHomepageUrl();

@@ -25,5 +25,6 @@
     android:fontFamily="monospace"
     android:hyphenationFrequency="fullFast"
     android:paddingHorizontal="@dimen/m3_appbar_expanded_title_margin_horizontal"
+    android:paddingVertical="2dp"
     android:textColor="?attr/colorOnSurface"
-    android:textSize="12sp" />
+    android:textSize="13sp" />
