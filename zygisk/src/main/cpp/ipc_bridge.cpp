@@ -96,7 +96,13 @@ constexpr jint HashPackageName(const char* str) {
     }
     return static_cast<jint>(hash);
 }
-constexpr jint kBridgeTransactionCode = HashPackageName(MANAGER_PACKAGE_NAME);
+
+#ifndef STR_HELPER
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+#endif
+
+constexpr jint kBridgeTransactionCode = HashPackageName(STR(MANAGER_PACKAGE_NAME));
 constexpr jint kDexTransactionCode = HashPackageName("vector.dex");
 constexpr jint kObfuscationMapTransactionCode = HashPackageName("vector.obf");
 
