@@ -82,7 +82,7 @@ public class RepoLoader {
     private final Path repoFile = Paths.get(App.getInstance().getFilesDir().getAbsolutePath(), "repo.json");
     private final Set<RepoListener> listeners = ConcurrentHashMap.newKeySet();
     private volatile boolean repoLoaded = false;
-    private static final String originRepoUrl = "https://raw.githubusercontent.com/Ahmoze/Vector/gh-pages/";
+    private static final String originRepoUrl = "https://raw.githubusercontent.com/Ahmoze/Vector-X/gh-pages/";
     private static final String backupRepoUrl = "https://modules-blogcdn.lsposed.org/";
 
     private static final String secondBackupRepoUrl = "https://modules-cloudflare.lsposed.org/";
@@ -124,7 +124,7 @@ public class RepoLoader {
             String currentRepoUrl = getRepoUrl();
             Gson gson = new Gson();
             List<OnlineModule> allModules = new ArrayList<>();
-            try (var response = App.getOkHttpClient().newCall(new Request.Builder().url(currentRepoUrl + "modules.json").header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36").build()).execute()) {
+            try (var response = App.getOkHttpClient().newCall(new Request.Builder().url(currentRepoUrl + "modules.json").header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKi[...]
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body != null) {
