@@ -1,5 +1,30 @@
 🚀 **What's New in v2.0.12** 🚀
 
+# 🚀 Vector v2.0.12 Release
+
+Welcome to the most robust and highly polished release of Vector yet! This massive update not only transforms the user downloading experience and fixes theme visibility, but also brings deep stability improvements to our build system, IDE synchronization, and introduces new localizations.
+
+### 🌟 What's New
+* **Native Downloader Engine**: Completely stripped out the unreliable Chrome Custom Tabs downloader that caused freezing/ANR on HyperOS. Module assets (APKs, ZIPs) are now downloaded flawlessly in the background using the native Android Download Manager (downloads will directly save to your `Downloads/` folder with proper progress notifications).
+* **UI Light Theme Fix**: Fixed a massive readability issue where text inside the Repository and Modules tabs turned invisible/light-grey when the system was set to Light Theme. Strict Material 3 (Monet) colors are now enforced across the board, guaranteeing sharp and highly readable text regardless of your theme preference.
+* **Intelligent URL Fallback**: Fixed the "URL not available" error when attempting to open a repository in the browser. The manager now intelligently falls back to the module's source or homepage URL if a specific release link is missing.
+* **Internationalization (i18n)**: Introduced full UI translation and localization for the **Serbian (Latin)** language in the Manager App, greatly expanding accessibility for regional users.
+
+### 🛠️ Developer & Build Improvements
+* **CMake & AGP Synchronization**: Fully resolved Native C++ build failures in continuous integration pipelines. CMake versions are now strictly enforced natively through the project structure.
+* **IDE & Language Server Fixes**: Cleared all false-positive syntax errors and Eclipse JDT/VSCode "Unsupported class file major version 69" issues. The Gradle internal environment is now strictly pinned to JDK 21.
+* **Apache Commons Architecture**: Refactored internal code generation paths (`ClassUtilsX` and `SerializationUtilsX`) to comply with strict Java package guidelines, eliminating missing class exceptions.
+
+### ⚙️ Installation
+1. Flash the provided `Vector-v2.0.12-Release.zip` module via **Magisk** or KernelSU.
+2. Reboot your device.
+3. The stealth manager will appear automatically. (If updating from a previous version, the old manager will be seamlessly replaced).
+
+
+---
+
+🚀 **What's New in v2.0.12** 🚀
+
 🔹 **Native Downloader Engine**: Completely removed the unreliable Custom Tabs downloader. Module assets (APKs, ZIPs) are now downloaded perfectly in the background using the native Android Download Manager.
 🔹 **UI Bug Fix (Light Theme)**: Fixed an issue where text within the Repository and Modules tabs became invisible/unreadable when the system was set to Light Theme (Monet colors now strictly enforced).
 🔹 **Intelligent URL Fallback**: Fixed the "URL not available" error when opening repositories; the manager now seamlessly falls back to source/homepage URLs if a specific release link is missing.

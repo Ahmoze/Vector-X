@@ -1,6 +1,6 @@
 {
-	"version": "v2.0.12",
-	"versionCode": 3080,
-	"zipUrl": "https://github.com/Ahmoze/Vector/releases/download/v2.0.12/Vector-v2.0.12-Release.zip",
-	"changelog": "https://raw.githubusercontent.com/Ahmoze/Vector/master/zygisk/changelog.md"
+  "version": "v2.0.12",
+  "versionCode": 3089,
+  "zipUrl": "https://github.com/Ahmoze/Vector-X/releases/download/v2.0.12/Vector-v2.0.12-Release.zip",
+  "changelog": "https://raw.githubusercontent.com/Ahmoze/Vector/master/zygisk/changelog.md"
 }
