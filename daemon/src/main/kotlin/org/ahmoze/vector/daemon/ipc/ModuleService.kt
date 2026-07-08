@@ -166,7 +166,7 @@ class ModuleService(private val loadedModule: Module) : IXposedService.Stub() {
                 "Hot reload requires exactly one Java entry class")
           }
           ApplicationService.hotReloadTarget(targetId, latest, data)
-          callback?.onHotReloadResult(IXposedService.HOT_RELOAD_SUCCEEDED, null)
+          callback?.onHotReloadResult(IXposedService.HOT_RELOAD_SUCCESS, null)
         }
         .onFailure { throwable ->
           if (throwable is SecurityException) throw throwable
@@ -174,7 +174,7 @@ class ModuleService(private val loadedModule: Module) : IXposedService.Stub() {
               when (throwable) {
                 is HotReloadInProgressException -> IXposedService.HOT_RELOAD_IN_PROGRESS
                 is HotReloadProcessDiedException -> IXposedService.HOT_RELOAD_PROCESS_DIED
-                is HotReloadUnsupportedException -> IXposedService.HOT_RELOAD_UNSUPPORTED
+                is HotReloadUnsupportedException -> IXposedService.HOT_RELOAD_FAILED
                 else -> IXposedService.HOT_RELOAD_FAILED
               }
           callback?.onHotReloadResult(status, throwable.message)

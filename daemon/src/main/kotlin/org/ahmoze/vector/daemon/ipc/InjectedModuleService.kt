@@ -70,14 +70,14 @@ class InjectedModuleService(private val packageName: String) : ILSPInjectedModul
             throw HotReloadUnsupportedException("Hot reload requires exactly one Java entry class")
           }
           ApplicationService.hotReloadTarget(targetId, module, data)
-          callback?.onHotReloadResult(IXposedService.HOT_RELOAD_SUCCEEDED, null)
+          callback?.onHotReloadResult(IXposedService.HOT_RELOAD_SUCCESS, null)
         }
         .onFailure { throwable ->
           if (throwable is SecurityException) throw throwable
           val status = when (throwable) {
             is HotReloadInProgressException -> IXposedService.HOT_RELOAD_IN_PROGRESS
             is HotReloadProcessDiedException -> IXposedService.HOT_RELOAD_PROCESS_DIED
-            is HotReloadUnsupportedException -> IXposedService.HOT_RELOAD_UNSUPPORTED
+            is HotReloadUnsupportedException -> IXposedService.HOT_RELOAD_FAILED
             else -> IXposedService.HOT_RELOAD_FAILED
           }
           callback?.onHotReloadResult(status, throwable.message)
