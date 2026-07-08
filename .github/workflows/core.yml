@@ -70,11 +70,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-ccache-
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-
-
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
