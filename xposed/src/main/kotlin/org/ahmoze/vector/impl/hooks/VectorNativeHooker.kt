@@ -10,15 +10,20 @@ import java.lang.reflect.Executable
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.util.concurrent.ConcurrentHashMap
 import org.ahmoze.vector.lspd.util.Utils
 import org.ahmoze.vector.impl.di.VectorBootstrap
 import org.ahmoze.vector.nativebridge.HookBridge
 
 /** Builder for configuring and registering hooks. */
-class VectorHookBuilder(private val origin: Executable) : HookBuilder {
+class VectorHookBuilder(private val modulePackageName: String, private val origin: Executable) :
+    HookBuilder {
+
+    constructor(origin: Executable) : this(FRAMEWORK_HOOK_OWNER, origin)
 
     private var priority = XposedInterface.PRIORITY_DEFAULT
     private var exceptionMode = ExceptionMode.DEFAULT
+    private var id: String? = null
 
     override fun setPriority(priority: Int): HookBuilder = apply { this.priority = priority }
 
@@ -26,7 +31,44 @@ class VectorHookBuilder(private val origin: Executable) : HookBuilder {
         this.exceptionMode = mode
     }
 
+    override fun setId(id: String?): HookBuilder = apply { this.id = id }
+
     override fun intercept(hooker: Hooker): HookHandle {
+        validateHookTarget()
+        if (HookRegistry.isFrozen(modulePackageName, hooker)) {
+            throw IllegalStateException("Module $modulePackageName is frozen for hot reload")
+        }
+
+        val hookKey = id?.let { HookKey(modulePackageName, origin, it) }
+        val record = createRecord(hooker)
+
+        if (hookKey != null) {
+            synchronized(HookRegistry) {
+                val existing = HookRegistry.records[hookKey]
+                installRecord(record)
+                HookRegistry.records[hookKey] = record
+                if (existing != null) {
+                    uninstallRecord(existing)
+                }
+                return VectorHookHandle(record, hookKey)
+            }
+        }
+
+        installRecord(record)
+        return VectorHookHandle(record, null)
+    }
+
+    private fun createRecord(hooker: Hooker): VectorHookRecord =
+        VectorHookRecord(
+            modulePackageName = modulePackageName,
+            executable = origin,
+            id = id,
+            priority = priority,
+            hooker = hooker,
+            exceptionMode = exceptionMode,
+        )
+
+    private fun validateHookTarget() {
         if (Modifier.isAbstract(origin.modifiers)) {
             throw IllegalArgumentException("Cannot hook abstract methods: $origin")
         } else if (origin.declaringClass.classLoader == VectorHookBuilder::class.java.classLoader) {
@@ -38,22 +80,103 @@ class VectorHookBuilder(private val origin: Executable) : HookBuilder {
         ) {
             throw IllegalArgumentException("Cannot hook Method.invoke")
         }
+    }
 
-        val record = VectorHookRecord(hooker, priority, exceptionMode)
-
-        // Register natively. HookBridge now stores VectorHookRecord instead of HookerCallback.
-        if (
-            !HookBridge.hookMethod(true, origin, VectorNativeHooker::class.java, priority, record)
-        ) {
+    private fun installRecord(record: VectorHookRecord) {
+        if (!HookBridge.hookMethod(true, origin, VectorNativeHooker::class.java, record.priority, record)) {
             throw HookFailedError("Cannot hook $origin")
         }
+        HookRegistry.allRecords.add(record)
+    }
 
-        return object : HookHandle {
-            override fun getExecutable(): Executable = origin
+    private fun uninstallRecord(record: VectorHookRecord): Boolean {
+        if (!record.deactivate()) return false
+        HookBridge.unhookMethod(true, record.executable, record)
+        record.id?.let { id ->
+            HookRegistry.records.remove(HookKey(record.modulePackageName, record.executable, id), record)
+        }
+        HookRegistry.allRecords.remove(record)
+        return true
+    }
+}
 
-            override fun unhook() {
-                HookBridge.unhookMethod(true, origin, record)
+private const val FRAMEWORK_HOOK_OWNER = "org.ahmoze.vector.framework"
+
+private data class HookKey(
+    val modulePackageName: String,
+    val executable: Executable,
+    val id: String,
+)
+
+private object HookRegistry {
+    val records = ConcurrentHashMap<HookKey, VectorHookRecord>()
+    val allRecords = ConcurrentHashMap.newKeySet<VectorHookRecord>()
+    private val frozenLoaders = ConcurrentHashMap<String, MutableSet<ClassLoader>>()
+
+    fun freeze(modulePackageName: String, classLoaders: Collection<ClassLoader>) {
+        frozenLoaders[modulePackageName] = ConcurrentHashMap.newKeySet<ClassLoader>().apply {
+            addAll(classLoaders)
+        }
+    }
+
+    fun unfreeze(modulePackageName: String) {
+        frozenLoaders.remove(modulePackageName)
+    }
+
+    fun isFrozen(modulePackageName: String, hooker: Hooker): Boolean {
+        val classLoader = hooker.javaClass.classLoader ?: return false
+        return frozenLoaders[modulePackageName]?.contains(classLoader) == true
+    }
+
+    fun handlesForModule(modulePackageName: String): List<HookHandle> {
+        return allRecords
+            .filter { it.modulePackageName == modulePackageName && it.isActive() }
+            .map { VectorHookHandle(it, it.id?.let { id -> HookKey(modulePackageName, it.executable, id) }) }
+    }
+}
+
+internal fun getActiveHookHandles(modulePackageName: String): List<HookHandle> {
+    return HookRegistry.handlesForModule(modulePackageName)
+}
+
+internal fun freezeHooks(modulePackageName: String, classLoaders: Collection<ClassLoader>) {
+    HookRegistry.freeze(modulePackageName, classLoaders)
+}
+
+internal fun unfreezeHooks(modulePackageName: String) {
+    HookRegistry.unfreeze(modulePackageName)
+}
+
+internal fun unhookAllModuleHooks(
+    modulePackageName: String,
+    except: Set<HookHandle> = emptySet(),
+) {
+    val excludedRecords = except.mapNotNull { (it as? VectorHookHandle)?.record }.toSet()
+    HookRegistry.allRecords
+        .filter { it.modulePackageName == modulePackageName && it !in excludedRecords }
+        .forEach { record ->
+            if (!record.deactivate()) return@forEach
+            HookBridge.unhookMethod(true, record.executable, record)
+            record.id?.let { id ->
+                HookRegistry.records.remove(HookKey(record.modulePackageName, record.executable, id), record)
             }
+            HookRegistry.allRecords.remove(record)
+        }
+}
+
+private class VectorHookHandle(
+    val record: VectorHookRecord,
+    private val key: HookKey?,
+) : HookHandle {
+
+    override fun getExecutable(): Executable = record.executable
+
+    override fun unhook() {
+        if (!record.deactivate()) return
+        HookBridge.unhookMethod(true, record.executable, record)
+        HookRegistry.allRecords.remove(record)
+        if (key != null) {
+            HookRegistry.records.remove(key, record)
         }
     }
 }

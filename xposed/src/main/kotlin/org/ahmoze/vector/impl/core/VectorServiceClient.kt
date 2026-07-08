@@ -54,6 +54,17 @@ object VectorServiceClient : ILSPApplicationService, IBinder.DeathRecipient {
         return runCatching { service?.requestInjectedManagerBinder(binder) }.getOrNull()
     }
 
+    override fun registerHotReloadTarget(
+        modulePackageName: String,
+        loadedVersionCode: Long,
+        target: org.ahmoze.vector.lspd.service.IHotReloadTarget
+    ): Long {
+        return runCatching {
+                service?.registerHotReloadTarget(modulePackageName, loadedVersionCode, target)
+            }
+            .getOrNull() ?: -1L
+    }
+
     override fun asBinder(): IBinder? {
         return service?.asBinder()
     }
