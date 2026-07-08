@@ -135,8 +135,8 @@ subprojects {
             }
 
             compileOptions {
-                sourceCompatibility = androidSourceCompatibility
-                targetCompatibility = androidTargetCompatibility
+                sourceCompatibility = androidSourceCompatibility as JavaVersion
+                targetCompatibility = androidTargetCompatibility as JavaVersion
             }
         }
     }
