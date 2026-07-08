@@ -9,3 +9,7 @@
 build
 /captures
 bin/
+.vscode/
+*.class
+*.jks
+temp.html
