@@ -19,6 +19,7 @@
 > **Acknowledgments:** Vector-X is a heavily modified and modernized fork of the original [Vector](https://github.com/JingMatrix/Vector) project by JingMatrix, which itself evolved from the legendary LSPosed framework. We extend our deepest gratitude to JingMatrix and the original LSPosed developers for laying the groundwork for this project.
 
 **✨ What makes Vector-X special?**
+* **Self-Healing Daemon:** Features a robust background process with an intelligent auto-installer that permanently prevents "Not Installed" errors or version mismatches by autonomously syncing the Manager APK.
 * **Advanced Stealth (Phase 3):** Uses mathematical dynamic Binder Transaction Code randomization to evade modern Anti-Cheat memory scanners (PUBG, Genshin, Bank apps).
 * **Modern Material 3 GUI:** Features a stunning "Glassmorphism" UI with beautifully rounded cards, dynamic Monet colors, and fluid micro-animations.
 * **Fully Restored Repository:** Flawlessly fetches and parses over 800+ online Xposed modules.
@@ -39,19 +40,17 @@ Vector-X supports devices running **Android 8.1 through Android 15**.
 
 ### Installation
 
-**For New Users:**
-1. Download the latest release ZIP.
+**For New and Existing Users:**
+1. Download the latest release ZIP from the Releases page.
 2. Flash the module via your root manager (Magisk / KernelSU).
 3. Reboot your device.
-4. Open Magisk/KernelSU and click the **Action** button on the Vector-X module (or open the Vector-X manager from the app drawer once it appears).
+4. **That's it!** The Vector-X Daemon features an advanced *Smart Auto-Installer* that will automatically extract, install, and update the Manager application in the background upon boot.
 
-> [!WARNING]
-> **Updating from pre-v2.0.8 or JingMatrix versions:**
-> Because the Application ID was changed for ultimate stealth, you **MUST manually uninstall the old Manager APK** from your phone before or after flashing. If you don't, you will have duplicate manager icons.
+> [!TIP]
+> If you don't see the Manager app immediately after a reboot, simply wait a few seconds. The background Daemon performs a silent installation and the app will magically appear in your app drawer!
 
 > [!NOTE]
-> **Updating from v2.0.8+:**
-> Normally, flashing the new ZIP automatically overwrites the old module. If for some reason the manager doesn't update, uninstall the old module in Magisk, reboot, and flash the new Vector-X ZIP again.
+> If you are migrating from an extremely old legacy version (pre-v2.0.8), the installer will automatically clean up old traces. You may just need to remove the old dead icon from your homescreen manually.
 
 ---
 
