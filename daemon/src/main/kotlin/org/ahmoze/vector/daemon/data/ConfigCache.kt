@@ -36,6 +36,8 @@ object ConfigCache {
 
   private val cacheUpdateChannel = Channel<Unit>(Channel.CONFLATED)
 
+  @Volatile private var isInstallingManager = false
+
   init {
     VectorDaemon.scope.launch {
       for (request in cacheUpdateChannel) {
@@ -69,8 +71,17 @@ object ConfigCache {
               packageManager?.getPackageInfoCompat(BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME, 0, 0)
           val uid = info?.applicationInfo?.uid
           val installedApkPath = info?.applicationInfo?.sourceDir
-          if (uid == null || installedApkPath == null) {
-            Log.i(TAG, "Manager is not installed")
+          
+          @Suppress("DEPRECATION")
+          val currentVersionCode = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+              info?.longVersionCode ?: 0L
+          } else {
+              info?.versionCode?.toLong() ?: 0L
+          }
+
+          if (uid == null || installedApkPath == null || currentVersionCode < BuildConfig.VERSION_CODE) {
+            Log.i(TAG, "Manager is missing or outdated (installed: $currentVersionCode, target: ${BuildConfig.VERSION_CODE}). Auto-installing in background...")
+            VectorDaemon.scope.launch { autoInstallManager() }
             state = state.copy(managerUid = -1)
             return
           }
@@ -80,6 +91,28 @@ object ConfigCache {
           state = state.copy(managerUid = uid)
         }
         .onFailure { state = state.copy(managerUid = -1) }
+  }
+
+  private fun autoInstallManager() {
+    if (isInstallingManager) return
+    isInstallingManager = true
+    try {
+      Log.i(TAG, "Executing pm install for Manager APK...")
+      val apkPath = FileSystem.managerApkPath.toString()
+      val process = Runtime.getRuntime().exec(arrayOf("pm", "install", "-r", "-d", apkPath))
+      val exitCode = process.waitFor()
+      if (exitCode == 0) {
+        Log.i(TAG, "Manager auto-installed successfully! Refreshing state.")
+        updateManager(false)
+      } else {
+        val error = process.errorStream.bufferedReader().readText()
+        Log.e(TAG, "Manager auto-install failed with exit code $exitCode: $error")
+      }
+    } catch (e: Exception) {
+      Log.e(TAG, "Failed to execute auto-install manager", e)
+    } finally {
+      isInstallingManager = false
+    }
   }
 
   private fun setupMiscPath() {
