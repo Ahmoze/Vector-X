@@ -1,3 +1,21 @@
+🚀 **What's New in v2.0.15** 🚀
+
+🚀 Vector v2.0.15 Release
+
+Welcome to a major developer-focused update! This release brings full compatibility with the highly anticipated libxposed API 102, introducing game-changing features for module creators like Hot Reloading and advanced hook management.
+
+🌟 What's New
+
+* 🔥 **Module Hot Reload Support**: The wait is over. Modules targeting API 102 can now dynamically reload their injected code in real-time. No more forced reboots or app restarts after every minor code change—drastically speeding up your development and testing iteration cycle!
+* ⚙️ **libxposed API 102 Core Integration**: Vector's internal framework bridge has been completely upgraded to seamlessly support the new API 102 architecture.
+* ⚛️ **Atomic Hook Replacements**: Introducing the new `replaceHook` capability. Developers can now atomically swap out active hooks on the fly without worrying about race conditions or manual unhook/rehook procedures.
+* 🆔 **Advanced Hook Identity Tracking**: Fully adopted the new `HookHandle` system. This brings robust hook identity tracking and the ability to safely transfer active hooks (`getOldHookHandles`) during a hot reload handoff, ensuring extreme stability when updating modules on the fly.
+
+Dive into the new API and enjoy a significantly faster and more powerful module development workflow!
+
+
+---
+
 🚀 **What's New in v2.0.14** 🚀
 
 # 🚀 Vector v2.0.14 Release
