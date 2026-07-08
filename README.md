@@ -22,6 +22,7 @@
 * **Advanced Stealth (Phase 3):** Uses mathematical dynamic Binder Transaction Code randomization to evade modern Anti-Cheat memory scanners (PUBG, Genshin, Bank apps).
 * **Modern Material 3 GUI:** Features a stunning "Glassmorphism" UI with beautifully rounded cards, dynamic Monet colors, and fluid micro-animations.
 * **Fully Restored Repository:** Flawlessly fetches and parses over 800+ online Xposed modules.
+* **API 102 & Hot Reloading:** Fully supports the cutting-edge libxposed API 102, allowing developers to hot-reload injected module code without rebooting devices or apps.
 
 The framework allows modules to modify system and application behavior in-memory. Because no APK files are modified, changes are non-destructive, easily reversible via reboot, and compatible across various ROMs and Android versions.
 
@@ -95,11 +96,11 @@ If you encounter issues or wish to help improve the project, please refer to the
 Vector supports both legacy and modern hooking standards to ensure broad module compatibility.
 
 *   [Legacy Xposed API](https://api.xposed.info/)
-*   [Modern libxposed API](https://libxposed.github.io/api/)
+*   [Modern libxposed API (102+)](https://libxposed.github.io/api/)
 *   [Xposed Module Repository](https://github.com/Xposed-Modules-Repo)
 
 > [!NOTE]
-> Vector supports the `libxposed` API via two git submodules: the [module API](./xposed/) and the [service API](./services/).
+> Vector fully supports the `libxposed` API 102 via two git submodules: the [module API](./xposed/) and the [service API](./services/).
 >
 > A successful GitHub Actions build of the [master](https://github.com/Ahmoze/Vector-X/tree/master) branch indicates that Vector fully supports these APIs at those specific commits.
 > Developers are suggested to check out the same commits as Vector.
