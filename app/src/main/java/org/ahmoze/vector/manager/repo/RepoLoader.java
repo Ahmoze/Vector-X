@@ -124,7 +124,7 @@ public class RepoLoader {
             String currentRepoUrl = getRepoUrl();
             Gson gson = new Gson();
             List<OnlineModule> allModules = new ArrayList<>();
-            try (var response = App.getOkHttpClient().newCall(new Request.Builder().url(currentRepoUrl + "modules.json").header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKi[...]
+            try (var response = App.getOkHttpClient().newCall(new Request.Builder().url(currentRepoUrl + "modules.json").header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36").build()).execute()) {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
                     if (body != null) {
