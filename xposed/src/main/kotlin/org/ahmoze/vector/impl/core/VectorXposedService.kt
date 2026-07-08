@@ -60,7 +60,7 @@ internal class VectorXposedService(
     ) {
         injectedService?.hotReloadModule(targetId, data, callback)
             ?: callback?.onHotReloadResult(
-                IXposedService.HOT_RELOAD_UNSUPPORTED,
+                IXposedService.HOT_RELOAD_FAILED,
                 "Injected module service unavailable",
             )
     }

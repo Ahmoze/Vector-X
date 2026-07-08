@@ -21,7 +21,7 @@ android {
         buildConfigField("long", "VERSION_CODE", versionCodeProvider.get())
     }
 
-    sourceSets { named("main") { java.srcDirs("src/main/kotlin") } }
+    sourceSets { named("main") { java.srcDirs("src/main/kotlin", "libxposed/api/src/main/java") } }
 }
 
 dependencies {

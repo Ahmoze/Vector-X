@@ -179,6 +179,38 @@ private class VectorHookHandle(
             HookRegistry.records.remove(key, record)
         }
     }
+
+    override fun getId(): String? = record.id
+
+    override fun replaceHook(hooker: XposedInterface.Hooker): XposedInterface.HookHandle {
+        if (!record.isActive()) {
+            throw IllegalStateException("Hook is already canceled")
+        }
+        val newRecord = VectorHookRecord(
+            record.modulePackageName,
+            record.executable,
+            record.id,
+            record.priority,
+            hooker,
+            record.exceptionMode
+        )
+        if (!record.deactivate()) {
+            throw IllegalStateException("Hook is already canceled")
+        }
+        HookBridge.unhookMethod(true, record.executable, record)
+        HookRegistry.allRecords.remove(record)
+        if (key != null) {
+            HookRegistry.records.remove(key, record)
+        }
+        HookRegistry.allRecords.add(newRecord)
+        if (key != null) {
+            HookRegistry.records[key] = newRecord
+        }
+        if (!HookBridge.hookMethod(true, newRecord.executable, VectorNativeHooker::class.java, newRecord.priority, newRecord)) {
+            throw HookFailedError("Cannot hook ${newRecord.executable}")
+        }
+        return VectorHookHandle(newRecord, key)
+    }
 }
 
 /**
