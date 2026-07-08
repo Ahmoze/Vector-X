@@ -1,3 +1,33 @@
+🚀 **What's New in v2.0.16** 🚀
+
+### ⚠️ Critical Hotfix (v2.0.16)
+This release primarily addresses a fatal Zygisk crash introduced in the previous build that caused the framework to silently break and display as **"Not Installed"** in the Manager app. 
+
+*   **[Critical Fix]** Resolved a native crash in `system_server` caused by an IPC transaction code mismatch when fetching the obfuscation map. Zygisk injection now initializes flawlessly.
+*   **[Fix]** Fixed native build macros (`MANAGER_PACKAGE_NAME`) which broke IPC package resolution.
+*   **[Fix]** Restored ABI backward compatibility in `Module.aidl` to prevent crashes for users using older Manager APKs.
+*   **[Fix]** Fixed Gradle memory allocation for faster builds and added missing `InternalApi.java`.
+*   **[CI/CD]** Added a GitHub Action to automatically sync Magisk OTA files upon creating a new release.
+
+> **Update Note:** If you are updating from a previous version and your Manager app does not refresh automatically after reboot, please manually uninstall the old Vector-X Manager and install the new APK extracted from this ZIP file.
+
+---
+
+### 🔥 Hot Reload & ⚙️ API 102 Features
+*(Included from the major API 102 update)*
+
+Welcome to a major developer-focused update! This brings full compatibility with the highly anticipated libxposed API 102, introducing game-changing features for module creators:
+
+*   🔥 **Module Hot Reload Support:** The wait is over. Modules targeting API 102 can now dynamically reload their injected code in real-time. No more forced reboots or app restarts after every minor code change—drastically speeding up your development and testing iteration cycle!
+*   ⚙️ **libxposed API 102 Core Integration:** Vector's internal framework bridge has been completely upgraded to seamlessly support the new API 102 architecture.
+*   ⚛️ **Atomic Hook Replacements:** Introducing the new `replaceHook` capability. Developers can now atomically swap out active hooks on the fly without worrying about race conditions or manual unhook/rehook procedures.
+*   🆔 **Advanced Hook Identity Tracking:** Fully adopted the new `HookHandle` system. This brings robust hook identity tracking and the ability to safely transfer active hooks (`getOldHookHandles`) during a hot reload handoff, ensuring extreme stability when updating modules on the fly.
+
+Dive into the new API and enjoy a significantly faster and more powerful module development workflow!
+
+
+---
+
 🚀 **What's New in v2.0.15** 🚀
 
 🚀 Vector v2.0.15 Release
