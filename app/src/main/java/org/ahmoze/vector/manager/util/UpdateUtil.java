@@ -58,9 +58,10 @@ public class UpdateUtil {
                 try {
                     var info = JsonParser.parseReader(body.charStream()).getAsJsonObject();
                     var notes = info.get("body").getAsString();
+                    var tagName = info.has("tag_name") ? info.get("tag_name").getAsString() : "";
                     var assetsArray = info.getAsJsonArray("assets");
                     for (var assets : assetsArray) {
-                        checkAssets(assets.getAsJsonObject(), notes);
+                        checkAssets(assets.getAsJsonObject(), notes, tagName);
                     }
                 } catch (Throwable t) {
                     Log.e(App.TAG, t.getMessage(), t);
@@ -78,17 +79,18 @@ public class UpdateUtil {
         App.getOkHttpClient().newCall(request).enqueue(callback);
     }
 
-    private static void checkAssets(JsonObject assets, String releaseNotes) {
+    private static void checkAssets(JsonObject assets, String releaseNotes, String tagName) {
         var pref = App.getPreferences();
         var name = assets.get("name").getAsString();
-        var splitName = name.split("-");
+        
         pref.edit()
-                .putInt("latest_version", Integer.parseInt(splitName[2]))
+                .putString("latest_version_name", tagName)
                 .putLong("latest_check", Instant.now().getEpochSecond())
                 .putString("release_notes", releaseNotes)
                 .putString("zip_file", null)
                 .putBoolean("checked", true)
                 .apply();
+                
         var updatedAt = Instant.parse(assets.get("updated_at").getAsString());
         var downloadUrl = assets.get("browser_download_url").getAsString();
         var zipTime = pref.getLong("zip_time", 0);
@@ -104,6 +106,24 @@ public class UpdateUtil {
         }
     }
 
+    private static int compareVersions(String v1, String v2) {
+        if (v1 == null) v1 = "";
+        if (v2 == null) v2 = "";
+        v1 = v1.replace("v", "").replaceAll("[^0-9.]", "");
+        v2 = v2.replace("v", "").replaceAll("[^0-9.]", "");
+        if (v1.isEmpty() || v2.isEmpty()) return 0;
+        
+        String[] parts1 = v1.split("\\.");
+        String[] parts2 = v2.split("\\.");
+        int length = Math.max(parts1.length, parts2.length);
+        for (int i = 0; i < length; i++) {
+            int n1 = i < parts1.length && !parts1[i].isEmpty() ? Integer.parseInt(parts1[i]) : 0;
+            int n2 = i < parts2.length && !parts2[i].isEmpty() ? Integer.parseInt(parts2[i]) : 0;
+            if (n1 != n2) return Integer.compare(n1, n2);
+        }
+        return 0;
+    }
+
     public static boolean needUpdate() {
         var pref = App.getPreferences();
         if (!pref.getBoolean("checked", false)) return false;
@@ -114,8 +134,12 @@ public class UpdateUtil {
             var checkTime = Instant.ofEpochSecond(check);
             if (checkTime.atOffset(ZoneOffset.UTC).plusDays(30).toInstant().isBefore(now))
                 return true;
-            var code = pref.getInt("latest_version", 0);
-            return code > BuildConfig.VERSION_CODE;
+            
+            var latestVersionName = pref.getString("latest_version_name", "");
+            if (latestVersionName != null && !latestVersionName.isEmpty()) {
+                return compareVersions(latestVersionName, BuildConfig.VERSION_NAME) > 0;
+            }
+            return false;
         }
         return buildTime.atOffset(ZoneOffset.UTC).plusDays(30).toInstant().isBefore(now);
     }
