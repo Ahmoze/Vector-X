@@ -1,3 +1,22 @@
+🚀 **What's New in v2.0.14** 🚀
+
+# 🚀 Vector v2.0.14 Release
+
+Welcome to a highly refined update focusing on debugging quality-of-life improvements, intelligent navigation, and essential system cleanup. This release makes module development and troubleshooting a much more pleasant experience!
+
+🌟 **What's New**
+
+- 🎨 **Logs UI Overhaul:** Completely revamped the log viewer interface for vastly improved readability. Logs are now dynamically colorized using `Spannable` strings based on their severity level (Errors in Red, Warnings in Orange, and metadata timestamps in a subtle Gray). We also added vertical spacing to let the text "breathe", making forensic debugging easier than ever.
+- 🧭 **Intelligent Release Redirects:** Enhanced the "Open in Browser" arrow button for repository modules. The app now parses GitHub URLs and attempts to dynamically route you directly to the module's specific `/releases/tag/` or `/releases` page, instead of blindly dumping you on the repository's root page. 
+- 🗂️ **Proper Log Export Naming:** Replaced the legacy archive nomenclature. Exported ZIP files containing your logs will now correctly save as `Vector-X_YYYY-MM-DD.zip` instead of the old `LSPosed_` prefix.
+- 🧹 **Defunct Feature Cleanup:** Completely stripped out the dead "Hide Launcher Icon" option from the settings, IPC, and AIDL interfaces. This legacy feature relied on older Android mechanisms that are no longer supported on modern OS versions, so it was removed to reduce clutter and prevent user confusion.
+
+🔧 **Under the Hood**
+- ⚙️ **Optimized Codebase:** Cleaned up unused AIDL endpoints (`setHiddenIcon`) and related bindings across the Manager and Daemon, making the codebase leaner and slightly more optimized.
+
+
+---
+
 🚀 **What's New in v2.0.12** 🚀
 
 # 🚀 Vector v2.0.12 Release
