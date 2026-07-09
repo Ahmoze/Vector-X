@@ -192,6 +192,18 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         protected SwiperefreshRecyclerviewBinding binding;
         protected LogAdaptor adaptor;
         protected LinearLayoutManager layoutManager;
+        private android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+        private boolean isAutoRefreshActive = false;
+        private Runnable autoRefreshRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (isAutoRefreshActive) {
+                    boolean isAtBottom = layoutManager.findLastVisibleItemPosition() >= adaptor.getItemCount() - 5;
+                    adaptor.silentRefresh(isAtBottom);
+                    handler.postDelayed(this, 2500);
+                }
+            }
+        };
 
         class LogAdaptor extends EmptyStateRecyclerView.EmptyStateAdapter<LogAdaptor.ViewHolder> {
             private List<CharSequence> log = Collections.emptyList();
@@ -233,6 +245,26 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                         tmp = Arrays.asList(Log.getStackTraceString(e).split("\n"));
                     }
                     refresh(tmp);
+                });
+            }
+
+            void silentRefresh(boolean scrollToBottom) {
+                runAsync(() -> {
+                    List<CharSequence> tmp;
+                    try (var parcelFileDescriptor = ConfigManager.getLog(verbose);
+                         var br = new BufferedReader(new InputStreamReader(new FileInputStream(parcelFileDescriptor != null ? parcelFileDescriptor.getFileDescriptor() : null)))) {
+                        tmp = br.lines().parallel().map(LogFragment.this::formatLogLine).collect(Collectors.toList());
+                    } catch (Throwable e) {
+                        tmp = Arrays.asList(Log.getStackTraceString(e).split("\n"));
+                    }
+                    final List<CharSequence> finalTmp = tmp;
+                    runOnUiThread(() -> {
+                        this.log = finalTmp;
+                        notifyDataSetChanged();
+                        if (scrollToBottom && finalTmp.size() > 0) {
+                            binding.recyclerView.scrollToPosition(finalTmp.size() - 1);
+                        }
+                    });
                 });
             }
 
@@ -280,6 +312,7 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
                     if (isError) {
                         android.text.SpannableString msgSpan = new android.text.SpannableString(message);
                         msgSpan.setSpan(new android.text.style.ForegroundColorSpan(0xFFE53935), 0, message.length(), android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        msgSpan.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, message.length(), android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         ssb.append(msgSpan);
                     } else if (isWarn) {
                         android.text.SpannableString msgSpan = new android.text.SpannableString(message);
@@ -323,6 +356,8 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
             adaptor.fullRefresh();
             return binding.getRoot();
         }
+
+
 
         public void scrollToTop(LogsFragment logsFragment) {
             logsFragment.binding.appBar.setExpanded(true, true);
@@ -386,6 +421,8 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         public void onResume() {
             super.onResume();
             attachListeners();
+            isAutoRefreshActive = true;
+            handler.postDelayed(autoRefreshRunnable, 2500);
         }
 
 
@@ -393,6 +430,8 @@ public class LogsFragment extends BaseFragment implements MenuProvider {
         public void onPause() {
             super.onPause();
             detachListeners();
+            isAutoRefreshActive = false;
+            handler.removeCallbacks(autoRefreshRunnable);
         }
 
         @Override

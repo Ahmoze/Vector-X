@@ -143,6 +143,10 @@ object ApplicationService : ILSPApplicationService.Stub() {
   }
 
   private fun getAllModules(): List<Module> {
+    if (org.ahmoze.vector.daemon.VectorDaemon.isRescueMode) {
+      Log.w(TAG, "Rescue mode is active. Skipping module injection.")
+      return emptyList()
+    }
     val info = ensureRegistered()
     if (info.key.uid == Process.SYSTEM_UID && info.processName == "system") {
       return ConfigCache.getModulesForSystemServer()

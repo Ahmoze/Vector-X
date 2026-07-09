@@ -144,11 +144,15 @@ public class HomeFragment extends BaseFragment implements MenuProvider {
             boolean dex2oatAbnormal = ConfigManager.getDex2OatWrapperCompatibility() != ILSPManagerService.DEX2OAT_OK && !ConfigManager.dex2oatFlagsLoaded();
             var sepolicyAbnormal = !ConfigManager.isSepolicyLoaded();
             var systemServerAbnormal = !ConfigManager.systemServerRequested();
-            if (sepolicyAbnormal || systemServerAbnormal || dex2oatAbnormal) {
+            var rescueModeActive = ConfigManager.isRescueMode();
+            if (rescueModeActive || sepolicyAbnormal || systemServerAbnormal || dex2oatAbnormal) {
                 binding.statusTitle.setText(R.string.partial_activated);
                 binding.statusIcon.setImageResource(R.drawable.ic_round_warning_24);
                 binding.warningCard.setVisibility(View.VISIBLE);
-                if (sepolicyAbnormal) {
+                if (rescueModeActive) {
+                    binding.warningTitle.setText("Bootloop Rescue Mode");
+                    binding.warningSummary.setText("Vector detected a system bootloop. All modules have been disabled to protect your device.");
+                } else if (sepolicyAbnormal) {
                     binding.warningTitle.setText(R.string.selinux_policy_not_loaded_summary);
                     binding.warningSummary.setText(HtmlCompat.fromHtml(getString(R.string.selinux_policy_not_loaded), HtmlCompat.FROM_HTML_MODE_LEGACY));
                 }

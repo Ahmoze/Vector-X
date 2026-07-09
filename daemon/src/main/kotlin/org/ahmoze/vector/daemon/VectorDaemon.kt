@@ -14,6 +14,7 @@ import android.os.ServiceManager
 import android.os.SystemProperties
 import android.system.Os
 import android.util.Log
+import java.io.File
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +47,7 @@ object VectorDaemon {
 
   var isLateInject = false
   var proxyServiceName = "serial"
+  var isRescueMode = false
 
   @JvmStatic
   fun main(args: Array<String>) {
@@ -72,6 +74,30 @@ object VectorDaemon {
     // Setup Main Looper
     Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND)
     @Suppress("DEPRECATION") Looper.prepareMainLooper()
+
+    // Bootloop Protection Logic
+    val counterFile = File(FileSystem.vectorModulePath, "bootloop_counter")
+    var failCount = 0
+    if (counterFile.exists()) {
+      failCount = counterFile.readText().trim().toIntOrNull() ?: 0
+    }
+    if (failCount >= 3) {
+      isRescueMode = true
+      Log.e(TAG, "BOOTLOOP DETECTED! Rescue Mode activated. Modules will not be loaded.")
+      File(FileSystem.vectorModulePath, "rescue_mode_active").writeText("1")
+    } else {
+      counterFile.writeText((failCount + 1).toString())
+      File(FileSystem.vectorModulePath, "rescue_mode_active").delete()
+      
+      // Monitor boot complete to reset counter
+      scope.launch {
+        while (SystemProperties.get("sys.boot_completed") != "1") {
+          delay(2000)
+        }
+        Log.i(TAG, "System boot completed successfully. Resetting bootloop counter.")
+        counterFile.delete()
+      }
+    }
 
     // Squat on the proxy service name immediately, which creates the early IPC channel of
     // ApplicationService for our Zygisk module during system_server specialization.

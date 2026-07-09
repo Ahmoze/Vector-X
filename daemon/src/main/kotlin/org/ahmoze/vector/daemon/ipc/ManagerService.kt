@@ -429,4 +429,6 @@ object ManagerService : ILSPManagerService.Stub() {
       ModuleDatabase.setAutoInclude(packageName, enabled)
 
   override fun getAutoInclude(packageName: String) = ConfigCache.getAutoInclude(packageName)
+
+  override fun isRescueMode() = org.ahmoze.vector.daemon.VectorDaemon.isRescueMode
 }

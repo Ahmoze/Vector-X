@@ -334,4 +334,12 @@ public class ConfigManager {
             return false;
         }
     }
+
+    public static boolean isRescueMode() {
+        try {
+            return LSPManagerServiceHolder.getService().isRescueMode();
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
 }

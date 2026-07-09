@@ -81,4 +81,6 @@ interface ILSPManagerService {
     boolean getAutoInclude(String packageName) = 51;
 
     boolean setAutoInclude(String packageName, boolean enable) = 52;
+
+    boolean isRescueMode() = 53;
 }
