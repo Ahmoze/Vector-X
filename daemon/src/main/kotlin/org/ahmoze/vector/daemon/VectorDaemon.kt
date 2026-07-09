@@ -76,7 +76,7 @@ object VectorDaemon {
     @Suppress("DEPRECATION") Looper.prepareMainLooper()
 
     // Bootloop Protection Logic
-    val counterFile = File(FileSystem.vectorModulePath, "bootloop_counter")
+    val counterFile = File(FileSystem.basePath.toFile(), "bootloop_counter")
     var failCount = 0
     if (counterFile.exists()) {
       failCount = counterFile.readText().trim().toIntOrNull() ?: 0
@@ -84,10 +84,10 @@ object VectorDaemon {
     if (failCount >= 3) {
       isRescueMode = true
       Log.e(TAG, "BOOTLOOP DETECTED! Rescue Mode activated. Modules will not be loaded.")
-      File(FileSystem.vectorModulePath, "rescue_mode_active").writeText("1")
+      File(FileSystem.basePath.toFile(), "rescue_mode_active").writeText("1")
     } else {
       counterFile.writeText((failCount + 1).toString())
-      File(FileSystem.vectorModulePath, "rescue_mode_active").delete()
+      File(FileSystem.basePath.toFile(), "rescue_mode_active").delete()
       
       // Monitor boot complete to reset counter
       scope.launch {
