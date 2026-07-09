@@ -1,3 +1,20 @@
+🚀 **What's New in v2.0.18** 🚀
+
+🚀 New Feature Highlight: Vector Rescue Mode (Bootloop Protection) Tired of a bad module crashing your system and causing a bootloop? Vector-X now features an intelligent Rescue Mode! During every system boot, the VectorDaemon independently tracks boot failures. If the Android system fails to boot successfully 3 times in a row, the Daemon will automatically enter Rescue Mode and strictly block all module injections. Your phone will boot up safely, allowing you to enter the Manager and disable the problematic module.
+
+📊 New Feature Highlight: Live Logcat Studio Say goodbye to constantly swiping down to refresh logs! The Logs tab in the Manager has been completely revamped into a "Live Studio". Logs are now automatically fetched and refreshed in the background every 2.5 seconds. With smart auto-scrolling and enhanced Material 3 color coding for errors and warnings, debugging is smoother and more intuitive than ever.
+
+Changelog:
+
+[Feature] Introduced Vector Rescue Mode: A daemon-level failsafe that detects bootloops and prevents module injection after 3 consecutive failed boots.
+[Feature] Introduced Live Logcat Studio: The Logs tab now features a battery-friendly background auto-refresh mechanism tied to the fragment's lifecycle.
+[Enhancement] Added a red "Bootloop Rescue Mode" warning banner to the Home tab when the failsafe is active.
+[Enhancement] Improved log parsing UI: Error logs (E) are now bolded and highlighted in intense red, while Warnings (W) are distinctly colored orange for better readability.
+[Enhancement] Smart auto-scrolling in the Logs tab automatically snaps to the newest logs if you are reading at the bottom of the list.
+[Under-the-Hood] Bumped GitHub Actions dependencies to resolve CI/CD conflicts and deprecated Node.js warnings.
+
+---
+
 🚀 **What's New in v2.0.17** 🚀
 
 🚀 **New Feature Highlight: Smart Daemon Auto-Installer (Self-Healing)**
