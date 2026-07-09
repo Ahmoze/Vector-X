@@ -23,8 +23,8 @@ jobs:
           RELEASE_BODY: ${{ github.event.release.body }}
           REPO: ${{ github.repository }}
         run: |
-          # Get version code from commit count
-          COUNT=$(git rev-list --count HEAD)
+          # Get version code from the tag commit
+          COUNT=$(git rev-list --count "$TAG_NAME")
           VERSION_CODE=$((COUNT + 3019))
           
           # Update update.json using jq
