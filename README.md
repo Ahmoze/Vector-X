@@ -31,7 +31,7 @@ The framework allows modules to modify system and application behavior in-memory
 
 ### Compatibility
 
-Vector-X supports devices running **Android 8.1 through Android 15**.
+Vector-X supports devices running **Android 8.1 through Android 17**.
 
 > [!TIP]
 > This framework requires a recent installation of Magisk or KernelSU with Zygisk enabled.
