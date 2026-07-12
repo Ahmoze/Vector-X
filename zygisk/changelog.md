@@ -1,3 +1,16 @@
+🚀 **What's New in v2.0.19** 🚀
+
+Description: 🚀 New Feature Highlight: Quick Module Uninstaller Tired of digging deep into your phone's Android Settings to remove modules that don't have a launcher icon? Vector-X v2.0.19 introduces a convenient, built-in "Uninstall" button right inside the Manager! Located directly in the top right corner of every module's configuration screen, you can now completely remove modules from your device in seconds. When you click the sleek Material Design trash can icon, Vector-X will gracefully prompt you with our signature blur dialog and instantly trigger the native Android uninstaller.
+
+Changelog:
+
+[Feature] Added an inline "Uninstall module" action directly to the Module configuration screen for rapid removal.
+[Enhancement] Fully localized the new uninstaller strings into 42 different languages natively within the app.
+[Enhancement] Implemented a seamless double-confirmation flow utilizing Vector-X's signature BlurBehindDialogBuilder for a secure and premium user experience.
+[Under-the-Hood] Vector-X automatically and gracefully cleans up the uninstalled module's scope and config from the daemon database upon successful system package removal.
+
+---
+
 🚀 **What's New in v2.0.18** 🚀
 
 🚀 New Feature Highlight: Vector Rescue Mode (Bootloop Protection) Tired of a bad module crashing your system and causing a bootloop? Vector-X now features an intelligent Rescue Mode! During every system boot, the VectorDaemon independently tracks boot failures. If the Android system fails to boot successfully 3 times in a row, the Daemon will automatically enter Rescue Mode and strictly block all module injections. Your phone will boot up safely, allowing you to enter the Manager and disable the problematic module.
