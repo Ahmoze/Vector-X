@@ -233,4 +233,6 @@ Nên gỡ cài đặt ứng dụng hiện tại.</string>
     <string name="color_deep_orange">Cam đậm</string>
     <string name="color_brown">Nâu</string>
     <string name="color_blue_grey">Xanh xám</string>
+    <string name="menu_uninstall">Gỡ cài đặt mô-đun</string>
+    <string name="uninstall_module_confirm">Bạn có chắc chắn muốn gỡ cài đặt mô-đun này không?</string>
 </resources>

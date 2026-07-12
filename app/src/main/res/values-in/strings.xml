@@ -233,4 +233,6 @@
     <string name="color_deep_orange">Jingga gelap</string>
     <string name="color_brown">Coklat</string>
     <string name="color_blue_grey">Abu-abu kebiruan</string>
+    <string name="menu_uninstall">Copot modul</string>
+    <string name="uninstall_module_confirm">Yakin ingin mencopot modul ini?</string>
 </resources>

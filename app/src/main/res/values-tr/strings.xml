@@ -239,4 +239,6 @@
     <string name="color_deep_orange">Koyu turuncu</string>
     <string name="color_brown">Kahverengi</string>
     <string name="color_blue_grey">Mavi gri</string>
+    <string name="menu_uninstall">Modülü kaldır</string>
+    <string name="uninstall_module_confirm">Bu modülü kaldırmak istediğinizden emin misiniz?</string>
 </resources>

@@ -232,4 +232,6 @@
     <string name="color_deep_orange">짙은 주황</string>
     <string name="color_brown">갈색</string>
     <string name="color_blue_grey">청회색</string>
+    <string name="menu_uninstall">모듈 제거</string>
+    <string name="uninstall_module_confirm">이 모듈을 제거하시겠습니까?</string>
 </resources>

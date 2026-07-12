@@ -231,4 +231,6 @@
     <string name="color_deep_orange">ส้มเข้ม</string>
     <string name="color_brown">สีน้ำตาล</string>
     <string name="color_blue_grey">น้ำเงินเทา</string>
+    <string name="menu_uninstall">ถอนการติดตั้งโมดูล</string>
+    <string name="uninstall_module_confirm">คุณแน่ใจหรือไม่ว่าต้องการถอนการติดตั้งโมดูลนี้</string>
 </resources>

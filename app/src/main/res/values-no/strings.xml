@@ -233,4 +233,6 @@
     <string name="color_deep_orange">Dyp oransje</string>
     <string name="color_brown">Brun</string>
     <string name="color_blue_grey">Blå grå</string>
+    <string name="menu_uninstall">Avinstaller modul</string>
+    <string name="uninstall_module_confirm">Er du sikker på at du vil avinstallere denne modulen?</string>
 </resources>

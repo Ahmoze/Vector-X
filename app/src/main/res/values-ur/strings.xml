@@ -233,4 +233,6 @@
     <string name="color_deep_orange">گہرا نارنجی</string>
     <string name="color_brown">براؤن</string>
     <string name="color_blue_grey">بلیو گرے</string>
+    <string name="menu_uninstall">ان انسٹال کریں</string>
+    <string name="uninstall_module_confirm">کیا آپ کو یقین ہے؟</string>
 </resources>

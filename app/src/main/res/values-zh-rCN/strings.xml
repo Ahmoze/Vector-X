@@ -237,4 +237,6 @@ Ahmoze (Vector-X)</string>
     <string name="color_deep_orange">深橙</string>
     <string name="color_brown">棕色</string>
     <string name="color_blue_grey">灰蓝</string>
+    <string name="menu_uninstall">卸载模块</string>
+    <string name="uninstall_module_confirm">您确定要卸载此模块吗？</string>
 </resources>

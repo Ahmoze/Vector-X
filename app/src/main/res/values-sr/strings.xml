@@ -224,4 +224,6 @@
     <string name="color_deep_orange">Tamno narandžasta</string>
     <string name="color_brown">Braon</string>
     <string name="color_blue_grey">Plavo-siva</string>
+    <string name="menu_uninstall">Deinstaliraj modul</string>
+    <string name="uninstall_module_confirm">Jeste li sigurni da želite da deinstalirate ovaj modul? Biće uklonjen sa uređaja.</string>
 </resources>

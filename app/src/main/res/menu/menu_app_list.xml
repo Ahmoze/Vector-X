@@ -29,6 +29,12 @@
         android:title="@android:string/search_go" />
 
     <item
+        android:id="@+id/menu_uninstall"
+        android:icon="@drawable/ic_outline_delete_24"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_uninstall" />
+
+    <item
         android:showAsAction="never"
         android:title="@string/menu_select">
         <menu>

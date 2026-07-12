@@ -233,4 +233,6 @@
     <string name="color_deep_orange">Diep oranje</string>
     <string name="color_brown">Bruin</string>
     <string name="color_blue_grey">Blou grys</string>
+    <string name="menu_uninstall">Deïnstalleer module</string>
+    <string name="uninstall_module_confirm">Is jy seker jy wil hierdie module deïnstalleer? Dit sal verwyder word.</string>
 </resources>

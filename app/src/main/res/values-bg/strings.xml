@@ -233,4 +233,6 @@
     <string name="color_deep_orange">Наситено оранжево</string>
     <string name="color_brown">Кафяв</string>
     <string name="color_blue_grey">Синьо сиво</string>
+    <string name="menu_uninstall">Деинсталиране на модул</string>
+    <string name="uninstall_module_confirm">Сигурни ли сте, че искате да деинсталирате този модул?</string>
 </resources>

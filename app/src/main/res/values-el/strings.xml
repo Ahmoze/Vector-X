@@ -233,4 +233,6 @@
     <string name="color_deep_orange">Βαθύ πορτοκαλί</string>
     <string name="color_brown">Καφέ</string>
     <string name="color_blue_grey">Μπλε γκρι</string>
+    <string name="menu_uninstall">Απεγκατάσταση</string>
+    <string name="uninstall_module_confirm">Είστε βέβαιοι;</string>
 </resources>

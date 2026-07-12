@@ -234,4 +234,6 @@
     <string name="color_deep_orange">Mély narancssárga</string>
     <string name="color_brown">Barna</string>
     <string name="color_blue_grey">Kékes szürke</string>
+    <string name="menu_uninstall">Modul eltávolítása</string>
+    <string name="uninstall_module_confirm">Biztosan eltávolítja ezt a modult?</string>
 </resources>

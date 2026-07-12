@@ -236,4 +236,6 @@
     <string name="color_deep_orange">ディープオレンジ</string>
     <string name="color_brown">茶色</string>
     <string name="color_blue_grey">ブルーグレー</string>
+    <string name="menu_uninstall">モジュールをアンインストール</string>
+    <string name="uninstall_module_confirm">このモジュールをアンインストールしてもよろしいですか？</string>
 </resources>

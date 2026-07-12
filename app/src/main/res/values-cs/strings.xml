@@ -239,4 +239,6 @@
     <string name="color_deep_orange">Tmavě oranžová</string>
     <string name="color_brown">Hnědá</string>
     <string name="color_blue_grey">Modro-šedivá</string>
+    <string name="menu_uninstall">Odinstalovat modul</string>
+    <string name="uninstall_module_confirm">Opravdu chcete tento modul odinstalovat?</string>
 </resources>

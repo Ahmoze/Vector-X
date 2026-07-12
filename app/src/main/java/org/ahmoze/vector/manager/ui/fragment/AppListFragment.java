@@ -45,6 +45,7 @@ import org.ahmoze.vector.manager.R;
 import org.ahmoze.vector.manager.adapters.AppHelper;
 import org.ahmoze.vector.manager.adapters.ScopeAdapter;
 import org.ahmoze.vector.manager.databinding.FragmentAppListBinding;
+import org.ahmoze.vector.manager.ui.dialog.BlurBehindDialogBuilder;
 import org.ahmoze.vector.manager.util.BackupUtils;
 import org.ahmoze.vector.manager.util.ModuleUtil;
 
@@ -194,6 +195,18 @@ public class AppListFragment extends BaseFragment implements MenuProvider {
 
     @Override
     public boolean onMenuItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_uninstall) {
+            new BlurBehindDialogBuilder(requireActivity(), R.style.ThemeOverlay_MaterialAlertDialog_Centered_FullWidthButtons)
+                    .setMessage(R.string.uninstall_module_confirm)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        android.net.Uri packageUri = android.net.Uri.parse("package:" + module.packageName);
+                        android.content.Intent uninstallIntent = new android.content.Intent(android.content.Intent.ACTION_DELETE, packageUri);
+                        startActivity(uninstallIntent);
+                    })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
+            return true;
+        }
         return scopeAdapter.onOptionsItemSelected(item);
     }
 

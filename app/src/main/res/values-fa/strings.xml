@@ -239,4 +239,6 @@
     <string name="color_deep_orange">نارنجی تیره</string>
     <string name="color_brown">قهوه ای</string>
     <string name="color_blue_grey">آبی خاکستری</string>
+    <string name="menu_uninstall">حذف ماژول</string>
+    <string name="uninstall_module_confirm">آیا مطمئن هستید؟</string>
 </resources>

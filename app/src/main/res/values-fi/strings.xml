@@ -233,4 +233,6 @@
     <string name="color_deep_orange">Syvä oranssi</string>
     <string name="color_brown">Ruskea</string>
     <string name="color_blue_grey">Sininen harmaa</string>
+    <string name="menu_uninstall">Poista moduuli</string>
+    <string name="uninstall_module_confirm">Haluatko varmasti poistaa tämän moduulin?</string>
 </resources>

@@ -233,4 +233,6 @@
     <string name="color_deep_orange">গভীর কমলা</string>
     <string name="color_brown">বাদামী</string>
     <string name="color_blue_grey">নীল ধূসর</string>
+    <string name="menu_uninstall">মডিউল আনইনস্টল করুন</string>
+    <string name="uninstall_module_confirm">আপনি কি নিশ্চিত?</string>
 </resources>

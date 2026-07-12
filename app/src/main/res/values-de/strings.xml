@@ -240,4 +240,6 @@ JJ108</string>
     <string name="color_deep_orange">Dunkelorange</string>
     <string name="color_brown">Braun</string>
     <string name="color_blue_grey">Blaugrau</string>
+    <string name="menu_uninstall">Modul deinstallieren</string>
+    <string name="uninstall_module_confirm">Sind Sie sicher, dass Sie dieses Modul deinstallieren möchten?</string>
 </resources>

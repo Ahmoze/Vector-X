@@ -236,4 +236,6 @@
     <string name="color_deep_orange">Tamno narančasta</string>
     <string name="color_brown">Smeđa</string>
     <string name="color_blue_grey">Plavo siva</string>
+    <string name="menu_uninstall">Deinstaliraj modul</string>
+    <string name="uninstall_module_confirm">Jeste li sigurni da želite deinstalirati ovaj modul?</string>
 </resources>

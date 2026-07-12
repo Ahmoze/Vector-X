@@ -239,4 +239,6 @@
     <string name="color_deep_orange">Tamsiai oranžinė</string>
     <string name="color_brown">Ruda</string>
     <string name="color_blue_grey">Mėlyna pilka</string>
+    <string name="menu_uninstall">Pašalinti modulį</string>
+    <string name="uninstall_module_confirm">Ar tikrai norite pašalinti šį modulį?</string>
 </resources>

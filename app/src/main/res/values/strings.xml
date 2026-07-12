@@ -239,4 +239,6 @@
     <string name="color_deep_orange">Deep orange</string>
     <string name="color_brown">Brown</string>
     <string name="color_blue_grey">Blue grey</string>
+    <string name="menu_uninstall">Uninstall module</string>
+    <string name="uninstall_module_confirm">Are you sure you want to uninstall this module? It will be removed from your device.</string>
 </resources>

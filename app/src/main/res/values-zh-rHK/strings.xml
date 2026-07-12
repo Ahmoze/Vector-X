@@ -236,4 +236,6 @@
     <string name="color_deep_orange">深橙</string>
     <string name="color_brown">棕色</string>
     <string name="color_blue_grey">藍灰</string>
+    <string name="menu_uninstall">解除安裝模組</string>
+    <string name="uninstall_module_confirm">確定要解除安裝此模組嗎？</string>
 </resources>

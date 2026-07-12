@@ -235,4 +235,6 @@
     <string name="color_deep_orange">Arancione scuro</string>
     <string name="color_brown">Marrone</string>
     <string name="color_blue_grey">Blu grigio</string>
+    <string name="menu_uninstall">Disinstalla modulo</string>
+    <string name="uninstall_module_confirm">Sei sicuro di voler disinstallare questo modulo?</string>
 </resources>

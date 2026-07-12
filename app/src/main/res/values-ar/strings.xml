@@ -247,4 +247,6 @@
     <string name="color_deep_orange">برتقالي عميق</string>
     <string name="color_brown">بني</string>
     <string name="color_blue_grey">أزرق رمادي</string>
+    <string name="menu_uninstall">إلغاء تثبيت الوحدة</string>
+    <string name="uninstall_module_confirm">هل أنت متأكد من إلغاء التثبيت؟</string>
 </resources>

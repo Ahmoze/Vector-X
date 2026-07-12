@@ -241,4 +241,6 @@ Ahmoze (Vector-X)</string>
     <string name="color_deep_orange">Orange foncé</string>
     <string name="color_brown">Marron</string>
     <string name="color_blue_grey">Bleu grisâtre</string>
+    <string name="menu_uninstall">Désinstaller le module</string>
+    <string name="uninstall_module_confirm">Voulez-vous vraiment désinstaller ce module ?</string>
 </resources>

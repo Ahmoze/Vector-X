@@ -239,4 +239,6 @@
     <string name="color_deep_orange">Djup orange</string>
     <string name="color_brown">Brun</string>
     <string name="color_blue_grey">Blå grå</string>
+    <string name="menu_uninstall">Avinstallera modul</string>
+    <string name="uninstall_module_confirm">Är du säker på att du vill avinstallera den här modulen?</string>
 </resources>

@@ -233,4 +233,6 @@
     <string name="color_deep_orange">Diep oranje</string>
     <string name="color_brown">Bruin</string>
     <string name="color_blue_grey">Blauw grijs</string>
+    <string name="menu_uninstall">Module verwijderen</string>
+    <string name="uninstall_module_confirm">Weet je zeker dat je deze module wilt verwijderen?</string>
 </resources>

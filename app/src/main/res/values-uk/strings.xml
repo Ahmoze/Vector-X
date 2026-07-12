@@ -245,4 +245,6 @@
     <string name="color_deep_orange">Жовтогарячий</string>
     <string name="color_brown">Коричневий</string>
     <string name="color_blue_grey">Блакитно-сірий</string>
+    <string name="menu_uninstall">Видалити модуль</string>
+    <string name="uninstall_module_confirm">Ви впевнені, що хочете видалити цей модуль?</string>
 </resources>

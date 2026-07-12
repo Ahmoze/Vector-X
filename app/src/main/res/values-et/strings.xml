@@ -233,4 +233,6 @@
     <string name="color_deep_orange">Sügavoranž</string>
     <string name="color_brown">Pruun</string>
     <string name="color_blue_grey">Sinine hall</string>
+    <string name="menu_uninstall">Desinstalli moodul</string>
+    <string name="uninstall_module_confirm">Oled sa kindel?</string>
 </resources>

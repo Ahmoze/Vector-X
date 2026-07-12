@@ -245,4 +245,6 @@
     <string name="color_deep_orange">Насыщенный оранжевый</string>
     <string name="color_brown">Коричневый</string>
     <string name="color_blue_grey">Серо-голубой</string>
+    <string name="menu_uninstall">Удалить модуль</string>
+    <string name="uninstall_module_confirm">Вы уверены, что хотите удалить этот модуль?</string>
 </resources>

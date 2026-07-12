@@ -233,4 +233,6 @@
     <string name="color_deep_orange">गहरा नारंगी</string>
     <string name="color_brown">भूरा</string>
     <string name="color_blue_grey">नीला ग्रे</string>
+    <string name="menu_uninstall">अनइंस्टॉल करें</string>
+    <string name="uninstall_module_confirm">क्या आप वाकई अनइंस्टॉल करना चाहते हैं?</string>
 </resources>

@@ -233,4 +233,6 @@
     <string name="color_deep_orange">Taronja profund</string>
     <string name="color_brown">marró</string>
     <string name="color_blue_grey">Gris blau</string>
+    <string name="menu_uninstall">Desinstal·lar mòdul</string>
+    <string name="uninstall_module_confirm">Esteu segur que voleu desinstal·lar aquest mòdul?</string>
 </resources>

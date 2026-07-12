@@ -242,4 +242,6 @@
     <string name="color_deep_orange">Portocaliu-închis</string>
     <string name="color_brown">Maro</string>
     <string name="color_blue_grey">Gri-albăstrui</string>
+    <string name="menu_uninstall">Dezinstalare modul</string>
+    <string name="uninstall_module_confirm">Sigur doriți să dezinstalați acest modul?</string>
 </resources>

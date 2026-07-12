@@ -239,4 +239,6 @@
     <string name="color_deep_orange">כתום עמוק</string>
     <string name="color_brown">חום</string>
     <string name="color_blue_grey">כחול אפור</string>
+    <string name="menu_uninstall">הסר מודול</string>
+    <string name="uninstall_module_confirm">האם אתה בטוח שברצונך להסיר מודול זה?</string>
 </resources>

@@ -245,4 +245,6 @@
     <string name="color_deep_orange">Ciemny pomarańczowy</string>
     <string name="color_brown">Brązowy</string>
     <string name="color_blue_grey">Niebiesko szary</string>
+    <string name="menu_uninstall">Odinstaluj moduł</string>
+    <string name="uninstall_module_confirm">Czy na pewno chcesz odinstalować ten moduł?</string>
 </resources>
