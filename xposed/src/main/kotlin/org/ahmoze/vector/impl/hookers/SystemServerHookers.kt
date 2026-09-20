@@ -39,6 +39,8 @@ object HandleSystemServerProcessHooker : XposedInterface.Hooker {
         // Deoptimize heavily inlined system server paths
         VectorDeopter.deoptSystemServerMethods(classLoader)
 
+        callback?.onSystemServerLoaded(classLoader)
+
         if (!isLate) {
             // Dynamically locate and hook the bootstrap service initializer
             val sysServerClass =
@@ -52,8 +54,6 @@ object HandleSystemServerProcessHooker : XposedInterface.Hooker {
             // Ensure we can hook the private method
             startMethod.isAccessible = true
             VectorHookBuilder(startMethod).intercept(StartBootstrapServicesHooker)
-        } else {
-            callback?.onSystemServerLoaded(classLoader)
         }
     }
 }
@@ -62,12 +62,10 @@ object HandleSystemServerProcessHooker : XposedInterface.Hooker {
 object StartBootstrapServicesHooker : XposedInterface.Hooker {
 
     override fun intercept(chain: XposedInterface.Chain): Any? {
-        val result = chain.proceed()
         HandleSystemServerProcessHooker.systemServerCL?.let {
             dispatchSystemServerLoaded(it)
-            HandleSystemServerProcessHooker.callback?.onSystemServerLoaded(it)
         }
-        return result
+        return chain.proceed()
     }
 
     /** Dispatches module loading events. */
