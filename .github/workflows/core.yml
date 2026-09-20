@@ -24,6 +24,10 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Apply Android 16 LSPlant Patches
+        run: |
+          git -C external/lsplant apply ../../patches/lsplant_android16.patch
+
       - name: Write key
         if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/master' ) || github.ref_type == 'tag' }}
         run: |

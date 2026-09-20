@@ -1,3 +1,16 @@
+🚀 **What's New in v2.0.21** 🚀
+
+Description: 🚀 New Feature Highlight: Official Android 16 (API 36 / HyperOS 3) Compatibility!
+Vector-X v2.0.21 brings native compatibility and system stability for Android 16 (Baklava / API 36) and HyperOS 3! Resolved the ART runtime debugger interface assertion crash (`AddNativeDebugInfoForJit` / `JitCodeCache::Commit`) by correcting native method hook signatures in LSPlant. Added support for Android 16's updated `JniIdManager::EncodeGenericIdWithClass`.
+
+Changelog:
+[Fix] Fixed ART crash on Android 16 (API 36) by correcting `ArtMethod::RegisterNative` and `UnregisterNative` hook signatures in LSPlant.
+[Fix] Added support for Android 16/17 `EncodeGenericIdWithClass` in `JniIdManager`.
+[Fix] Fixed `RepoFragment` auto-unboxing NullPointerException in `OnlineModule.java`.
+[Enhancement] Full stability and hook execution confirmed on Android 16 (HyperOS 3 / Xiaomi 14T Pro).
+
+---
+
 🚀 **What's New in v2.0.20** 🚀
 
 🚀 **Highlight: Seamless Daemon-Powered Module Uninstaller & Core Fixes**
@@ -15,12 +28,10 @@ In previous builds, triggering the uninstall action relied on standard Android O
 * **[Infrastructure] GitHub Pages & Repo Fix:** Resolved deployment timeout issues on the module repository by adding automatic `.nojekyll` configuration and a modern web landing page.
 * **[Under-the-Hood]** Bumped core updates and OTA definitions to `v2.0.20`.
 
-
 ---
 
 🚀 **What's New in v2.0.19** 🚀
 
-Description: 🚀 New Feature Highlight: Quick Module Uninstaller Tired of digging deep into your phone's Android Settings to remove modules that don't have a launcher icon? Vector-X v2.0.19 introduces a convenient, built-in "Uninstall" button right inside the Manager! Located directly in the top right corner of every module's configuration screen, you can now completely remove modules from your device in seconds. When you click the sleek Material Design trash can icon, Vector-X will gracefully prompt you with our signature blur dialog and instantly trigger the native Android uninstaller.
 
 Changelog:
 
