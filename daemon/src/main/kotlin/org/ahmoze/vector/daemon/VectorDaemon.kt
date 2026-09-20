@@ -88,15 +88,16 @@ object VectorDaemon {
     } else {
       counterFile.writeText((failCount + 1).toString())
       File(FileSystem.basePath.toFile(), "rescue_mode_active").delete()
-      
-      // Monitor boot complete to reset counter
-      scope.launch {
-        while (SystemProperties.get("sys.boot_completed") != "1") {
-          delay(2000)
-        }
-        Log.i(TAG, "System boot completed successfully. Resetting bootloop counter.")
-        counterFile.delete()
+    }
+
+    // Monitor boot complete to reset counter and rescue mode
+    scope.launch {
+      while (SystemProperties.get("sys.boot_completed") != "1") {
+        delay(2000)
       }
+      Log.i(TAG, "System boot completed successfully. Resetting bootloop counter.")
+      counterFile.delete()
+      File(FileSystem.basePath.toFile(), "rescue_mode_active").delete()
     }
 
     // Squat on the proxy service name immediately, which creates the early IPC channel of

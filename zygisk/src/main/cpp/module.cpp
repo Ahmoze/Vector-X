@@ -354,6 +354,12 @@ void VectorModule::postAppSpecialize(const zygisk::AppSpecializeArgs *args) {
         env_, "forkCommon", "(ZZLjava/lang/String;Ljava/lang/String;Landroid/os/IBinder;)V",
         JNI_FALSE, JNI_FALSE, args->nice_name, args->app_data_dir, binder.get(), is_manager_app_);
 
+    if (env_->ExceptionCheck()) {
+        LOGE("Pending exception detected in postAppSpecialize for '{}', clearing.", nice_name_str.get());
+        env_->ExceptionDescribe();
+        env_->ExceptionClear();
+    }
+
     LOGV("Injected Vector framework into '{}'.", nice_name_str.get());
     SetAllowUnload(false);  // We are injected, PREVENT module unloading.
 }
@@ -441,6 +447,12 @@ void VectorModule::postServerSpecialize(const zygisk::ServerSpecializeArgs *args
                       "(ZZLjava/lang/String;Ljava/lang/String;Landroid/os/IBinder;)V", JNI_TRUE,
                       is_late_inject, system_name.get(), nullptr, manager_binder.get(),
                       is_manager_app_);
+
+    if (env_->ExceptionCheck()) {
+        LOGE("Pending exception detected in postServerSpecialize, clearing.");
+        env_->ExceptionDescribe();
+        env_->ExceptionClear();
+    }
 
     LOGI("Injected Vector framework into system_server.");
     SetAllowUnload(false);  // We are injected, PREVENT module unloading.

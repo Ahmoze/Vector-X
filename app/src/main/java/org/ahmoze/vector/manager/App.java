@@ -71,6 +71,7 @@ import rikka.core.os.FileUtils;
 import rikka.material.app.LocaleDelegate;
 
 public class App extends Application {
+    public static final String TAG = "LSPosedManager";
     public static final int PER_USER_RANGE = 100000;
     public static final FutureTask<String> HTML_TEMPLATE = new FutureTask<>(() -> readWebviewHTML("template.html"));
     public static final FutureTask<String> HTML_TEMPLATE_DARK = new FutureTask<>(() -> readWebviewHTML("template_dark.html"));
@@ -89,7 +90,11 @@ public class App extends Application {
 
     static {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            HiddenApiBypass.addHiddenApiExemptions("");
+            try {
+                HiddenApiBypass.addHiddenApiExemptions("");
+            } catch (Throwable t) {
+                Log.w(TAG, "HiddenApiBypass failed or not permitted on this runtime: " + t.getMessage());
+            }
         }
         Looper.myQueue().addIdleHandler(() -> {
             if (App.getInstance() == null || App.getExecutorService() == null) return true;
@@ -106,7 +111,6 @@ public class App extends Application {
         });
     }
 
-    public static final String TAG = "LSPosedManager";
     private static final String ACTION_USER_ADDED = "android.intent.action.USER_ADDED";
     private static final String ACTION_USER_REMOVED = "android.intent.action.USER_REMOVED";
     private static final String ACTION_USER_INFO_CHANGED = "android.intent.action.USER_INFO_CHANGED";

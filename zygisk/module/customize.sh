@@ -154,7 +154,10 @@ rm -f /data/user*/0/org.matrix.vector.manager/files/repo.json
 
 if [ "$BOOTMODE" = true ]; then
     ui_print "  [+] Executing Automatic Manager Installation..."
-    pm install -r -d "$MODPATH/manager.apk" >/dev/null 2>&1
+    pm install -r -d "$MODPATH/manager.apk" >/dev/null 2>&1 || {
+        pm uninstall org.ahmoze.vector.manager >/dev/null 2>&1
+        pm install "$MODPATH/manager.apk" >/dev/null 2>&1
+    }
 fi
 
 ui_print " "

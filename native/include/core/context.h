@@ -162,6 +162,11 @@ protected:
         if (mid) {
             env->CallStaticVoidMethod(entry_class_, mid,
                                       lsplant::UnwrapScope(std::forward<Args>(args))...);
+            if (env->ExceptionCheck()) {
+                LOGE("Exception occurred during FindAndCall('{}'):", method_name.data());
+                env->ExceptionDescribe();
+                env->ExceptionClear();
+            }
         } else {
             LOGE("Static method '{}' with signature '{}' not found", method_name.data(),
                  method_sig.data());

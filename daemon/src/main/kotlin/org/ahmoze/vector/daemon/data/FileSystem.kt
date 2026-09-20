@@ -59,9 +59,10 @@ object FileSystem {
   init {
     runCatching {
           Files.createDirectories(basePath)
-          Os.chmod(basePath.toString(), "700".toInt(8))
+          Os.chmod(basePath.toString(), "771".toInt(8))
           SELinux.setFileContext(basePath.toString(), "u:object_r:system_file:s0")
           Files.createDirectories(configDirPath)
+          Os.chmod(configDirPath.toString(), "777".toInt(8))
         }
         .onFailure { Log.e(TAG, "Failed to initialize directories", it) }
   }

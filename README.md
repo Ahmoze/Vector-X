@@ -31,10 +31,10 @@ The framework allows modules to modify system and application behavior in-memory
 
 ### Compatibility
 
-Vector-X supports devices running **Android 8.1 through Android 17**.
+Vector-X supports devices running **Android 8.1 through Android 16 (API 27 ~ 36)**.
 
 > [!TIP]
-> This framework requires a recent installation of Magisk or KernelSU with Zygisk enabled.
+> This framework requires a recent installation of **Magisk**, **KernelSU**, or **APatch** with Zygisk enabled (e.g., via ZygiskNext or built-in Zygisk).
 
 ---
 
@@ -51,6 +51,17 @@ Vector-X supports devices running **Android 8.1 through Android 17**.
 
 > [!NOTE]
 > If you are migrating from an extremely old legacy version (pre-v2.0.8), the installer will automatically clean up old traces. You may just need to remove the old dead icon from your homescreen manually.
+
+---
+
+### ⚡ Magisk / KernelSU / APatch Action Button (Control & Recovery)
+
+Vector-X features an interactive **Action** button accessible directly inside the Magisk / KernelSU / APatch Modules tab:
+* **🚀 Instant Manager Launcher:** Opens the Vector-X Manager with a single click without searching your app drawer.
+* **🛡️ Self-Healing & SEPolicy Auto-Repair:** Automatically applies and refreshes live SEPolicy rules (`magiskpolicy --live --apply`) ensuring no permission errors or missing SELinux rules.
+* **🔄 Rescue Mode & Failsafe Reset:** Automatically clears Rescue Mode flags and resets the bootloop counter if failsafe mode was previously triggered.
+* **📦 Smart Auto-Update & Recovery:** Detects if the Manager is uninstalled or outdated and automatically extracts, installs, or updates `manager.apk` directly from the module.
+* **🩺 Live Daemon Health-Check:** Inspects the status of the Vector background daemon (`lspd`) and displays its PID in an interactive colored terminal.
 
 ---
 
@@ -77,7 +88,7 @@ Vector-X supports devices running **Android 8.1 through Android 17**.
 
 If you encounter issues or wish to help improve the project, please refer to the resources below.
 
-*   **Troubleshooting:** Consult the [guide](https://github.com/Ahmoze/Vector-X/issues/123) before reporting bugs.
+*   **Troubleshooting:** Consult the [Issues tracker](https://github.com/Ahmoze/Vector-X/issues) before reporting bugs.
 *   **Discussions:** Join our community on [GitHub Discussions](https://github.com/Ahmoze/Vector-X/discussions).
 *   **Localization:** Help translate the project via [Crowdin](https://crowdin.com/project/Ahmoze/Vector-X).
 
@@ -92,17 +103,17 @@ If you encounter issues or wish to help improve the project, please refer to the
 
 ### Developer Resources
 
-Vector supports both legacy and modern hooking standards to ensure broad module compatibility.
+Vector-X supports both legacy and modern hooking standards to ensure broad module compatibility.
 
 *   [Legacy Xposed API](https://api.xposed.info/)
 *   [Modern libxposed API (102+)](https://libxposed.github.io/api/)
 *   [Xposed Module Repository](https://github.com/Xposed-Modules-Repo)
 
 > [!NOTE]
-> Vector fully supports the `libxposed` API 102 via two git submodules: the [module API](./xposed/) and the [service API](./services/).
+> Vector-X fully supports the `libxposed` API 102 via two git submodules: the [module API](./xposed/) and the [service API](./services/).
 >
-> A successful GitHub Actions build of the [master](https://github.com/Ahmoze/Vector-X/tree/master) branch indicates that Vector fully supports these APIs at those specific commits.
-> Developers are suggested to check out the same commits as Vector.
+> A successful GitHub Actions build of the [master](https://github.com/Ahmoze/Vector-X/tree/master) branch indicates that Vector-X fully supports these APIs at those specific commits.
+> Developers are suggested to check out the same commits as Vector-X.
 
 ---
 
@@ -131,4 +142,4 @@ This project is made possible by the following open-source contributions:
 
 ### License
 
-Vector is licensed under the [GNU General Public License v3](http://www.gnu.org/copyleft/gpl.html).
+Vector-X is licensed under the [GNU General Public License v3](http://www.gnu.org/copyleft/gpl.html).
