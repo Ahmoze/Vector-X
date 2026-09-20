@@ -106,11 +106,11 @@ If you encounter issues or wish to help improve the project, please refer to the
 Vector-X supports both legacy and modern hooking standards to ensure broad module compatibility.
 
 *   [Legacy Xposed API](https://api.xposed.info/)
-*   [Modern libxposed API (102+)](https://libxposed.github.io/api/)
+*   [Modern libxposed API (102+) Reference](https://ahmoze.github.io/libxposed-api/)
 *   [Xposed Module Repository](https://github.com/Xposed-Modules-Repo)
 
 > [!NOTE]
-> Vector-X fully supports the `libxposed` API 102 via two git submodules: the [module API](./xposed/) and the [service API](./services/).
+> Vector-X fully supports the `libxposed` API 102 via two mirrored submodules: the [module API](https://github.com/Ahmoze/libxposed-api) and the [service API](https://github.com/Ahmoze/libxposed-service).
 >
 > A successful GitHub Actions build of the [master](https://github.com/Ahmoze/Vector-X/tree/master) branch indicates that Vector-X fully supports these APIs at those specific commits.
 > Developers are suggested to check out the same commits as Vector-X.
