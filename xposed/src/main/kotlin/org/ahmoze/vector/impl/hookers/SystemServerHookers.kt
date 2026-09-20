@@ -39,8 +39,6 @@ object HandleSystemServerProcessHooker : XposedInterface.Hooker {
         // Deoptimize heavily inlined system server paths
         VectorDeopter.deoptSystemServerMethods(classLoader)
 
-        callback?.onSystemServerLoaded(classLoader)
-
         if (!isLate) {
             // Dynamically locate and hook the bootstrap service initializer
             val sysServerClass =
@@ -55,6 +53,8 @@ object HandleSystemServerProcessHooker : XposedInterface.Hooker {
             startMethod.isAccessible = true
             VectorHookBuilder(startMethod).intercept(StartBootstrapServicesHooker)
         }
+
+        callback?.onSystemServerLoaded(classLoader)
     }
 }
 

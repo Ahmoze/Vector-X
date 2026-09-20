@@ -1,3 +1,54 @@
+diff --git a/lsplant/src/main/jni/art/runtime/art_method.cxx b/lsplant/src/main/jni/art/runtime/art_method.cxx
+index 8b7efc9..db8b6e6 100644
+--- a/lsplant/src/main/jni/art/runtime/art_method.cxx
++++ b/lsplant/src/main/jni/art/runtime/art_method.cxx
+@@ -13,6 +13,9 @@ import hook_helper;
+ 
+ export namespace lsplant::art {
+ class ArtMethod {
++    inline static auto SetNotIntrinsic_ =
++        "_ZN3art9ArtMethod15SetNotIntrinsicEv"_sym.as<void (ArtMethod::*)()>;
++
+     inline static auto PrettyMethod_ =
+             "_ZN3art9ArtMethod12PrettyMethodEPS0_b"_sym.as<std::string(ArtMethod::*)(bool)>;
+ 
+@@ -103,6 +106,16 @@ public:
+         SetAccessFlags(access_flags);
+     }
+ 
++    void SetNonIntrinsic() {
++        if (SetNotIntrinsic_) [[likely]] {
++            SetNotIntrinsic_(this);
++        } else if (kAccIntrinsic) [[likely]] {
++            auto access_flags = GetAccessFlags();
++            access_flags &= ~kAccIntrinsic;
++            SetAccessFlags(access_flags);
++        }
++    }
++
+     bool IsPrivate() { return GetAccessFlags() & kAccPrivate; }
+     bool IsProtected() { return GetAccessFlags() & kAccProtected; }
+     bool IsPublic() { return GetAccessFlags() & kAccPublic; }
+@@ -294,6 +307,11 @@ public:
+             kAccPreCompiled = 0x00800000;
+         }
+         if (sdk_int < __ANDROID_API_Q__) kAccFastInterpreterToInterpreterInvoke = 0;
++        if (sdk_int < __ANDROID_API_O__) kAccIntrinsic = 0;
++
++        if (sdk_int >= __ANDROID_API_P__ && !handler(SetNotIntrinsic_)) {
++            LOGW("Failed to find SetNotIntrinsic, use hard-coded kAccIntrinsic instead");
++        }
+ 
+         if (!handler(GetMethodShortyL_, true, GetMethodShorty_)) {
+             LOGE("Failed to find GetMethodShorty");
+@@ -367,6 +385,7 @@ private:
+     inline static uint32_t kAccPreCompiled = 0x00200000;
+     inline static uint32_t kAccCompileDontBother = 0x02000000;
+     inline static uint32_t kAccDefaultConflict = 0x01000000;
++    inline static uint32_t kAccIntrinsic = 0x80000000;
+ };
+ 
+ }  // namespace lsplant::art
 diff --git a/lsplant/src/main/jni/art/runtime/class_linker.cxx b/lsplant/src/main/jni/art/runtime/class_linker.cxx
 index 361c630..53371fe 100644
 --- a/lsplant/src/main/jni/art/runtime/class_linker.cxx
@@ -109,6 +160,52 @@ index 361c630..53371fe 100644
                  return false;
              }
          }
+diff --git a/lsplant/src/main/jni/art/runtime/jit/jit.cxx b/lsplant/src/main/jni/art/runtime/jit/jit.cxx
+index 8f84696..27c98f8 100644
+--- a/lsplant/src/main/jni/art/runtime/jit/jit.cxx
++++ b/lsplant/src/main/jni/art/runtime/jit/jit.cxx
+@@ -11,12 +11,16 @@ import hook_helper;
+ 
+ namespace lsplant::art::jit {
+ enum class CompilationKind {
+-    kOsr [[maybe_unused]],
+-    kBaseline [[maybe_unused]],
+-    kOptimized,
++    kUnknown = -1,
+ };
+ 
+ export class Jit {
++    inline static auto kOptimized{CompilationKind::kUnknown};
++
++    inline static auto EnqueueBaselineCompilation_ =
++        "_ZN3art3jit3Jit26EnqueueBaselineCompilationEPNS_9ArtMethodEPNS_6ThreadE"_sym
++            .as<void (Jit::*)(ArtMethod *, Thread *)>;
++
+     inline static auto EnqueueOptimizedCompilation_ =
+         "_ZN3art3jit3Jit27EnqueueOptimizedCompilationEPNS_9ArtMethodEPNS_6ThreadE"_sym.hook->*[]
+         <MemBackup auto backup>
+@@ -32,7 +36,7 @@ export class Jit {
+         "_ZN3art3jit3Jit14AddCompileTaskEPNS_6ThreadEPNS_9ArtMethodENS_15CompilationKindEb"_sym.hook->*[]
+         <MemBackup auto backup>
+         (Jit *thiz, Thread *self, ArtMethod *method, CompilationKind compilation_kind, bool precompile) static -> void {
+-            if (compilation_kind == CompilationKind::kOptimized && !precompile) {
++            if (compilation_kind == kOptimized && !precompile) {
+                 if (auto b = IsHooked(method); b) [[unlikely]] {
+                     LOGD("Propagate compile task: %p -> %p", method, b);
+                     method = b;
+@@ -45,6 +49,12 @@ public:
+     static bool Init(const HookHandler &handler) {
+         auto sdk_int = GetAndroidApiLevel();
+ 
++        if (sdk_int >= 35 || handler(EnqueueBaselineCompilation_)) [[likely]] {
++            kOptimized = static_cast<CompilationKind>(3);
++        } else {
++            kOptimized = static_cast<CompilationKind>(2);
++        }
++
+         if (sdk_int <= __ANDROID_API_U__) [[likely]] {
+             handler(EnqueueOptimizedCompilation_);
+             handler(AddCompileTask_);
 diff --git a/lsplant/src/main/jni/art/runtime/jni/jni_id_manager.cxx b/lsplant/src/main/jni/art/runtime/jni/jni_id_manager.cxx
 index 60f4984..0556a51 100644
 --- a/lsplant/src/main/jni/art/runtime/jni/jni_id_manager.cxx
@@ -196,10 +293,19 @@ index f492fa0..01eb870 100644
              size_t expected = 2;
              if (count.compare_exchange_strong(expected, 1, std::memory_order_acq_rel,
 diff --git a/lsplant/src/main/jni/lsplant.cc b/lsplant/src/main/jni/lsplant.cc
-index 9452d4e..53952ca 100644
+index 9452d4e..9425bec 100644
 --- a/lsplant/src/main/jni/lsplant.cc
 +++ b/lsplant/src/main/jni/lsplant.cc
-@@ -830,7 +830,6 @@ using ::lsplant::IsHooked;
+@@ -539,6 +539,8 @@ bool DoHook(ArtMethod *target, ArtMethod *hook, ArtMethod *backup) {
+     } else {
+         LOGV("Generated trampoline %p", entrypoint);
+ 
++        target->SetNonIntrinsic();
++
+         target->BackupTo(backup);
+ 
+         target->SetNonCompilable();
+@@ -830,7 +832,6 @@ using ::lsplant::IsHooked;
  }
  
  [[maybe_unused]] bool MakeDexFileTrusted(JNIEnv *env, jobject cookie) {
