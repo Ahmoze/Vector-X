@@ -1,3 +1,39 @@
+🚀 **What's New in v2.0.25** 🚀
+
+## 🚀 Vector-X v2.0.25 (Android 16/17 Full Support)
+
+This release brings complete, rock-solid stability and compatibility for **Android 16** (HyperOS 3, API 36) and expands compatibility through **Android 17**, alongside powerful new Magisk / KernelSU recovery and self-healing tools.
+
+---
+
+### 🌟 What's New & Fixed:
+
+* **🛡️ Android 16 ART Crash & Bootloop Prevention:**
+  * Fixed critical `SecurityException: Can't exempt class, process is not debuggable.` thrown by Android 16 ART on release builds when invoking `HiddenApiBypass`.
+  * Added robust JNI exception checks and clears (`env->ExceptionCheck()` / `env->ExceptionClear()`) in `context.h` and `module.cpp`, permanently preventing unhandled Java exceptions from aborting Zygote with `SIGABRT`.
+
+* **⚡ Interactive Magisk / KernelSU / APatch Action Tool:**
+  * **Instant Launch:** Tap the *Action* button inside Magisk/KernelSU/APatch modules list to instantly launch Vector Manager.
+  * **Self-Healing & SEPolicy Auto-Repair:** Automatically applies live SEPolicy rules (`magiskpolicy --live --apply`) directly to the running system.
+  * **Smart Auto-Update:** Detects if Manager is uninstalled or outdated and automatically extracts, installs, or updates `manager.apk` with multi-user (`--user 0`) compatibility.
+  * **Health-Check & Failsafe Reset:** Clears Rescue Mode flags and resets bootloop counters on demand while displaying live daemon status (`lspd`) in an interactive colored terminal.
+
+* **⚙️ SEPolicy & Bootloop Recovery Stabilization:**
+  * System-wide boot complete listener (`sys.boot_completed == 1`) now reliably resets the bootloop counter and clears rescue mode flags once Android finishes booting.
+  * Injects live SEPolicy rules during `service.sh` initialization to guarantee immediate `dex2oat` execution permissions across all vendor ROMs.
+
+* **📚 Documentation & Compatibility Polish:**
+  * Updated documentation across `README.md` and `module.prop` for full Android 8.1 ~ 17 support, APatch integration, and unified naming.
+
+---
+
+### 📦 Downloads:
+* **`Vector-v2.0.25-Release.zip`**: Standard production release build (Optimized & Minified).
+* **`Vector-v2.0.25-Debug.zip`**: Troubleshooting build with full debug symbols and verbose logging.
+
+
+---
+
 🚀 **What's New in v2.0.24** 🚀
 
 🚀 **Highlight: Universal Safe Late Injection for System Server (Magisk Zygisk & Zygisk Next)**
