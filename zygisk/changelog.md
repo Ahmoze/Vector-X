@@ -1,5 +1,25 @@
 🚀 **What's New in v2.0.21** 🚀
 
+🚀 **Highlight: Android 16 ART Runtime Compatibility & Hook Engine Update**
+
+Vector-X `v2.0.21` brings full native support for **Android 16 (Baklava)**, modern HyperOS 3, and resolves critical ART runtime crashes observed on high-performance flagship chipsets (MediaTek Dimensity 9300+ / Snapdragon 8 Gen 3/4).
+
+In earlier Android 16 builds, ART introduced strict JIT debug assertions (`art::AddNativeDebugInfoForJit` / `Check failed: entry->seqlock_ Expected invalid entry`) triggered by register signature mismatches in JNI native registration. `v2.0.21` delivers a hardened, precision-aligned hooking engine that seamlessly operates across both legacy and the latest preview platforms.
+
+---
+
+### 🛠️ Changelog:
+* **[Critical Fix] Android 16 ART Panic Resolved:** Corrected `ClassLinker::RegisterNative` and `ClassLinker::UnregisterNative` method signatures, fixing ARM64 argument register alignment (preventing invalid sequence lock assertions during JIT compilation).
+* **[Runtime] Android 16 Generic JNI ID Support:** Added `EncodeGenericIdWithClass_` runtime symbol resolution for `art::jni_id_manager` on Android 16.
+* **[Infrastructure] Mirrored Submodule Resilience:** Transferred external submodule dependencies (`libxposed/service` and `libxposed/api`) to dedicated resilient GitHub mirrors under Ahmoze, ensuring persistent CI/CD build integrity.
+* **[Dual Distribution] Release & Debug Builds:** Providing both streamlined, high-performance `Vector-v2.0.21-Release.zip` and diagnostic `Vector-v2.0.21-Debug.zip` for developers.
+* **[Under-the-Hood]** Bumped core updates and OTA definitions to `v2.0.21`.
+
+
+---
+
+🚀 **What's New in v2.0.21** 🚀
+
 Description: 🚀 New Feature Highlight: Official Android 16 (API 36 / HyperOS 3) Compatibility!
 Vector-X v2.0.21 brings native compatibility and system stability for Android 16 (Baklava / API 36) and HyperOS 3! Resolved the ART runtime debugger interface assertion crash (`AddNativeDebugInfoForJit` / `JitCodeCache::Commit`) by correcting native method hook signatures in LSPlant. Added support for Android 16's updated `JniIdManager::EncodeGenericIdWithClass`.
 
