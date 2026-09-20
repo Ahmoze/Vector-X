@@ -140,6 +140,51 @@ private:
     bool is_manager_app_ = false;
 };
 
+// --- ART JIT Native Debug Info Neutralizer ---
+// On Android 14+ / 16, calling AddNativeDebugInfoForJit in system_server without pre-fork GDB init
+// triggers: "Check failed: entry->seqlock_.load(kNonRacingRelaxed) & 1 == 1u Expected invalid entry".
+// Neutralizing this function prevents ART JIT crashes while preserving 100% normal execution.
+static void AddNativeDebugInfoForJit_Hook([[maybe_unused]] const void *code_ptr,
+                                          [[maybe_unused]] const void *debug_info,
+                                          [[maybe_unused]] bool is_in_memory) {
+    // No-op
+}
+
+static void RemoveNativeDebugInfoForJit_Hook([[maybe_unused]] const void *code_ptr) {
+    // No-op
+}
+
+static void NeutralizeArtJitNativeDebug() {
+    auto *art_elf = ElfSymbolCache::GetArt();
+    if (!art_elf) {
+        LOGW("ElfSymbolCache::GetArt() returned null");
+        return;
+    }
+
+    void *add_sym = art_elf->getSymbAddress(
+        "_ZN3art24AddNativeDebugInfoForJitEPKvRKNSt3__16vectorIhNS2_9allocatorIhEEEEb");
+    if (add_sym) {
+        void *backup = nullptr;
+        if (HookInline(add_sym, reinterpret_cast<void *>(&AddNativeDebugInfoForJit_Hook), &backup) == 0) {
+            LOGI("Neutralized art::AddNativeDebugInfoForJit at {}", add_sym);
+        } else {
+            LOGE("Failed to hook art::AddNativeDebugInfoForJit at {}", add_sym);
+        }
+    } else {
+        LOGW("Symbol AddNativeDebugInfoForJit not found in libart.so");
+    }
+
+    void *remove_sym = art_elf->getSymbAddress("_ZN3art27RemoveNativeDebugInfoForJitEPKv");
+    if (remove_sym) {
+        void *backup = nullptr;
+        if (HookInline(remove_sym, reinterpret_cast<void *>(&RemoveNativeDebugInfoForJit_Hook), &backup) == 0) {
+            LOGI("Neutralized art::RemoveNativeDebugInfoForJit at {}", remove_sym);
+        } else {
+            LOGE("Failed to hook art::RemoveNativeDebugInfoForJit at {}", remove_sym);
+        }
+    }
+}
+
 // =========================================================================================
 // Implementation of VectorModule
 // =========================================================================================
@@ -309,6 +354,8 @@ void VectorModule::postAppSpecialize(const zygisk::AppSpecializeArgs *args) {
         return;
     }
 
+    NeutralizeArtJitNativeDebug();
+
     if (is_manager_app_) {
         args->nice_name = env_->NewStringUTF(kManagerPackageName);
     }
@@ -373,6 +420,8 @@ void VectorModule::postServerSpecialize(const zygisk::ServerSpecializeArgs *args
         SetAllowUnload(true);
         return;
     }
+
+    NeutralizeArtJitNativeDebug();
 
     LOGD("Attempting injection into system_server.");
 

@@ -52,9 +52,9 @@ object HandleSystemServerProcessHooker : XposedInterface.Hooker {
             // Ensure we can hook the private method
             startMethod.isAccessible = true
             VectorHookBuilder(startMethod).intercept(StartBootstrapServicesHooker)
+        } else {
+            callback?.onSystemServerLoaded(classLoader)
         }
-
-        callback?.onSystemServerLoaded(classLoader)
     }
 }
 
@@ -62,8 +62,12 @@ object HandleSystemServerProcessHooker : XposedInterface.Hooker {
 object StartBootstrapServicesHooker : XposedInterface.Hooker {
 
     override fun intercept(chain: XposedInterface.Chain): Any? {
-        HandleSystemServerProcessHooker.systemServerCL?.let { dispatchSystemServerLoaded(it) }
-        return chain.proceed()
+        val result = chain.proceed()
+        HandleSystemServerProcessHooker.systemServerCL?.let {
+            dispatchSystemServerLoaded(it)
+            HandleSystemServerProcessHooker.callback?.onSystemServerLoaded(it)
+        }
+        return result
     }
 
     /** Dispatches module loading events. */
