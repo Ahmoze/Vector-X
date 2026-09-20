@@ -1,3 +1,17 @@
+🚀 **What's New in v2.0.22** 🚀
+
+🚀 **Highlight: Official Magisk Zygisk & Android 16 Boot Stability Fix**
+
+Vector-X `v2.0.22` resolves the longstanding bootloop conflict between Vector-X and **official Magisk Zygisk** on Android 14, 15, and 16 (HyperOS 2 / HyperOS 3), enabling 100% stable booting without requiring third-party Zygisk Next or NeoZygisk loaders!
+
+### 🛠️ Key Fixes in v2.0.22:
+* **[Critical Fix] Eliminated JIT Debug State Corruption (`JavaDebuggableGuard`):** Removed `JavaDebuggableGuard` calls that were inadvertently switching the ART runtime state to debuggable inside `system_server` during early Magisk injection. On Android 14+, changing debug state without pre-fork initialization triggered ART JIT `AddNativeDebugInfoForJit` / `InsertNewEntry` assertions (`entry->seqlock_ & 1 == 1u Expected invalid entry`).
+* **[Hook Engine] Prioritized Direct Interpreter Bridge Resolution:** LSPlant now prioritizes direct `art_quick_to_interpreter_bridge` symbol resolution from `libart.so`, eliminating the problematic `GetOptimizedCodeFor` fallback and preventing debug state mutation.
+* **[System Server Optimization] Skipped Redundant Boot Image Deopt in system_server:** `VectorStartup.init` now strictly guards `VectorDeopter.deoptBootMethods()`, executing application-level method deoptimizations only in application processes and leaving `system_server` boot methods untouched.
+* **[Type Alignment] 32-bit `RuntimeDebugState` Enum Alignment:** Updated `RuntimeDebugState` in LSPlant runtime header to `uint32_t` to match ART's internal representation.
+
+---
+
 🚀 **What's New in v2.0.21** 🚀
 
 🚀 **Highlight: Android 16 ART Runtime Compatibility & Hook Engine Update**

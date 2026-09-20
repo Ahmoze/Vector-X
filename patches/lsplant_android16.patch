@@ -1,5 +1,5 @@
 diff --git a/lsplant/src/main/jni/art/runtime/class_linker.cxx b/lsplant/src/main/jni/art/runtime/class_linker.cxx
-index 361c630..7b0b1d8 100644
+index 361c630..53371fe 100644
 --- a/lsplant/src/main/jni/art/runtime/class_linker.cxx
 +++ b/lsplant/src/main/jni/art/runtime/class_linker.cxx
 @@ -50,43 +50,45 @@ private:
@@ -89,6 +89,26 @@ index 361c630..7b0b1d8 100644
              return false;
          }
  
+@@ -196,7 +201,9 @@ public:
+         }
+ 
+         if (!handler(SetEntryPointsToInterpreter_)) [[likely]] {
+-            if (handler(GetOptimizedCodeFor_, true)) [[likely]] {
++            if (handler(art_quick_to_interpreter_bridge_)) [[likely]] {
++                // Direct symbol resolved from libart.so
++            } else if (handler(GetOptimizedCodeFor_, true)) [[likely]] {
+                 auto obj = JNI_FindClass(env, "java/lang/Object");
+                 if (!obj) {
+                     return false;
+@@ -211,7 +218,7 @@ public:
+                 // just in case
+                 dummy->SetNonNative();
+                 art_quick_to_interpreter_bridge_ = GetOptimizedCodeFor_(dummy.get());
+-            } else if (!handler(art_quick_to_interpreter_bridge_)) [[unlikely]] {
++            } else {
+                 return false;
+             }
+         }
 diff --git a/lsplant/src/main/jni/art/runtime/jni/jni_id_manager.cxx b/lsplant/src/main/jni/art/runtime/jni/jni_id_manager.cxx
 index 60f4984..0556a51 100644
 --- a/lsplant/src/main/jni/art/runtime/jni/jni_id_manager.cxx
@@ -127,3 +147,63 @@ index 60f4984..0556a51 100644
                  LOGW("Failed to hook EncodeGenericId, attaching debugger may crash the process");
              }
          }
+diff --git a/lsplant/src/main/jni/art/runtime/runtime.cxx b/lsplant/src/main/jni/art/runtime/runtime.cxx
+index f492fa0..01eb870 100644
+--- a/lsplant/src/main/jni/art/runtime/runtime.cxx
++++ b/lsplant/src/main/jni/art/runtime/runtime.cxx
+@@ -14,19 +14,10 @@ namespace lsplant::art {
+ 
+ export class Runtime {
+ public:
+-    enum class RuntimeDebugState {
+-        // This doesn't support any debug features / method tracing. This is the expected state
+-        // usually.
+-        kNonJavaDebuggable,
+-        // This supports method tracing and a restricted set of debug features (for ex: redefinition
+-        // isn't supported). We transition to this state when method tracing has started or when the
+-        // debugger was attached and transition back to NonDebuggable once the tracing has stopped /
+-        // the debugger agent has detached..
+-        kJavaDebuggable,
+-        // The runtime was started as a debuggable runtime. This allows us to support the extended
+-        // set
+-        // of debug features (for ex: redefinition). We never transition out of this state.
+-        kJavaDebuggableAtInit
++    enum class RuntimeDebugState : uint32_t {
++        kNonJavaDebuggable = 0,
++        kJavaDebuggable = 1,
++        kJavaDebuggableAtInit = 2
+     };
+ 
+ private:
+@@ -91,6 +82,9 @@ public:
+ 
+ export struct JavaDebuggableGuard {
+     JavaDebuggableGuard() {
++        if (GetAndroidApiLevel() >= 34) {
++            return;
++        }
+         while (true) {
+             size_t expected = 0;
+             if (count.compare_exchange_strong(expected, 1, std::memory_order_acq_rel,
+@@ -113,6 +107,9 @@ export struct JavaDebuggableGuard {
+     }
+ 
+     ~JavaDebuggableGuard() {
++        if (GetAndroidApiLevel() >= 34) {
++            return;
++        }
+         while (true) {
+             size_t expected = 2;
+             if (count.compare_exchange_strong(expected, 1, std::memory_order_acq_rel,
+diff --git a/lsplant/src/main/jni/lsplant.cc b/lsplant/src/main/jni/lsplant.cc
+index 9452d4e..53952ca 100644
+--- a/lsplant/src/main/jni/lsplant.cc
++++ b/lsplant/src/main/jni/lsplant.cc
+@@ -830,7 +830,6 @@ using ::lsplant::IsHooked;
+ }
+ 
+ [[maybe_unused]] bool MakeDexFileTrusted(JNIEnv *env, jobject cookie) {
+-    JavaDebuggableGuard guard;
+     if (!cookie) return false;
+     return DexFile::SetTrusted(env, cookie);
+ }

@@ -21,7 +21,9 @@ object VectorStartup {
         service: ILSPApplicationService?,
     ) {
         VectorServiceClient.init(service, processName ?: "android")
-        VectorDeopter.deoptBootMethods()
+        if (!isSystem) {
+            VectorDeopter.deoptBootMethods()
+        }
     }
 
     @JvmStatic
