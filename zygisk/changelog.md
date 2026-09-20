@@ -11,6 +11,22 @@ In `v2.0.24`, `system_server` boots 100% naturally with zero invasive hooks duri
 * **[Guarded App Interceptors] Application-Only Hook Scope:** Strictly scoped `LoadedApk` constructors, `createAppFactory`, `createOrUpdateClassLoaderLocked`, and `ActivityThread.attach` hooks to application processes (`!isSystem`), eliminating unintended hook overhead inside `system_server`.
 * **[Universal Parity] Flawless Operation on Both Loaders:** Vector-X now behaves identically whether running on stock Magisk Zygisk or standalone Zygisk Next / NeoZygisk, providing instantaneous 5-second boots without risk of bootloops.
 
+
+---
+
+🚀 **What's New in v2.0.24** 🚀
+
+🚀 **Highlight: Universal Safe Late Injection for System Server (Magisk Zygisk & Zygisk Next)**
+
+Vector-X `v2.0.24` introduces an architectural breakthrough: **Universal Safe Late Injection for `system_server`**. On modern Android 14, 15, and 16 (HyperOS 2 / HyperOS 3), early hooking of `ZygoteInit.handleSystemServerProcess` and `SystemServer.startBootstrapServices` under official Magisk Zygisk caused severe ART JIT code cache corruption (`SIGILL / ILL_ILLOPC`) and assertion aborts (`Expected invalid entry`) while parsing XMLs during boot.
+
+In `v2.0.24`, `system_server` boots 100% naturally with zero invasive hooks during early initialization. Vector-X asynchronously detects when `ActivityManagerService` is published, seamlessly binding its ClassLoader and dispatching `onSystemServerLoaded` events to all modern and legacy Xposed modules—matching the exact rock-solid behavior previously only possible on Zygisk Next!
+
+### 🛠️ Key Fixes in v2.0.24:
+* **[Architectural Breakthrough] Asynchronous Safe Late Initialization:** Replaced invasive early `handleSystemServerProcess` and `startBootstrapServices` hooks in `system_server` with an asynchronous listener for the system `activity` service. `system_server` completes early bootstrap and XML parsing unhindered without any JIT code cache interference or SIGILL faults.
+* **[Guarded App Interceptors] Application-Only Hook Scope:** Strictly scoped `LoadedApk` constructors, `createAppFactory`, `createOrUpdateClassLoaderLocked`, and `ActivityThread.attach` hooks to application processes (`!isSystem`), eliminating unintended hook overhead inside `system_server`.
+* **[Universal Parity] Flawless Operation on Both Loaders:** Vector-X now behaves identically whether running on stock Magisk Zygisk or standalone Zygisk Next / NeoZygisk, providing instantaneous 5-second boots without risk of bootloops.
+
 ---
 
 🚀 **What's New in v2.0.22** 🚀
