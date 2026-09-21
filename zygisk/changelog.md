@@ -2,6 +2,35 @@
 
 ## 🚀 Vector-X v2.0.26 (Dex Optimizer & Smart Update Engine)
 
+This release resolves Dex Optimizer wrapper mount diagnostics, aligns internal daemon AIDL compatibility codes, and introduces enhanced build-aware update detection across Vector-X Manager and Magisk.
+
+---
+
+### 🌟 What's New & Fixed:
+
+* **⚡ Dex Optimizer Wrapper & APEX Bind-Mount Reliability:**
+  * Aligned `Dex2OatServer` compatibility constants with `ILSPManagerService.aidl`, eliminating incorrect reporting of SEPolicy and mount errors.
+  * Native dex2oat mount engine now resolves absolute module paths dynamically, preventing working directory path resolution failures.
+  * Added resilient fallback paths for `resetprop` (`/data/adb/magisk/resetprop`, `/data/adb/ksu/bin/resetprop`, `/data/adb/ap/bin/resetprop`) and ensured proper child process lifecycle management.
+  * Eliminated legacy false-positive SEPolicy unmount triggers on Android 14~16.
+
+* **🔄 Smart Build-Aware Update Detection:**
+  * Enhanced `UpdateUtil` to detect new releases using both semantic versioning and build numbers in parentheses (e.g. `(3148)`).
+  * Future revisions and hotfix builds will now seamlessly trigger the update prompt in both Vector-X Manager and Magisk.
+
+---
+
+### 📦 Downloads:
+* **`Vector-v2.0.26-Release.zip`**: Standard production release build (Optimized & Minified).
+* **`Vector-v2.0.26-Debug.zip`**: Troubleshooting build with full debug symbols and verbose logging.
+
+
+---
+
+🚀 **What's New in v2.0.26** 🚀
+
+## 🚀 Vector-X v2.0.26 (Dex Optimizer & Smart Update Engine)
+
 This release resolves the Dex Optimizer wrapper mount diagnostics, aligns internal daemon AIDL compatibility codes, and introduces enhanced build-aware update detection across Vector-X Manager and Magisk.
 
 ---
