@@ -21,19 +21,14 @@ struct UniqueFd {
 };
 
 extern "C" JNIEXPORT void JNICALL Java_org_ahmoze_vector_daemon_env_Dex2OatServer_doMountNative(
-    JNIEnv *env, jobject, jboolean enabled, jstring r32, jstring d32, jstring r64, jstring d64) {
-    char dex2oat32[PATH_MAX], dex2oat64[PATH_MAX];
-    if (realpath("bin/dex2oat32", dex2oat32) == nullptr) {
-        PLOGE("resolve realpath for bin/dex2oat32");
-    }
-    if (realpath("bin/dex2oat64", dex2oat64) == nullptr) {
-        PLOGE("resolve realpath for bin/dex2oat64");
-    }
-
+    JNIEnv *env, jobject, jboolean enabled, jstring r32, jstring d32, jstring r64, jstring d64,
+    jstring w32, jstring w64) {
     const char *r32p = r32 ? env->GetStringUTFChars(r32, nullptr) : nullptr;
     const char *d32p = d32 ? env->GetStringUTFChars(d32, nullptr) : nullptr;
     const char *r64p = r64 ? env->GetStringUTFChars(r64, nullptr) : nullptr;
     const char *d64p = d64 ? env->GetStringUTFChars(d64, nullptr) : nullptr;
+    const char *w32p = w32 ? env->GetStringUTFChars(w32, nullptr) : nullptr;
+    const char *w64p = w64 ? env->GetStringUTFChars(w64, nullptr) : nullptr;
 
     pid_t pid = fork();
     if (pid > 0) {  // Parent process
@@ -44,6 +39,8 @@ extern "C" JNIEXPORT void JNICALL Java_org_ahmoze_vector_daemon_env_Dex2OatServe
         if (d32p) env->ReleaseStringUTFChars(d32, d32p);
         if (r64p) env->ReleaseStringUTFChars(r64, r64p);
         if (d64p) env->ReleaseStringUTFChars(d64, d64p);
+        if (w32p) env->ReleaseStringUTFChars(w32, w32p);
+        if (w64p) env->ReleaseStringUTFChars(w64, w64p);
     } else if (pid == 0) {  // Child process
         UniqueFd ns(open("/proc/1/ns/mnt", O_RDONLY));
         if (ns >= 0) {
@@ -52,23 +49,27 @@ extern "C" JNIEXPORT void JNICALL Java_org_ahmoze_vector_daemon_env_Dex2OatServe
 
         if (enabled) {
             LOGI("Enable dex2oat wrapper");
-            if (r32p) {
-                mount(dex2oat32, r32p, nullptr, MS_BIND, nullptr);
+            if (r32p && w32p) {
+                mount(w32p, r32p, nullptr, MS_BIND, nullptr);
                 mount(nullptr, r32p, nullptr, MS_BIND | MS_REMOUNT | MS_RDONLY, nullptr);
             }
-            if (d32p) {
-                mount(dex2oat32, d32p, nullptr, MS_BIND, nullptr);
+            if (d32p && w32p) {
+                mount(w32p, d32p, nullptr, MS_BIND, nullptr);
                 mount(nullptr, d32p, nullptr, MS_BIND | MS_REMOUNT | MS_RDONLY, nullptr);
             }
-            if (r64p) {
-                mount(dex2oat64, r64p, nullptr, MS_BIND, nullptr);
+            if (r64p && w64p) {
+                mount(w64p, r64p, nullptr, MS_BIND, nullptr);
                 mount(nullptr, r64p, nullptr, MS_BIND | MS_REMOUNT | MS_RDONLY, nullptr);
             }
-            if (d64p) {
-                mount(dex2oat64, d64p, nullptr, MS_BIND, nullptr);
+            if (d64p && w64p) {
+                mount(w64p, d64p, nullptr, MS_BIND, nullptr);
                 mount(nullptr, d64p, nullptr, MS_BIND | MS_REMOUNT | MS_RDONLY, nullptr);
             }
             execlp("resetprop", "resetprop", "--delete", "dalvik.vm.dex2oat-flags", nullptr);
+            execlp("/data/adb/magisk/resetprop", "resetprop", "--delete", "dalvik.vm.dex2oat-flags", nullptr);
+            execlp("/data/adb/ksu/bin/resetprop", "resetprop", "--delete", "dalvik.vm.dex2oat-flags", nullptr);
+            execlp("/data/adb/ap/bin/resetprop", "resetprop", "--delete", "dalvik.vm.dex2oat-flags", nullptr);
+            _exit(0);
         } else {
             LOGI("Disable dex2oat wrapper");
             if (r32p) umount(r32p);
@@ -77,10 +78,14 @@ extern "C" JNIEXPORT void JNICALL Java_org_ahmoze_vector_daemon_env_Dex2OatServe
             if (d64p) umount(d64p);
             execlp("resetprop", "resetprop", "dalvik.vm.dex2oat-flags", "--inline-max-code-units=0",
                    nullptr);
+            execlp("/data/adb/magisk/resetprop", "resetprop", "dalvik.vm.dex2oat-flags", "--inline-max-code-units=0",
+                   nullptr);
+            execlp("/data/adb/ksu/bin/resetprop", "resetprop", "dalvik.vm.dex2oat-flags", "--inline-max-code-units=0",
+                   nullptr);
+            execlp("/data/adb/ap/bin/resetprop", "resetprop", "dalvik.vm.dex2oat-flags", "--inline-max-code-units=0",
+                   nullptr);
+            _exit(0);
         }
-
-        PLOGE("Failed to resetprop");
-        exit(1);
     }
 }
 

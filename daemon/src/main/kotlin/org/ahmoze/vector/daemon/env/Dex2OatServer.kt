@@ -16,20 +16,26 @@ import java.nio.file.Paths
 import kotlinx.coroutines.launch
 import org.ahmoze.vector.daemon.VectorDaemon
 
+import org.ahmoze.vector.daemon.data.FileSystem
+
 private const val TAG = "VectorDex2Oat"
 
-// Compatibility states matching Manager expectations
+// Compatibility states matching ILSPManagerService.aidl
 const val DEX2OAT_OK = 0
-const val DEX2OAT_MOUNT_FAILED = 1
-const val DEX2OAT_SEPOLICY_INCORRECT = 2
+const val DEX2OAT_CRASHED = 1
+const val DEX2OAT_MOUNT_FAILED = 2
 const val DEX2OAT_SELINUX_PERMISSIVE = 3
-const val DEX2OAT_CRASHED = 4
+const val DEX2OAT_SEPOLICY_INCORRECT = 4
 
 object Dex2OatServer {
-  private const val WRAPPER32 = "bin/dex2oat32"
-  private const val WRAPPER64 = "bin/dex2oat64"
-  private const val HOOKER32 = "bin/liboat_hook32.so"
-  private const val HOOKER64 = "bin/liboat_hook64.so"
+  private val moduleBinDir by lazy {
+    runCatching { FileSystem.daemonApkPath.parent?.resolve("bin") }
+        .getOrNull() ?: Paths.get("/data/adb/modules/zygisk_vector/bin")
+  }
+  private val WRAPPER32 get() = moduleBinDir.resolve("dex2oat32").toString()
+  private val WRAPPER64 get() = moduleBinDir.resolve("dex2oat64").toString()
+  private val HOOKER32 get() = moduleBinDir.resolve("liboat_hook32.so").toString()
+  private val HOOKER64 get() = moduleBinDir.resolve("liboat_hook64.so").toString()
 
   private val dex2oatArray = arrayOfNulls<String>(6)
   private val fdArray = arrayOfNulls<FileDescriptor>(6)
@@ -43,7 +49,9 @@ object Dex2OatServer {
       r32: String?,
       d32: String?,
       r64: String?,
-      d64: String?
+      d64: String?,
+      w32: String?,
+      w64: String?
   )
 
   private external fun setSockCreateContext(context: String?): Boolean
@@ -75,10 +83,6 @@ object Dex2OatServer {
                 if (compatibility == DEX2OAT_OK) doMount(false)
                 compatibility = DEX2OAT_SELINUX_PERMISSIVE
               }
-              hasSePolicyErrors() -> {
-                if (compatibility == DEX2OAT_OK) doMount(false)
-                compatibility = DEX2OAT_SEPOLICY_INCORRECT
-              }
               compatibility != DEX2OAT_OK -> {
                 doMount(true)
                 if (notMounted()) {
@@ -108,15 +112,8 @@ object Dex2OatServer {
       checkAndAddDex2Oat("/apex/com.android.art/bin/dex2oatd64")
     }
 
-    openDex2oat(4, "/data/adb/modules/zygisk_vector/bin/liboat_hook32.so")
-    openDex2oat(5, "/data/adb/modules/zygisk_vector/bin/liboat_hook64.so")
-  }
-
-  private fun hasSePolicyErrors(): Boolean {
-    return SELinux.checkSELinuxAccess(
-        "u:r:untrusted_app:s0", "u:object_r:dex2oat_exec:s0", "file", "execute") ||
-        SELinux.checkSELinuxAccess(
-            "u:r:untrusted_app:s0", "u:object_r:dex2oat_exec:s0", "file", "execute_no_trans")
+    openDex2oat(4, HOOKER32)
+    openDex2oat(5, HOOKER64)
   }
 
   private fun openDex2oat(id: Int, path: String) {
@@ -179,7 +176,15 @@ object Dex2OatServer {
   }
 
   private fun doMount(enabled: Boolean) {
-    doMountNative(enabled, dex2oatArray[0], dex2oatArray[1], dex2oatArray[2], dex2oatArray[3])
+    doMountNative(
+        enabled,
+        dex2oatArray[0],
+        dex2oatArray[1],
+        dex2oatArray[2],
+        dex2oatArray[3],
+        WRAPPER32,
+        WRAPPER64
+    )
   }
 
   fun start() {

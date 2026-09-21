@@ -59,9 +59,10 @@ public class UpdateUtil {
                     var info = JsonParser.parseReader(body.charStream()).getAsJsonObject();
                     var notes = info.get("body").getAsString();
                     var tagName = info.has("tag_name") ? info.get("tag_name").getAsString() : "";
+                    var releaseTitle = info.has("name") && !info.get("name").isJsonNull() ? info.get("name").getAsString() : "";
                     var assetsArray = info.getAsJsonArray("assets");
                     for (var assets : assetsArray) {
-                        checkAssets(assets.getAsJsonObject(), notes, tagName);
+                        checkAssets(assets.getAsJsonObject(), notes, tagName, releaseTitle);
                     }
                 } catch (Throwable t) {
                     Log.e(App.TAG, t.getMessage(), t);
@@ -79,12 +80,13 @@ public class UpdateUtil {
         App.getOkHttpClient().newCall(request).enqueue(callback);
     }
 
-    private static void checkAssets(JsonObject assets, String releaseNotes, String tagName) {
+    private static void checkAssets(JsonObject assets, String releaseNotes, String tagName, String releaseTitle) {
         var pref = App.getPreferences();
         var name = assets.get("name").getAsString();
         
         pref.edit()
                 .putString("latest_version_name", tagName)
+                .putString("latest_release_title", releaseTitle)
                 .putLong("latest_check", Instant.now().getEpochSecond())
                 .putString("release_notes", releaseNotes)
                 .putString("zip_file", null)
@@ -104,6 +106,20 @@ public class UpdateUtil {
                         .apply();
             }
         }
+    }
+
+    private static int extractBuildCode(String... sources) {
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("(?:\\(|\\-)(\\d{4,6})(?:\\)|$)");
+        for (String source : sources) {
+            if (source == null || source.isEmpty()) continue;
+            java.util.regex.Matcher m = pattern.matcher(source);
+            if (m.find()) {
+                try {
+                    return Integer.parseInt(m.group(1));
+                } catch (Exception ignored) {}
+            }
+        }
+        return 0;
     }
 
     private static int compareVersions(String v1, String v2) {
@@ -136,8 +152,18 @@ public class UpdateUtil {
                 return true;
             
             var latestVersionName = pref.getString("latest_version_name", "");
+            var latestReleaseTitle = pref.getString("latest_release_title", "");
+            var releaseNotes = pref.getString("release_notes", "");
             if (latestVersionName != null && !latestVersionName.isEmpty()) {
-                return compareVersions(latestVersionName, BuildConfig.VERSION_NAME) > 0;
+                int cmp = compareVersions(latestVersionName, BuildConfig.VERSION_NAME);
+                if (cmp > 0) return true;
+                if (cmp == 0) {
+                    int remoteBuild = extractBuildCode(latestReleaseTitle, latestVersionName, releaseNotes);
+                    if (remoteBuild > BuildConfig.VERSION_CODE) {
+                        return true;
+                    }
+                }
+                return false;
             }
             return false;
         }
