@@ -31,7 +31,6 @@ This release delivers critical stability fixes for modern Android versions (Andr
 ### 📦 Downloads:
 * **`Vector-v2.0.26-Release.zip`**: Standard production release build (Optimized & Minified).
 * **`Vector-v2.0.26-Debug.zip`**: Troubleshooting build with full debug symbols and verbose logging.
-* **`manager.apk`**: Standalone Vector-X Manager application.
 
 
 ---
