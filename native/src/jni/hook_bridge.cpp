@@ -1,4 +1,5 @@
 #include <alloca.h>
+#include <android/api-level.h>
 #include <parallel_hashmap/phmap.h>
 
 #include <lsplant.hpp>
@@ -496,7 +497,15 @@ VECTOR_DEF_NATIVE_METHOD(jboolean, HookBridge, instanceOf, jobject object, jclas
  * @brief JNI wrapper to mark a DEX file loaded from memory as trusted.
  */
 VECTOR_DEF_NATIVE_METHOD(jboolean, HookBridge, setTrusted, jobject cookie) {
-    return lsplant::MakeDexFileTrusted(env, cookie);
+    if (android_get_device_api_level() >= 34) {
+        return JNI_FALSE;
+    }
+    jboolean res = lsplant::MakeDexFileTrusted(env, cookie);
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        return JNI_FALSE;
+    }
+    return res;
 }
 
 /**

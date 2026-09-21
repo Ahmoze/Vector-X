@@ -45,10 +45,15 @@ object Main {
 
         // Check if this process is the designated Vector Manager.
         if (niceName == BuildConfig.ManagerPackageName) {
-            val type =
-                if (Process.myUid() == BuildConfig.HostPackageUid) "parasitic" else "user-installed"
-            if (ParasiticManagerHooker.start()) {
-                Utils.logI("Manager ($type) loaded into host, skipping standard bootstrap.")
+            val isParasitic = Process.myUid() == BuildConfig.HostPackageUid
+            val type = if (isParasitic) "parasitic" else "user-installed"
+            val success = if (isParasitic) {
+                ParasiticManagerHooker.start()
+            } else {
+                ParasiticManagerHooker.startUserInstalled()
+            }
+            if (success) {
+                Utils.logI("Manager ($type) loaded, skipping standard bootstrap.")
                 return
             }
         }

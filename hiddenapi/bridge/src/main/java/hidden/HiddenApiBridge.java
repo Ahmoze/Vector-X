@@ -90,29 +90,50 @@ public class HiddenApiBridge {
     }
 
     public static String ApplicationInfo_credentialProtectedDataDir(ApplicationInfo applicationInfo) {
-        return applicationInfo.credentialProtectedDataDir;
+        try {
+            return applicationInfo.credentialProtectedDataDir;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     public static void ApplicationInfo_credentialProtectedDataDir(ApplicationInfo applicationInfo, String dir) {
-        applicationInfo.credentialProtectedDataDir = dir;
+        try {
+            applicationInfo.credentialProtectedDataDir = dir;
+        } catch (Throwable ignored) {
+        }
     }
 
     public static String[] ApplicationInfo_resourceDirs(ApplicationInfo applicationInfo) {
-        return applicationInfo.resourceDirs;
+        try {
+            return applicationInfo.resourceDirs;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     public static void ApplicationInfo_resourceDirs(ApplicationInfo applicationInfo, String[] resourceDirs) {
-        applicationInfo.resourceDirs = resourceDirs;
+        try {
+            applicationInfo.resourceDirs = resourceDirs;
+        } catch (Throwable ignored) {
+        }
     }
 
     @RequiresApi(31)
     public static String[] ApplicationInfo_overlayPaths(ApplicationInfo applicationInfo) {
-        return applicationInfo.overlayPaths;
+        try {
+            return applicationInfo.overlayPaths;
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     @RequiresApi(31)
     public static void ApplicationInfo_overlayPaths(ApplicationInfo applicationInfo, String[] overlayPaths) {
-        applicationInfo.overlayPaths = overlayPaths;
+        try {
+            applicationInfo.overlayPaths = overlayPaths;
+        } catch (Throwable ignored) {
+        }
     }
 
     public static CompatibilityInfo Resources_getCompatibilityInfo(Resources res) {

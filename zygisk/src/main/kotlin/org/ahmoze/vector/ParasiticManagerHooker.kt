@@ -91,28 +91,32 @@ object ParasiticManagerHooker {
                         publicSourceDir = sourcePath
                         nativeLibraryDir = appInfo.nativeLibraryDir
                         packageName = appInfo.packageName
-                        dataDir =
+                        val credDir =
                             HiddenApiBridge.ApplicationInfo_credentialProtectedDataDir(appInfo)
+                        dataDir = credDir ?: appInfo.dataDir
                         deviceProtectedDataDir = appInfo.deviceProtectedDataDir
                         processName = appInfo.processName
                         uid = appInfo.uid
                         // A14 QPR3 Fix: Ensure the flag for code existence is set
                         flags = flags or ApplicationInfo.FLAG_HAS_CODE
 
-                        HiddenApiBridge.ApplicationInfo_credentialProtectedDataDir(
-                            this,
-                            HiddenApiBridge.ApplicationInfo_credentialProtectedDataDir(appInfo),
-                        )
+                        if (credDir != null) {
+                            HiddenApiBridge.ApplicationInfo_credentialProtectedDataDir(this, credDir)
+                        }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            HiddenApiBridge.ApplicationInfo_overlayPaths(
+                            runCatching {
+                                HiddenApiBridge.ApplicationInfo_overlayPaths(
+                                    this,
+                                    HiddenApiBridge.ApplicationInfo_overlayPaths(appInfo),
+                                )
+                            }
+                        }
+                        runCatching {
+                            HiddenApiBridge.ApplicationInfo_resourceDirs(
                                 this,
-                                HiddenApiBridge.ApplicationInfo_overlayPaths(appInfo),
+                                HiddenApiBridge.ApplicationInfo_resourceDirs(appInfo),
                             )
                         }
-                        HiddenApiBridge.ApplicationInfo_resourceDirs(
-                            this,
-                            HiddenApiBridge.ApplicationInfo_resourceDirs(appInfo),
-                        )
                     }
                     managerPkgInfo = pkgInfo
                 }
@@ -125,8 +129,8 @@ object ParasiticManagerHooker {
      * Passes the IPC binder to the Manager's internal [Constants] class so it can communicate back
      * to the Vector system service.
      */
-    private fun sendBinderToManager(classLoader: ClassLoader, binder: IBinder) {
-        runCatching {
+    fun sendBinderToManager(classLoader: ClassLoader, binder: IBinder): Boolean {
+        return runCatching {
                 val clazz =
                     XposedHelpers.findClass(
                         BuildConfig.ManagerPackageName + ".Constants",
@@ -140,8 +144,11 @@ object ParasiticManagerHooker {
                         binder,
                     ) as Boolean
                 if (!ok) throw RuntimeException("setBinder returned false")
+                Utils.logI("Successfully sent binder to Vector Manager!")
+                true
             }
             .onFailure { Utils.logW("Could not send binder to LSPosed Manager", it) }
+            .getOrDefault(false)
     }
 
     private fun hookForManager(managerService: ILSPManagerService) {
@@ -155,9 +162,15 @@ object ParasiticManagerHooker {
                     logD("ActivityThread#handleBindApplication() starts")
                     val bindData = param.args[0]
                     val hostAppInfo =
-                        XposedHelpers.getObjectField(bindData, "appInfo") as ApplicationInfo
-                    val parasiticInfo = getManagerPkgInfo(hostAppInfo)?.applicationInfo
-                    XposedHelpers.setObjectField(bindData, "appInfo", parasiticInfo)
+                        XposedHelpers.getObjectField(bindData, "appInfo") as? ApplicationInfo
+                    if (hostAppInfo != null) {
+                        val parasiticInfo = getManagerPkgInfo(hostAppInfo)?.applicationInfo
+                        if (parasiticInfo != null) {
+                            XposedHelpers.setObjectField(bindData, "appInfo", parasiticInfo)
+                        } else {
+                            Utils.logE("ParasiticManagerHooker: parasiticInfo is null, preserving hostAppInfo")
+                        }
+                    }
                 }
             },
         )
@@ -455,6 +468,65 @@ object ParasiticManagerHooker {
             }
         } catch (e: Throwable) {
             Utils.logE("Parasitic injection failed", e)
+            false
+        }
+    }
+
+    /** Entry point for standalone/user-installed manager APK. Injects service binder cleanly without parasitic hooks. */
+    @JvmStatic
+    fun startUserInstalled(): Boolean {
+        val binderList = mutableListOf<IBinder>()
+        return try {
+            val pfd = VectorServiceClient.requestInjectedManagerBinder(binderList)
+            pfd?.close()
+            if (binderList.isEmpty()) {
+                Utils.logE("No manager binder returned for user-installed manager")
+                return false
+            }
+            val managerService = ILSPManagerService.Stub.asInterface(binderList[0])
+
+            var bound = false
+            fun tryDeliver(classLoader: ClassLoader?) {
+                if (bound || classLoader == null) return
+                if (sendBinderToManager(classLoader, managerService.asBinder())) {
+                    bound = true
+                }
+            }
+
+            var classLoaderUnhook: XC_MethodHook.Unhook? = null
+            classLoaderUnhook =
+                XposedHelpers.findAndHookMethod(
+                    LoadedApk::class.java,
+                    "getClassLoader",
+                    object : XC_MethodHook() {
+                        override fun afterHookedMethod(param: MethodHookParam<*>) {
+                            val mPackageName =
+                                XposedHelpers.getObjectField(param.thisObject, "mPackageName") as? String
+                            if (mPackageName == BuildConfig.ManagerPackageName) {
+                                tryDeliver(param.result as? ClassLoader)
+                                if (bound) classLoaderUnhook?.unhook()
+                            }
+                        }
+                    },
+                )
+
+            XposedHelpers.findAndHookMethod(
+                ActivityThread::class.java,
+                "handleBindApplication",
+                "android.app.ActivityThread\$AppBindData",
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam<*>) {
+                        val bindData = param.args[0]
+                        val loadedApk = XposedHelpers.getObjectField(bindData, "info") as? LoadedApk
+                        tryDeliver(loadedApk?.classLoader)
+                    }
+                },
+            )
+
+            Utils.logD("User-installed Vector manager hooked successfully.")
+            true
+        } catch (e: Throwable) {
+            Utils.logE("User-installed manager setup failed", e)
             false
         }
     }

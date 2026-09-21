@@ -1,28 +1,37 @@
 🚀 **What's New in v2.0.26** 🚀
 
-## 🚀 Vector-X v2.0.26 (Dex Optimizer & Smart Update Engine)
+## 🚀 Vector-X v2.0.26 (Dex Optimizer, HyperOS 3 & ART Stability Edition)
 
-This release resolves Dex Optimizer wrapper mount diagnostics, aligns internal daemon AIDL compatibility codes, and introduces enhanced build-aware update detection across Vector-X Manager and Magisk.
+This release delivers critical stability fixes for modern Android versions (Android 14 ~ 16 / Xiaomi HyperOS 3), resolves Dex Optimizer wrapper diagnostics, and ensures seamless lifecycle operation for both standalone and injected environments.
 
 ---
 
 ### 🌟 What's New & Fixed:
 
+* **🛡️ Android 14+ / 16 ART Security & Boot Crash Fixes:**
+  * Fixed a critical boot-time crash (`SIGABRT`) triggered by ART's internal `DexFile_setTrusted` on non-debuggable processes. Added proper API level guards (< API 34) and immediate JNI exception clears to prevent `AssertNoPendingException` aborts.
+  * Resolved `NoSuchFieldError` on Android 16 (where `ApplicationInfo.overlayPaths` was deprecated/removed) by safeguarding all hidden `ApplicationInfo` field accesses across JNI and Java reflection bridges.
+
+* **📱 HyperOS 3 / Android 16 Manager Launch Fix:**
+  * Resolved a startup crash (`NullPointerException: Attempt to invoke virtual method 'int ApplicationInfo.getAdaptCutoutMode()'`) when launching Vector-X Manager on Xiaomi HyperOS 3.
+  * Differentiated standalone/user-installed Manager initialization from parasitic host mode, preserving genuine system `ApplicationInfo` metadata while cleanly delivering the daemon service IPC binder.
+
 * **⚡ Dex Optimizer Wrapper & APEX Bind-Mount Reliability:**
-  * Aligned `Dex2OatServer` compatibility constants with `ILSPManagerService.aidl`, eliminating incorrect reporting of SEPolicy and mount errors.
-  * Native dex2oat mount engine now resolves absolute module paths dynamically, preventing working directory path resolution failures.
+  * Aligned `Dex2OatServer` compatibility constants with `ILSPManagerService.aidl`, eliminating incorrect reporting of SEPolicy and mount errors (Dex Optimizer now properly reports **Podržano / Supported**).
+  * Native dex2oat mount engine dynamically resolves absolute module paths, preventing working directory path resolution failures.
   * Added resilient fallback paths for `resetprop` (`/data/adb/magisk/resetprop`, `/data/adb/ksu/bin/resetprop`, `/data/adb/ap/bin/resetprop`) and ensured proper child process lifecycle management.
   * Eliminated legacy false-positive SEPolicy unmount triggers on Android 14~16.
 
 * **🔄 Smart Build-Aware Update Detection:**
-  * Enhanced `UpdateUtil` to detect new releases using both semantic versioning and build numbers in parentheses (e.g. `(3148)`).
-  * Future revisions and hotfix builds will now seamlessly trigger the update prompt in both Vector-X Manager and Magisk.
+  * Enhanced `UpdateUtil` to detect new releases using both semantic versioning and build numbers in parentheses (e.g. `(3150)`).
+  * Seamlessly triggers update prompts across both Vector-X Manager and Magisk.
 
 ---
 
 ### 📦 Downloads:
 * **`Vector-v2.0.26-Release.zip`**: Standard production release build (Optimized & Minified).
 * **`Vector-v2.0.26-Debug.zip`**: Troubleshooting build with full debug symbols and verbose logging.
+* **`manager.apk`**: Standalone Vector-X Manager application.
 
 
 ---

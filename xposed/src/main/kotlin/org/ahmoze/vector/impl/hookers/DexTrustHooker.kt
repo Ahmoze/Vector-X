@@ -20,7 +20,7 @@ object DexTrustHooker : XposedInterface.Hooker {
         while (classLoader != null) {
             if (classLoader === DexTrustHooker::class.java.classLoader) {
                 // Inform the native bridge that this DEX cookie is safe
-                HookBridge.setTrusted(result)
+                runCatching { HookBridge.setTrusted(result) }
                 break
             }
             classLoader = classLoader.parent

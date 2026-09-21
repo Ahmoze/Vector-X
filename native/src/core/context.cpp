@@ -1,5 +1,6 @@
 #include "core/context.h"
 
+#include <android/api-level.h>
 #include "core/config_bridge.h"
 #include "jni/jni_hooks.h"
 
@@ -89,10 +90,19 @@ void Context::InitHooks(JNIEnv *env) {
         // Attempt to modify the internal ART flags for this DEX file.
         // This effectively whitelists the DEX file, treating it as if it were part of
         // the BootClassPath, thereby bypassing Hidden API enforcement policies.
-        if (lsplant::MakeDexFileTrusted(env, cookie.get())) {
-            LOGD("InitHooks: Successfully elevated trust privileges for DexFile.");
-        } else {
-            LOGW("InitHooks: Failed to elevate trust privileges for DexFile.");
+        // On Android 14+ (API >= 34), DexFile_setTrusted throws SecurityException:
+        // "Can't exempt class, process is not debuggable" in non-debuggable processes.
+        // We only invoke it on older API levels and always clear any pending exception.
+        if (android_get_device_api_level() < 34) {
+            if (lsplant::MakeDexFileTrusted(env, cookie.get())) {
+                LOGD("InitHooks: Successfully elevated trust privileges for DexFile.");
+            } else {
+                LOGW("InitHooks: Failed to elevate trust privileges for DexFile.");
+            }
+        }
+        if (env->ExceptionCheck()) {
+            LOGW("InitHooks: Cleared pending exception from DexFile trust elevation.");
+            env->ExceptionClear();
         }
     }
 
