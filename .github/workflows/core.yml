@@ -127,8 +127,6 @@ jobs:
           mkdir -p release_assets
           cp zygisk/release/Vector-v*-Release.zip release_assets/
           cp zygisk/release/Vector-v*-Debug.zip release_assets/
-          find app/build/outputs/apk/release/ -name "*.apk" -exec cp {} release_assets/Vector-Manager-${TAG_NAME}-Release.apk \;
-          find app/build/outputs/apk/debug/ -name "*.apk" -exec cp {} release_assets/Vector-Manager-${TAG_NAME}-Debug.apk \;
 
           python3 -c "
           import sys

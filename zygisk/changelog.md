@@ -27,8 +27,6 @@ This release delivers complete, rock-solid stability and compatibility for **And
 ### 📦 Downloads:
 * **`Vector-v2.0.27-Release.zip`**: Standard production release build (Optimized & Minified).
 * **`Vector-v2.0.27-Debug.zip`**: Troubleshooting build with full debug symbols and verbose logging.
-* **`Vector-Manager-v2.0.27-Release.apk`**: Standalone Vector-X Manager APK (Release).
-* **`Vector-Manager-v2.0.27-Debug.apk`**: Standalone Vector-X Manager APK (Debug).
 
 ---
 
