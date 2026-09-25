@@ -1,6 +1,12 @@
 #!/system/bin/sh
 
-dir="${0%/*}"
+case "$0" in
+  /*) dir="${0%/*}" ;;
+  *) dir="$(pwd)/${0%/*}" ;;
+esac
+dir="$(cd "$dir" 2>/dev/null && pwd)"
+[ -z "$dir" ] && dir="/data/adb/modules/zygisk_vector"
+cd "$dir" || exit 1
 tmpDaemonApk="/data/local/tmp/daemon.apk"
 debug="@DEBUG@"
 

@@ -143,6 +143,8 @@ set_perm_recursive "$MODPATH" 0 0 0755 0644
 
 set_perm "$MODPATH/daemon" 0 0 0744
 set_perm "$MODPATH/cli" 0 0 0744
+set_perm "$MODPATH/service.sh" 0 0 0755
+set_perm "$MODPATH/action.sh" 0 0 0755
 
 if [ "$(grep_prop ro.maple.enable)" = "1" ]; then
     ui_print "  [+] Applying System Property Tweaks (ro.maple.enable=0)"

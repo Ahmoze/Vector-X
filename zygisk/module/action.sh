@@ -20,8 +20,11 @@ echo ""
 
 # 1. Self-Healing: Ensure SEPolicy rules are strictly applied
 echo -e "${C_BLUE}[*] Checking SEPolicy rules...${C_RESET}"
-if command -v magiskpolicy >/dev/null 2>&1; then
-    magiskpolicy --live --apply "$MODDIR/sepolicy.rule" >/dev/null 2>&1
+if [ -x "/data/adb/magisk/magiskpolicy" ]; then
+    /data/adb/magisk/magiskpolicy --live --apply "$MODDIR/sepolicy.rule" >/dev/null 2>&1
+    echo -e "${C_GREEN}[+] SEPolicy rules applied via magiskpolicy.${C_RESET}"
+elif [ -x "/data/adb/ksu/bin/magiskpolicy" ]; then
+    /data/adb/ksu/bin/magiskpolicy --live --apply "$MODDIR/sepolicy.rule" >/dev/null 2>&1
     echo -e "${C_GREEN}[+] SEPolicy rules applied via magiskpolicy.${C_RESET}"
 elif command -v supolicy >/dev/null 2>&1; then
     supolicy --live --apply "$MODDIR/sepolicy.rule" >/dev/null 2>&1
@@ -41,10 +44,13 @@ if [ -n "$DAEMON_PID" ]; then
     echo -e "${C_GREEN}[+] Vector Daemon: ACTIVE (PID: $DAEMON_PID)${C_RESET}"
 else
     echo -e "${C_YELLOW}[!] Vector Daemon not running, launching service...${C_RESET}"
-    if [ -x "$MODDIR/service.sh" ]; then
+    if [ -f "$MODDIR/service.sh" ]; then
         sh "$MODDIR/service.sh" >/dev/null 2>&1 &
-        sleep 1
-        NEW_PID=$(pidof lspd 2>/dev/null || pidof daemon 2>/dev/null || pidof vector 2>/dev/null)
+        for i in 1 2 3 4 5; do
+            sleep 1
+            NEW_PID=$(pidof lspd 2>/dev/null || pidof daemon 2>/dev/null || pidof vector 2>/dev/null)
+            [ -n "$NEW_PID" ] && break
+        done
         if [ -n "$NEW_PID" ]; then
             echo -e "${C_GREEN}[+] Vector Daemon started (PID: $NEW_PID).${C_RESET}"
         else

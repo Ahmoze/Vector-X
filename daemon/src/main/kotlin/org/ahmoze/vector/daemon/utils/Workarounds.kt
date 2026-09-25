@@ -95,7 +95,7 @@ fun performDexOptMode(packageName: String): Boolean {
 }
 
 fun applyXspaceWorkaround(connection: IServiceConnection) {
-  if (isXiaomi) {
+  if (isXiaomi && Build.VERSION.SDK_INT < 36) {
     val intent =
         Intent().apply {
           component =

@@ -99,7 +99,7 @@ object FileSystem {
           fileLock = lockChannel?.tryLock()
           fileLock?.isValid == true
         }
-        .getOrDefault(false)
+        .getOrDefault(true)
   }
 
   /** Clears all special file attributes (like immutable) on a directory. */
@@ -309,7 +309,11 @@ object FileSystem {
   fun getPreloadDex(obfuscate: Boolean): SharedMemory? {
     if (preloadDex == null) {
       runCatching {
-            FileInputStream("framework/lspd.dex").use { preloadDex = readDex(it, obfuscate) }
+            val dexFile =
+                File("framework/lspd.dex").let {
+                  if (it.exists()) it else File("/data/adb/modules/zygisk_vector/framework/lspd.dex")
+                }
+            FileInputStream(dexFile).use { preloadDex = readDex(it, obfuscate) }
           }
           .onFailure { Log.e(TAG, "Failed to load framework dex", it) }
     }

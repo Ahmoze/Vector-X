@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
       CCACHE_NOHASHDIR: "true"
@@ -115,4 +117,44 @@ jobs:
         with:
           name: symbols
           path: build/symbols
+
+      - name: Create GitHub Release
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          mkdir -p release_assets
+          cp zygisk/release/Vector-v*-Release.zip release_assets/
+          cp zygisk/release/Vector-v*-Debug.zip release_assets/
+          find app/build/outputs/apk/release/ -name "*.apk" -exec cp {} release_assets/Vector-Manager-${TAG_NAME}-Release.apk \;
+          find app/build/outputs/apk/debug/ -name "*.apk" -exec cp {} release_assets/Vector-Manager-${TAG_NAME}-Debug.apk \;
+
+          python3 -c "
+          import sys
+          tag = '$TAG_NAME'
+          try:
+              with open('zygisk/changelog.md', 'r') as f:
+                  content = f.read()
+              start = content.find('🚀 **What\'s New in ' + tag)
+              if start != -1:
+                  first_dash = content.find('---', start)
+                  if first_dash != -1:
+                      next_dash = content.find('---', first_dash + 3)
+                      body = content[start:next_dash if next_dash != -1 else len(content)].strip()
+                  else:
+                      body = content[start:].strip()
+                  with open('release_notes.md', 'w') as out:
+                      out.write(body)
+              else:
+                  with open('release_notes.md', 'w') as out:
+                      out.write(f'Vector-X {tag}')
+          except Exception:
+              with open('release_notes.md', 'w') as out:
+                  out.write(f'Vector-X {tag}')
+          "
+
+          gh release create "$TAG_NAME" release_assets/* \
+            --title "Vector-X $TAG_NAME" \
+            --notes-file release_notes.md
 
