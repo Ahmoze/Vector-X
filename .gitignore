@@ -13,3 +13,8 @@ bin/
 *.class
 *.jks
 temp.html
+scratch/
+built_artifacts/
+release_v*/
+__pycache__/
+*.pyc

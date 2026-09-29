@@ -49,7 +49,7 @@ This release delivers critical stability fixes for modern Android versions (Andr
   * Differentiated standalone/user-installed Manager initialization from parasitic host mode, preserving genuine system `ApplicationInfo` metadata while cleanly delivering the daemon service IPC binder.
 
 * **⚡ Dex Optimizer Wrapper & APEX Bind-Mount Reliability:**
-  * Aligned `Dex2OatServer` compatibility constants with `ILSPManagerService.aidl`, eliminating incorrect reporting of SEPolicy and mount errors (Dex Optimizer now properly reports **Podržano / Supported**).
+  * Aligned `Dex2OatServer` compatibility constants with `ILSPManagerService.aidl`, eliminating incorrect reporting of SEPolicy and mount errors (Dex Optimizer now properly reports **Supported**).
   * Native dex2oat mount engine dynamically resolves absolute module paths, preventing working directory path resolution failures.
   * Added resilient fallback paths for `resetprop` (`/data/adb/magisk/resetprop`, `/data/adb/ksu/bin/resetprop`, `/data/adb/ap/bin/resetprop`) and ensured proper child process lifecycle management.
   * Eliminated legacy false-positive SEPolicy unmount triggers on Android 14~16.
