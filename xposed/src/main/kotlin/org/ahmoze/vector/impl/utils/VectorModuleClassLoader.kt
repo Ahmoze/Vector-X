@@ -7,7 +7,7 @@ import android.system.Os
 import android.system.OsConstants
 import android.util.Log
 import androidx.annotation.RequiresApi
-import hidden.ByteBufferDexClassLoader
+import dalvik.system.InMemoryDexClassLoader
 import java.io.File
 import java.io.IOException
 import java.net.URL
@@ -23,10 +23,11 @@ import java.util.zip.ZipEntry
  * extract module code to the disk, enhancing both security and performance during the module
  * lifecycle.
  */
-class VectorModuleClassLoader : ByteBufferDexClassLoader {
+class VectorModuleClassLoader : ClassLoader {
 
     private val apkPath: String
     private val nativeLibraryDirs = mutableListOf<File>()
+    private val dexClassLoader: InMemoryDexClassLoader
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private constructor(
@@ -34,8 +35,13 @@ class VectorModuleClassLoader : ByteBufferDexClassLoader {
         librarySearchPath: String?,
         parent: ClassLoader?,
         apkPath: String,
-    ) : super(dexBuffers, librarySearchPath, parent) {
+    ) : super(parent) {
         this.apkPath = apkPath
+        this.dexClassLoader = InMemoryDexClassLoader(
+            dexBuffers,
+            librarySearchPath,
+            FilterClassLoader(parent),
+        )
         initNativeDirs(librarySearchPath)
     }
 
@@ -44,9 +50,34 @@ class VectorModuleClassLoader : ByteBufferDexClassLoader {
         parent: ClassLoader?,
         apkPath: String,
         librarySearchPath: String?,
-    ) : super(dexBuffers, parent) {
+    ) : super(parent) {
         this.apkPath = apkPath
+        this.dexClassLoader = InMemoryDexClassLoader(
+            dexBuffers,
+            librarySearchPath,
+            FilterClassLoader(parent),
+        )
         initNativeDirs(librarySearchPath)
+    }
+
+    private class FilterClassLoader(private val realParent: ClassLoader?) :
+        ClassLoader(Any::class.java.classLoader) {
+
+        @Throws(ClassNotFoundException::class)
+        override fun loadClass(name: String, resolve: Boolean): Class<*> {
+            // Prevent parent delegation for classes in the default/root package (e.g. "c0", "a", "b").
+            // When both Vector and module are obfuscated via R8 with -repackageclasses,
+            // parent-first delegation causes the module to mistakenly resolve Vector's internal classes.
+            if (name.indexOf('.') < 0) {
+                throw ClassNotFoundException(name)
+            }
+            return realParent?.loadClass(name) ?: super.loadClass(name, resolve)
+        }
+    }
+
+    @Throws(ClassNotFoundException::class)
+    override fun findClass(name: String): Class<*> {
+        return dexClassLoader.loadClass(name)
     }
 
     private fun initNativeDirs(librarySearchPath: String?) {

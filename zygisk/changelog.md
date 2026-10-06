@@ -1,3 +1,33 @@
+🚀 **What's New in v2.0.28** 🚀
+
+## 🚀 Vector-X v2.0.28 (Android 17 / HyperOS 4 Module Injection & ClassLoader Shield Edition)
+
+This release delivers critical architectural fixes for **Android 17** (Xiaomi HyperOS 4 / SDK 37), solving module injection failures in production applications (such as TikTok, Instagram, etc.), eliminating ART Hidden API restrictions on in-memory DEX loading, and introducing ClassLoader namespace shielding against R8 `-repackageclasses` collisions.
+
+---
+
+### 🌟 What's New & Fixed:
+
+* **🛡️ Official `InMemoryDexClassLoader` Migration (Android 17 / SDK 37 Fix):**
+  * Eliminated `java.lang.NoSuchMethodError: No direct method <init>([Ljava/nio/ByteBuffer;Ljava/lang/String;Ljava/lang/ClassLoader;)V in class Ldalvik/system/BaseDexClassLoader;` when injecting modules into release/non-debuggable target apps.
+  * Replaced invocation of the blacklisted `BaseDexClassLoader` hidden constructor with the official, whitelisted public `dalvik.system.InMemoryDexClassLoader(dexBuffers, librarySearchPath, parent)` API.
+
+* **⚡ Root-Package ClassLoader Isolation (`FilterClassLoader`):**
+  * Resolved fatal runtime method lookup crashes (`NoSuchMethodError: No static method c(Ljava/lang/String;)Z in class Lc0;`) caused by R8/ProGuard `-repackageclasses` shadowing.
+  * Implemented an isolating `FilterClassLoader` bridge that prevents parent delegation for classes residing in the default/root package (`name.indexOf('.') < 0`).
+  * Guarantees that internal module classes (e.g. `c0`, `a`, `b`) are always resolved strictly from the module's own in-memory DEX rather than mistakenly intercepting Vector's internal framework classes.
+
+* **🏷️ Version Tag Resolution Guard:**
+  * Updated build script tag resolution to target `v2.0.*` series, preventing build artifacts from adopting legacy tag identifiers.
+
+---
+
+### 📦 Downloads:
+* **`Vector-v2.0.28-Release.zip`**: Standard production release build (Optimized & Minified).
+* **`Vector-v2.0.28-Debug.zip`**: Troubleshooting build with full debug symbols and verbose logging.
+
+---
+
 🚀 **What's New in v2.0.27** 🚀
 
 ## 🚀 Vector-X v2.0.27 (Android 17 & HyperOS 4 Full Support Edition)

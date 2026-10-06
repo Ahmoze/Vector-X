@@ -40,7 +40,7 @@ abstract class GitLatestTagValueSource : ValueSource<String, ValueSourceParamete
         val output = ByteArrayOutputStream()
         val result =
             execOperations.exec {
-                commandLine("git", "tag", "--list", "--sort=-v:refname")
+                commandLine("git", "tag", "--list", "v2.0.*", "--sort=-v:refname")
                 standardOutput = output
                 isIgnoreExitValue = true
             }
