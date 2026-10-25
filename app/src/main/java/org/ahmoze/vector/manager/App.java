@@ -28,6 +28,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -210,6 +212,10 @@ public class App extends Application {
             }
         }
         AppCompatDelegate.setDefaultNightMode(ThemeUtil.getDarkTheme());
+        var sysLocales = Resources.getSystem().getConfiguration().getLocales();
+        if (!sysLocales.isEmpty()) {
+            LocaleDelegate.setSystemLocale(sysLocales.get(0));
+        }
         LocaleDelegate.setDefaultLocale(getLocale());
         var res = getResources();
         var config = res.getConfiguration();
@@ -265,14 +271,31 @@ public class App extends Application {
                 if (intent == null || intent.getData() == null) return;
                 String pkg = intent.getData().getSchemeSpecificPart();
                 if (pkg == null) return;
-                boolean isFullyRemoved = Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(intent.getAction());
+                int uid = intent.getIntExtra(Intent.EXTRA_UID, -1);
+                int userId = intent.getIntExtra("android.intent.extra.user_handle", uid >= 0 ? uid / PER_USER_RANGE : 0);
+                boolean packageRemovedForAllUsers = intent.getBooleanExtra(EXTRA_REMOVED_FOR_ALL_USERS, false);
+                boolean isFullyRemoved = packageRemovedForAllUsers || Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(intent.getAction());
                 App.getExecutorService().submit(() -> {
-                    ModuleUtil.getInstance().reloadSingleModule(pkg, 0, isFullyRemoved);
+                    ModuleUtil.getInstance().reloadSingleModule(pkg, userId, isFullyRemoved);
                 });
             }
         }, pkgFilter, Context.RECEIVER_EXPORTED);
 
         UpdateUtil.loadRemoteVersion();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (!newConfig.getLocales().isEmpty()) {
+            LocaleDelegate.setSystemLocale(newConfig.getLocales().get(0));
+        }
+        LocaleDelegate.setDefaultLocale(getLocale());
+        var res = getResources();
+        var config = res.getConfiguration();
+        config.setLocale(LocaleDelegate.getDefaultLocale());
+        //noinspection deprecation
+        res.updateConfiguration(config, res.getDisplayMetrics());
     }
 
     @NonNull
@@ -298,14 +321,37 @@ public class App extends Application {
         return okHttpCache;
     }
 
+    private static Locale normalizeLocale(Locale locale) {
+        if (locale == null) return Locale.getDefault();
+        String lang = locale.getLanguage();
+        if ("sr".equalsIgnoreCase(lang) || "cnr".equalsIgnoreCase(lang)) {
+            String country = locale.getCountry();
+            return TextUtils.isEmpty(country) ? new Locale("sr") : new Locale("sr", country);
+        }
+        if ("bs".equalsIgnoreCase(lang)) {
+            String country = locale.getCountry();
+            return TextUtils.isEmpty(country) ? new Locale("bs") : new Locale("bs", country);
+        }
+        return locale;
+    }
+
     public static Locale getLocale(String tag) {
         if (TextUtils.isEmpty(tag) || "SYSTEM".equals(tag)) {
-            return LocaleDelegate.getSystemLocale();
+            var sysLocales = Resources.getSystem().getConfiguration().getLocales();
+            Locale sysLocale = !sysLocales.isEmpty() ? sysLocales.get(0) : LocaleDelegate.getSystemLocale();
+            if (sysLocale != null) {
+                LocaleDelegate.setSystemLocale(sysLocale);
+                return normalizeLocale(sysLocale);
+            }
+            return normalizeLocale(LocaleDelegate.getSystemLocale());
         }
-        return Locale.forLanguageTag(tag);
+        return normalizeLocale(Locale.forLanguageTag(tag));
     }
 
     public static Locale getLocale() {
+        if (instance == null || instance.pref == null) {
+            return getLocale(null);
+        }
         String tag = getPreferences().getString("language", null);
         return getLocale(tag);
     }

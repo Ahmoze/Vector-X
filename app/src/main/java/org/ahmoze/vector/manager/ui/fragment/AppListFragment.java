@@ -113,7 +113,7 @@ public class AppListFragment extends BaseFragment implements MenuProvider {
 
         setupToolbar(binding.toolbar, binding.clickView, title, R.menu.menu_app_list, view -> requireActivity().getOnBackPressedDispatcher().onBackPressed());
         View.OnClickListener l = v -> {
-            if (searchView.isIconified()) {
+            if (searchView == null || searchView.isIconified()) {
                 binding.recyclerView.smoothScrollToPosition(0);
                 binding.appBar.setExpanded(true, true);
             }
@@ -142,6 +142,9 @@ public class AppListFragment extends BaseFragment implements MenuProvider {
         int moduleUserId = args.getModuleUserId();
 
         module = ModuleUtil.getInstance().getModule(modulePackageName, moduleUserId);
+        if (module == null) {
+            module = ModuleUtil.getInstance().reloadSingleModule(modulePackageName, moduleUserId);
+        }
         if (module == null) {
             if (!safeNavigate(R.id.action_app_list_fragment_to_modules_fragment)) {
                 safeNavigate(R.id.modules_nav);

@@ -156,6 +156,8 @@ public class RepoLoader {
         return originRepoUrl;
     }
 
+    private volatile long lastInstalledRemoteCheckTime = 0L;
+
     public void loadRemoteDataIfNeeded() {
         if (isRefreshing) return;
         long now = System.currentTimeMillis();
@@ -169,6 +171,73 @@ public class RepoLoader {
         }
         if ((now - lastRemoteLoadTime) > AUTO_REFRESH_INTERVAL_MS || fileStale || latestVersion.isEmpty()) {
             App.getExecutorService().submit(this::loadRemoteData);
+        } else {
+            refreshInstalledModulesIfNeeded();
+        }
+    }
+
+    public void refreshInstalledModulesIfNeeded() {
+        long now = System.currentTimeMillis();
+        if ((now - lastInstalledRemoteCheckTime) < AUTO_REFRESH_INTERVAL_MS) return;
+        var installedMap = org.ahmoze.vector.manager.util.ModuleUtil.getInstance().getModules();
+        if (installedMap == null || installedMap.isEmpty() || !repoLoaded) return;
+        lastInstalledRemoteCheckTime = now;
+        App.getExecutorService().submit(this::refreshInstalledModulesRemote);
+    }
+
+    private void refreshInstalledModulesRemote() {
+        var installedMap = org.ahmoze.vector.manager.util.ModuleUtil.getInstance().getModules();
+        if (installedMap == null || installedMap.isEmpty()) return;
+        Set<String> pkgNames = new java.util.HashSet<>();
+        for (var entry : installedMap.entrySet()) {
+            if (entry.getKey().first != null) {
+                pkgNames.add(entry.getKey().first);
+            }
+        }
+        if (pkgNames.isEmpty()) return;
+        Gson gson = new Gson();
+        boolean anyUpdated = false;
+        for (String pkg : pkgNames) {
+            try (var response = App.getOkHttpClient().newCall(
+                    new Request.Builder()
+                            .url(String.format(lsposedModuleDetailBaseUrl + "module/%s.json", pkg))
+                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                            .header("Cache-Control", "no-cache")
+                            .build()
+            ).execute()) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String bodyStr = response.body().string();
+                    OnlineModule detail = gson.fromJson(bodyStr, OnlineModule.class);
+                    if (detail != null && detail.getName() != null) {
+                        detail.releasesLoaded = true;
+                        onlineModules.put(detail.getName(), detail);
+                        anyUpdated = true;
+                    }
+                }
+            } catch (Throwable ignored) {
+            }
+        }
+        if (anyUpdated) {
+            var channel = App.getPreferences().getString("update_channel", channels[0]);
+            updateLatestVersion(onlineModules.values().toArray(new OnlineModule[0]), channel);
+            try {
+                String fullJson = gson.toJson(onlineModules.values());
+                Files.write(repoFile, fullJson.getBytes(StandardCharsets.UTF_8));
+            } catch (Throwable ignored) {
+            }
+        }
+    }
+
+    public synchronized void mergeOnlineModule(OnlineModule module, boolean notifyReleasesLoaded) {
+        if (module == null || module.getName() == null) return;
+        module.releasesLoaded = true;
+        onlineModules.put(module.getName(), module);
+        var channel = App.getPreferences().getString("update_channel", channels[0]);
+        updateLatestVersion(onlineModules.values().toArray(new OnlineModule[0]), channel);
+        if (notifyReleasesLoaded) {
+            for (RepoListener listener : listeners) {
+                listener.onModuleReleasesLoaded(module);
+            }
         }
     }
 
@@ -238,7 +307,9 @@ public class RepoLoader {
                                 String fullJson = gson.toJson(allModules);
                                 Files.write(repoFile, fullJson.getBytes(StandardCharsets.UTF_8));
                                 lastRemoteLoadTime = System.currentTimeMillis();
+                                lastInstalledRemoteCheckTime = 0L;
                                 loadLocalData(false);
+                                refreshInstalledModulesIfNeeded();
                                 return;
                             }
                         }

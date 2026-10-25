@@ -242,4 +242,13 @@ JJ108</string>
     <string name="color_blue_grey">Blaugrau</string>
     <string name="menu_uninstall">Modul deinstallieren</string>
     <string name="uninstall_module_confirm">Sind Sie sicher, dass Sie dieses Modul deinstallieren möchten?</string>
+    <string name="install_and_reboot">Installieren &amp; Neustarten</string>
+    <string name="update_flash_confirm_msg">Möchten Sie es über Root flashen und neu starten? Root-Zugriff ist erforderlich.</string>
+    <string name="rescue_mode_title">Bootloop-Rettungsmodus</string>
+    <string name="rescue_mode_summary">Vector hat einen System-Bootloop erkannt. Alle Module wurden zum Schutz Ihres Geräts deaktiviert.</string>
+    <string name="download_started">Download gestartet…</string>
+    <string name="download_failed">Download fehlgeschlagen: %s</string>
+    <string name="url_not_available">URL nicht verfügbar</string>
+    <string name="custom_repo_url_title">Benutzerdefinierte Repository-URL</string>
+    <string name="custom_repo_url_summary">Geben Sie eine benutzerdefinierte URL für das Modul-Repository ein. Leer lassen für Standard.</string>
 </resources>

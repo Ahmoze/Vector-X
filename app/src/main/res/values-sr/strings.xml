@@ -226,4 +226,18 @@
     <string name="color_blue_grey">Plavo-siva</string>
     <string name="menu_uninstall">Deinstaliraj modul</string>
     <string name="uninstall_module_confirm">Jeste li sigurni da želite da deinstalirate ovaj modul? Biće uklonjen sa uređaja.</string>
+    <string name="install_and_reboot">Instaliraj i ponovo pokreni</string>
+    <string name="update_flash_confirm_msg">Da li želiš da instaliraš ažuriranje putem Root pristupa i ponovo pokreneš uređaj? Root pristup je neophodan.</string>
+    <string name="rescue_mode_title">Režim spasavanja od bootloop-a</string>
+    <string name="rescue_mode_summary">Vector je detektovao bootloop sistema. Svi moduli su privremeno onemogućeni radi zaštite uređaja.</string>
+    <string name="download_started">Preuzimanje je započeto…</string>
+    <string name="download_failed">Preuzimanje nije uspelo: %s</string>
+    <string name="url_not_available">URL nije dostupan</string>
+    <string name="custom_repo_url_title">Prilagođeni URL repozitorijuma</string>
+    <string name="custom_repo_url_summary">Unesi prilagođeni URL za repozitorijum modula. Ostavi prazno za podrazumevani.</string>
+    <string name="dark_theme">Tamna tema</string>
+    <string name="dark_theme_off">Uvek isključena</string>
+    <string name="dark_theme_on">Uvek uključena</string>
+    <string name="dark_theme_follow_system">Prati sistem</string>
+    <string name="follow_system">Prati sistem</string>
 </resources>

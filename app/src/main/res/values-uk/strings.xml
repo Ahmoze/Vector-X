@@ -247,4 +247,13 @@
     <string name="color_blue_grey">Блакитно-сірий</string>
     <string name="menu_uninstall">Видалити модуль</string>
     <string name="uninstall_module_confirm">Ви впевнені, що хочете видалити цей модуль?</string>
+    <string name="install_and_reboot">Встановити та перезавантажити</string>
+    <string name="update_flash_confirm_msg">Встановити оновлення через Root і перезавантажити пристрій? Потрібен Root-доступ.</string>
+    <string name="rescue_mode_title">Режим порятунку від бутлупу</string>
+    <string name="rescue_mode_summary">Vector виявив бутлуп системи. Усі модулі було вимкнено для захисту вашого пристрою.</string>
+    <string name="download_started">Завантаження розпочато…</string>
+    <string name="download_failed">Помилка завантаження: %s</string>
+    <string name="url_not_available">URL недоступний</string>
+    <string name="custom_repo_url_title">Власний URL репозиторію</string>
+    <string name="custom_repo_url_summary">Введіть власний URL репозиторію модулів. Залиште порожнім для стандартного.</string>
 </resources>

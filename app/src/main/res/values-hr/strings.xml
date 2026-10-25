@@ -238,4 +238,24 @@
     <string name="color_blue_grey">Plavo siva</string>
     <string name="menu_uninstall">Deinstaliraj modul</string>
     <string name="uninstall_module_confirm">Jeste li sigurni da želite deinstalirati ovaj modul?</string>
+    <string name="developer_warning_title">Savjeti za programere modula</string>
+    <string name="developer_warning_summary">Molimo onemogućite opcije optimizacije u Android Studiju ili koristite naredbu `gradlew installDebug` za instalaciju. Inače se apk modula neće ažurirati.</string>
+    <string name="menu_select">Odaberi</string>
+    <string name="menu_select_all">Sve</string>
+    <string name="menu_select_none">Ništa</string>
+    <string name="menu_auto_include">Automatski uključi</string>
+    <string name="install_and_reboot">Instaliraj i ponovno pokreni</string>
+    <string name="update_flash_confirm_msg">Želite li instalirati ažuriranje putem Root pristupa i ponovno pokrenuti uređaj? Potreban je Root pristup.</string>
+    <string name="rescue_mode_title">Način spašavanja od bootloopa</string>
+    <string name="rescue_mode_summary">Vector je otkrio bootloop sustava. Svi moduli su onemogućeni radi zaštite vašeg uređaja.</string>
+    <string name="download_started">Preuzimanje je započelo…</string>
+    <string name="download_failed">Preuzimanje nije uspjelo: %s</string>
+    <string name="url_not_available">URL nije dostupan</string>
+    <string name="custom_repo_url_title">Prilagođeni URL spremišta</string>
+    <string name="custom_repo_url_summary">Unesite prilagođeni URL za spremište modula. Ostavite prazno za zadano.</string>
+    <string name="dark_theme">Tamna tema</string>
+    <string name="dark_theme_off">Uvijek isključena</string>
+    <string name="dark_theme_on">Uvijek uključena</string>
+    <string name="dark_theme_follow_system">Prati sustav</string>
+    <string name="follow_system">Prati sustav</string>
 </resources>

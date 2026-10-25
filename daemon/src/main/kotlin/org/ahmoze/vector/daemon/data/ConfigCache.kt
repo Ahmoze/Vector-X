@@ -90,7 +90,11 @@ object ConfigCache {
           Log.i(TAG, "Manager verified and found at UID: $uid")
           state = state.copy(managerUid = uid)
         }
-        .onFailure { state = state.copy(managerUid = -1) }
+        .onFailure { e ->
+          Log.w(TAG, "Manager verification failed (${e.message}), attempting auto-reinstall...")
+          VectorDaemon.scope.launch { autoInstallManager() }
+          state = state.copy(managerUid = -1)
+        }
   }
 
   private fun autoInstallManager() {
@@ -99,8 +103,15 @@ object ConfigCache {
     try {
       Log.i(TAG, "Executing pm install for Manager APK...")
       val apkPath = FileSystem.managerApkPath.toString()
-      val process = Runtime.getRuntime().exec(arrayOf("pm", "install", "-r", "-d", apkPath))
-      val exitCode = process.waitFor()
+      var process = Runtime.getRuntime().exec(arrayOf("pm", "install", "-r", "-d", apkPath))
+      var exitCode = process.waitFor()
+      if (exitCode != 0) {
+        val error = process.errorStream.bufferedReader().readText()
+        Log.w(TAG, "Manager pm install -r -d failed ($exitCode: $error), retrying after uninstall...")
+        Runtime.getRuntime().exec(arrayOf("pm", "uninstall", BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME)).waitFor()
+        process = Runtime.getRuntime().exec(arrayOf("pm", "install", apkPath))
+        exitCode = process.waitFor()
+      }
       if (exitCode == 0) {
         Log.i(TAG, "Manager auto-installed successfully! Refreshing state.")
         updateManager(false)
@@ -194,6 +205,7 @@ object ConfigCache {
                 appInfo?.sourceDir != null &&
                 apkPath != null &&
                 oldModule.apkPath != null &&
+                oldModule.versionCode == pkgInfo.longVersionCode &&
                 FileSystem.toGlobalNamespace(apkPath).exists() &&
                 apkPath == oldModule.apkPath &&
                 File(appInfo.sourceDir).parent == File(apkPath).parent) {

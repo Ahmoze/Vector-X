@@ -238,4 +238,13 @@
     <string name="color_blue_grey">ブルーグレー</string>
     <string name="menu_uninstall">モジュールをアンインストール</string>
     <string name="uninstall_module_confirm">このモジュールをアンインストールしてもよろしいですか？</string>
+    <string name="install_and_reboot">インストールして再起動</string>
+    <string name="update_flash_confirm_msg">Root 権限でフラッシュして再起動しますか？Root 権限が必要です。</string>
+    <string name="rescue_mode_title">ブートループ救済モード</string>
+    <string name="rescue_mode_summary">システムのブートループが検出されました。デバイスを保護するため、すべてのモジュールが無効化されました。</string>
+    <string name="download_started">ダウンロードを開始しました…</string>
+    <string name="download_failed">ダウンロードに失敗しました: %s</string>
+    <string name="url_not_available">URL が利用できません</string>
+    <string name="custom_repo_url_title">カスタムリポジトリ URL</string>
+    <string name="custom_repo_url_summary">モジュールリポジトリのカスタム URL を入力してください。空欄でデフォルトを使用します。</string>
 </resources>

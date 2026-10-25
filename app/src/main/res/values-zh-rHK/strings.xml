@@ -238,4 +238,13 @@
     <string name="color_blue_grey">藍灰</string>
     <string name="menu_uninstall">解除安裝模組</string>
     <string name="uninstall_module_confirm">確定要解除安裝此模組嗎？</string>
+    <string name="install_and_reboot">安裝並重新啟動</string>
+    <string name="update_flash_confirm_msg">是否透過 Root 刷入並重新啟動？需要 Root 權限。</string>
+    <string name="rescue_mode_title">防變磚救援模式</string>
+    <string name="rescue_mode_summary">Vector 偵測到系統無限重啟（Bootloop）。為保護您的裝置，所有模組已停用。</string>
+    <string name="download_started">已開始下載…</string>
+    <string name="download_failed">下載失敗：%s</string>
+    <string name="url_not_available">連結不可用</string>
+    <string name="custom_repo_url_title">自訂倉庫網址</string>
+    <string name="custom_repo_url_summary">輸入自訂模組倉庫 URL。留空則使用預設網址。</string>
 </resources>

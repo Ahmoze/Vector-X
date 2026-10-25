@@ -1,3 +1,37 @@
+🚀 **What's New in v2.0.30** 🚀
+
+## 🚀 Vector-X v2.0.30 (Real-Time Module Update Engine, One-Tap APK Installer & System Locale Edition)
+
+This release completes the **Real-Time Module Update & Release Notes Engine**, adds **Automatic APK Package Installation upon Download Completion**, fixes **Background OTA Bandwidth Usage**, hardens **Daemon In-Memory DEX Cache Invalidations & Multi-User Broadcasts**, and brings **Full System Language Detection (`SYSTEM` / Default) & Complete Localization** across Serbian (`sr`), Croatian (`hr`), Bosnian (`bs`), and 18+ international languages.
+
+---
+
+### 🌟 What's New & Fixed:
+
+* **⚡ Real-Time Module Updates & Release Notes Engine:**
+  * **Direct Per-Module Live Refresh**: `RepoLoader` now queries `modules.lsposed.org/module/<pkg>.json` directly in parallel for your installed modules, bypassing the 12-hour repository snapshot delay and detecting newly published module updates immediately.
+  * **Full Release Notes & Older Releases History**: Preserved full `descriptionHTML` release notes in both `scripts/update_modules.py` and on-demand `RepoItemFragment` detail fetches, and unlocked the **"Show older versions"** button across all repository modules.
+  * **Automatic System Package Installer Launch**: Added `REQUEST_INSTALL_PACKAGES` permission and a `DownloadManager.ACTION_DOWNLOAD_COMPLETE` receiver in `RepoItemFragment` so downloading a module update automatically opens the Android Package Installer without requiring manual file manager navigation.
+  * **Deep-Link & URI Hardening**: Added `lsposed://` scheme handling alongside `lspd://` in `MainActivity`, guarded missing ports on `module://` URIs, and added cold-start `reloadSingleModule` fallback in `AppListFragment`.
+
+* **🌍 System Language (`Default`) Detection & Complete Multi-Language Translations:**
+  * **Accurate Phone System Locale Tracking**: Fixed `App.getLocale("SYSTEM")` and `BaseActivity.attachBaseContext()` to dynamically read the phone's live system language from `Resources.getSystem().getConfiguration().getLocales()`, automatically normalizing Latin/Cyrillic script tags (`sr-Latn-RS` / `sr` / `bs` / `cnr`) so Android's `AssetManager` always matches `values-sr` and `values-bs` instead of falling back to English.
+  * **Daemon Notification Localization**: Updated `FileSystem.resources` and `FakeContext.getResources()` in the system daemon to apply the phone's live `Configuration` and added `values-sr` and `values-bs` daemon notification translations.
+  * **100% Translated New UI Strings**: Extracted all remaining hardcoded strings (`Install & Reboot`, `Clear Rescue Mode`, `Custom Repository URL`, `Download started`, theme selectors, etc.) and translated all new module update, badge, and settings strings across Serbian (`sr`), Croatian (`hr`), Bosnian (`bs`), and 18+ languages.
+
+* **🛡️ Daemon, Concurrency & OTA Update Hardening:**
+  * **Fixed Unnecessary 5.4 MB Background OTA Downloads**: Fixed `UpdateUtil.checkAssets()` so the release ZIP is only downloaded when `isRemoteNewer()` is `true`, and preserved cached `zip_file` preferences across app restarts.
+  * **Daemon In-Place Module Update Cache Invalidation**: Fixed `ConfigCache.performCacheUpdate()` to verify `oldModule.versionCode == pkgInfo.longVersionCode` before reusing cached `SharedMemory` DEX buffers, and triggered `ConfigCache.requestCacheUpdate()` on `ACTION_PACKAGE_ADDED`.
+  * **Thread-Safe `ModuleUtil` & Multi-User Broadcasts**: Migrated `installedModules` and `enabledModules` to `ConcurrentHashMap`, eliminated the empty-state flicker during `reloadInstalledModules()`, and extracted the real `userId` (`EXTRA_UID` / `EXTRA_USER_HANDLE`) on package broadcasts.
+
+---
+
+### 📦 Downloads:
+* **`Vector-v2.0.30-Release.zip`**: Standard production release build (Optimized & Minified).
+* **`Vector-v2.0.30-Debug.zip`**: Troubleshooting build with full debug symbols and verbose logging.
+
+---
+
 🚀 **What's New in v2.0.29** 🚀
 
 ## 🚀 Vector-X v2.0.29 (Repository Update Engine, Live Module Sync & Update Notification Edition)

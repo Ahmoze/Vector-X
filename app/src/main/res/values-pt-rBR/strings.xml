@@ -241,4 +241,13 @@
     <string name="color_blue_grey">Cinza-azulado</string>
     <string name="menu_uninstall">Desinstalar módulo</string>
     <string name="uninstall_module_confirm">Tem certeza que deseja desinstalar este módulo?</string>
+    <string name="install_and_reboot">Instalar e reiniciar</string>
+    <string name="update_flash_confirm_msg">Deseja instalar via Root e reiniciar? O acesso Root é necessário.</string>
+    <string name="rescue_mode_title">Modo de recuperação de Bootloop</string>
+    <string name="rescue_mode_summary">O Vector detectou um bootloop do sistema. Todos os módulos foram desativados para proteger seu dispositivo.</string>
+    <string name="download_started">Download iniciado…</string>
+    <string name="download_failed">Falha no download: %s</string>
+    <string name="url_not_available">URL não disponível</string>
+    <string name="custom_repo_url_title">URL personalizada do repositório</string>
+    <string name="custom_repo_url_summary">Insira uma URL personalizada para o repositório de módulos. Deixe em branco para usar o padrão.</string>
 </resources>

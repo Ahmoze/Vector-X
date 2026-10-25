@@ -239,4 +239,13 @@ Ahmoze (Vector-X)</string>
     <string name="color_blue_grey">灰蓝</string>
     <string name="menu_uninstall">卸载模块</string>
     <string name="uninstall_module_confirm">您确定要卸载此模块吗？</string>
+    <string name="install_and_reboot">安装并重启</string>
+    <string name="update_flash_confirm_msg">是否通过 Root 刷入并重启？需要 Root 权限。</string>
+    <string name="rescue_mode_title">防变砖救援模式</string>
+    <string name="rescue_mode_summary">Vector 检测到系统卡开机（Bootloop）。为保护您的设备，所有模块已被禁用。</string>
+    <string name="download_started">已开始下载…</string>
+    <string name="download_failed">下载失败：%s</string>
+    <string name="url_not_available">链接不可用</string>
+    <string name="custom_repo_url_title">自定义仓库地址</string>
+    <string name="custom_repo_url_summary">输入自定义模块仓库 URL。留空则使用默认地址。</string>
 </resources>

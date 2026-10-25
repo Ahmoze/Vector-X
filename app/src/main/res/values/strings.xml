@@ -241,4 +241,13 @@
     <string name="color_blue_grey">Blue grey</string>
     <string name="menu_uninstall">Uninstall module</string>
     <string name="uninstall_module_confirm">Are you sure you want to uninstall this module? It will be removed from your device.</string>
+    <string name="install_and_reboot">Install &amp; Reboot</string>
+    <string name="update_flash_confirm_msg">Do you want to flash it via Root and reboot? Root access is required.</string>
+    <string name="rescue_mode_title">Bootloop Rescue Mode</string>
+    <string name="rescue_mode_summary">Vector detected a system bootloop. All modules have been disabled to protect your device.</string>
+    <string name="download_started">Download started…</string>
+    <string name="download_failed">Download failed: %s</string>
+    <string name="url_not_available">URL not available</string>
+    <string name="custom_repo_url_title">Custom Repository URL</string>
+    <string name="custom_repo_url_summary">Enter a custom URL for the module repository. Leave empty to use the default.</string>
 </resources>

@@ -58,7 +58,29 @@ class FakeContext(private val fakePackageName: String = "android") : ContextWrap
     return fakeTheme!!
   }
 
-  override fun getResources(): Resources = FileSystem.resources
+  override fun getResources(): Resources {
+    val res = FileSystem.resources
+    runCatching {
+      val sysRes = Resources.getSystem()
+      val config = android.content.res.Configuration(sysRes.configuration)
+      val locales = config.locales
+      if (!locales.isEmpty) {
+        val loc = locales.get(0)
+        val lang = loc.language
+        if ("sr".equals(lang, ignoreCase = true) || "cnr".equals(lang, ignoreCase = true)) {
+          config.setLocale(
+              if (loc.country.isNullOrEmpty()) java.util.Locale("sr")
+              else java.util.Locale("sr", loc.country))
+        } else if ("bs".equals(lang, ignoreCase = true)) {
+          config.setLocale(
+              if (loc.country.isNullOrEmpty()) java.util.Locale("bs")
+              else java.util.Locale("bs", loc.country))
+        }
+      }
+      @Suppress("DEPRECATION") res.updateConfiguration(config, sysRes.displayMetrics)
+    }
+    return res
+  }
 
   // Required for Android 12+
   override fun getAttributionTag(): String? = null

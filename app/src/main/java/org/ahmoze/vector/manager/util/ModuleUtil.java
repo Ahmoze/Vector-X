@@ -60,10 +60,10 @@ public final class ModuleUtil {
     private static ModuleUtil instance = null;
     private final PackageManager pm;
     private final Set<ModuleListener> listeners = ConcurrentHashMap.newKeySet();
-    private HashSet<String> enabledModules = new HashSet<>();
-    private List<UserInfo> users = new ArrayList<>();
-    private Map<Pair<String, Integer>, InstalledModule> installedModules = new HashMap<>();
-    private boolean modulesLoaded = false;
+    private Set<String> enabledModules = ConcurrentHashMap.newKeySet();
+    private volatile List<UserInfo> users = new ArrayList<>();
+    private Map<Pair<String, Integer>, InstalledModule> installedModules = new ConcurrentHashMap<>();
+    private volatile boolean modulesLoaded = false;
 
     static final int MATCH_ANY_USER = 0x00400000; // PackageManager.MATCH_ANY_USER
 
@@ -123,13 +123,12 @@ public final class ModuleUtil {
     }
 
     synchronized public void reloadInstalledModules() {
-        modulesLoaded = false;
         if (!ConfigManager.isBinderAlive()) {
             modulesLoaded = true;
             return;
         }
 
-        Map<Pair<String, Integer>, InstalledModule> modules = new HashMap<>();
+        Map<Pair<String, Integer>, InstalledModule> modules = new ConcurrentHashMap<>();
         var users = ConfigManager.getUsers();
         for (PackageInfo pkg : ConfigManager.getInstalledPackagesFromAllUsers(PackageManager.GET_META_DATA | MATCH_ALL_FLAGS, false)) {
             ApplicationInfo app = pkg.applicationInfo;
@@ -141,10 +140,16 @@ public final class ModuleUtil {
         }
 
         installedModules = modules;
+        if (users != null) {
+            this.users = users;
+        }
 
-        this.users = users;
-
-        enabledModules = new HashSet<>(Arrays.asList(ConfigManager.getEnabledModules()));
+        Set<String> newEnabled = ConcurrentHashMap.newKeySet();
+        String[] enabledArr = ConfigManager.getEnabledModules();
+        if (enabledArr != null) {
+            newEnabled.addAll(Arrays.asList(enabledArr));
+        }
+        enabledModules = newEnabled;
         modulesLoaded = true;
         listeners.forEach(ModuleListener::onModulesReloaded);
     }
@@ -158,17 +163,19 @@ public final class ModuleUtil {
         return reloadSingleModule(packageName, userId, false);
     }
 
-    public InstalledModule reloadSingleModule(String packageName, int userId, boolean packageFullyRemoved) {
-        if (packageFullyRemoved && isModuleEnabled(packageName)) {
-            enabledModules.remove(packageName);
-            listeners.forEach(ModuleListener::onModulesReloaded);
-        }
+    synchronized public InstalledModule reloadSingleModule(String packageName, int userId, boolean packageFullyRemoved) {
+        if (!ConfigManager.isBinderAlive()) return null;
         PackageInfo pkg;
 
         try {
             pkg = ConfigManager.getPackageInfo(packageName, PackageManager.GET_META_DATA, userId);
         } catch (NameNotFoundException e) {
             InstalledModule old = installedModules.remove(Pair.create(packageName, userId));
+            if (packageFullyRemoved && isModuleEnabled(packageName) &&
+                    installedModules.values().stream().noneMatch(m -> packageName.equals(m.packageName))) {
+                enabledModules.remove(packageName);
+                listeners.forEach(ModuleListener::onModulesReloaded);
+            }
             if (old != null) listeners.forEach(i -> i.onSingleModuleReloaded(old));
             return null;
         }
@@ -182,6 +189,11 @@ public final class ModuleUtil {
             return module;
         } else {
             InstalledModule old = installedModules.remove(Pair.create(packageName, userId));
+            if (packageFullyRemoved && isModuleEnabled(packageName) &&
+                    installedModules.values().stream().noneMatch(m -> packageName.equals(m.packageName))) {
+                enabledModules.remove(packageName);
+                listeners.forEach(ModuleListener::onModulesReloaded);
+            }
             if (old != null) listeners.forEach(i -> i.onSingleModuleReloaded(old));
             return null;
         }
@@ -194,7 +206,15 @@ public final class ModuleUtil {
 
     @Nullable
     public InstalledModule getModule(String packageName) {
-        return getModule(packageName, 0);
+        if (!modulesLoaded || packageName == null) return null;
+        InstalledModule mod = installedModules.get(Pair.create(packageName, 0));
+        if (mod != null) return mod;
+        for (InstalledModule candidate : installedModules.values()) {
+            if (packageName.equals(candidate.packageName)) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     @Nullable

@@ -277,6 +277,9 @@ object VectorService : IDaemonService.Stub() {
           moduleApkPathUpdated =
               ModuleDatabase.updateModuleApkPath(
                   moduleName, ConfigCache.getModuleApkPath(appInfo), false)
+          if (!moduleApkPathUpdated && action == Intent.ACTION_PACKAGE_ADDED) {
+            ConfigCache.requestCacheUpdate()
+          }
         } else {
           if (ConfigCache.state.scopes.keys.any { it.uid == uid }) {
             // If not a module, but it's an app that was previously a "scope" (target)

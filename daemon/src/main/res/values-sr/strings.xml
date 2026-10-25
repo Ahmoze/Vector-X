@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Notification -->
+    <string name="module_is_not_activated_yet">Xposed modul još nije aktiviran</string>
+    <string name="module_is_not_activated_yet_main_user_detailed">%1$s je instaliran, ali još nije aktiviran</string>
+    <string name="module_is_not_activated_yet_multi_user_detailed">%1$s je instaliran kod korisnika %2$s, ali još nije aktiviran</string>
+    <string name="xposed_module_updated_notification_title">Xposed modul je ažuriran</string>
+    <string name="xposed_module_updated_notification_content">%s je ažuriran, prinudno zaustavi i ponovo pokreni aplikacije u njegovom opsegu</string>
+    <string name="xposed_module_updated_notification_title_system">Xposed modul je ažuriran, potrebno je ponovno pokretanje sistema</string>
+    <string name="xposed_module_updated_notification_content_system">%s je ažuriran, pošto opseg sadrži Android Sistem, potrebno je ponovno pokretanje uređaja da bi se promene primenile</string>
+    <string name="module_updated_channel_name">Ažuriranje modula završeno</string>
+    <string name="status_channel_name">Vector status</string>
+    <string name="vector_running_notification_title">Vector je učitan</string>
+    <string name="vector_running_notification_content">Dodirni notifikaciju da otvoriš menadžer</string>
+    <string name="xposed_module_request_scope_title">Zahtev za opseg</string>
+    <string name="xposed_module_request_scope_content">%1$s kod korisnika %2$s zahteva dodavanje %3$s u svoj opseg.</string>
+    <string name="scope_channel_name">Zahtev za opseg</string>
+    <string name="scope_approve">Odobri</string>
+    <string name="scope_deny">Odbij</string>
+    <string name="never_ask_again">Ne pitaj ponovo</string>
+</resources>

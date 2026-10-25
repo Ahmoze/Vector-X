@@ -429,10 +429,12 @@ public class ModulesFragment extends BaseFragment implements ModuleUtil.ModuleLi
             if (parent instanceof ModulesFragment moduleFragment) {
                 binding.recyclerView.getBorderViewDelegate().setBorderVisibilityChangedListener((top, oldTop, bottom, oldBottom) -> moduleFragment.binding.appBar.setLifted(!top));
                 moduleFragment.binding.appBar.setLifted(!binding.recyclerView.getBorderViewDelegate().isShowingTopBorder());
-                moduleFragment.searchView.addOnAttachStateChangeListener(searchViewLocker);
-                binding.recyclerView.setNestedScrollingEnabled(moduleFragment.searchView.isIconified());
+                if (moduleFragment.searchView != null) {
+                    moduleFragment.searchView.addOnAttachStateChangeListener(searchViewLocker);
+                    binding.recyclerView.setNestedScrollingEnabled(moduleFragment.searchView.isIconified());
+                }
                 View.OnClickListener l = v -> {
-                    if (moduleFragment.searchView.isIconified()) {
+                    if (moduleFragment.searchView == null || moduleFragment.searchView.isIconified()) {
                         binding.recyclerView.smoothScrollToPosition(0);
                         moduleFragment.binding.appBar.setExpanded(true, true);
                     }
@@ -446,7 +448,9 @@ public class ModulesFragment extends BaseFragment implements ModuleUtil.ModuleLi
             binding.recyclerView.getBorderViewDelegate().setBorderVisibilityChangedListener(null);
             var parent = getParentFragment();
             if (parent instanceof ModulesFragment moduleFragment) {
-                moduleFragment.searchView.removeOnAttachStateChangeListener(searchViewLocker);
+                if (moduleFragment.searchView != null) {
+                    moduleFragment.searchView.removeOnAttachStateChangeListener(searchViewLocker);
+                }
                 binding.recyclerView.setNestedScrollingEnabled(true);
             }
         }
@@ -632,7 +636,7 @@ public class ModulesFragment extends BaseFragment implements ModuleUtil.ModuleLi
                 holder.hint.setText(sb);
                 if (isUpgradable && !isPick) {
                     holder.hint.setOnClickListener(v -> {
-                        searchView.clearFocus();
+                        if (searchView != null) searchView.clearFocus();
                         var navController = getNavController();
                         navController.navigate(
                                 new Uri.Builder().scheme("lsposed").authority("repo").appendQueryParameter("modulePackageName", item.packageName).build(),
@@ -647,13 +651,13 @@ public class ModulesFragment extends BaseFragment implements ModuleUtil.ModuleLi
             if (!isPick) {
                 holder.root.setAlpha(moduleUtil.isModuleEnabled(item.packageName) ? 1.0f : .5f);
                 holder.itemView.setOnClickListener(v -> {
-                    searchView.clearFocus();
+                    if (searchView != null) searchView.clearFocus();
                     if (isLoaded()) {
                         safeNavigate(ModulesFragmentDirections.actionModulesFragmentToAppListFragment(item.packageName, item.userId));
                     }
                 });
                 holder.itemView.setOnLongClickListener(v -> {
-                    searchView.clearFocus();
+                    if (searchView != null) searchView.clearFocus();
                     selectedModule = item;
                     return false;
                 });

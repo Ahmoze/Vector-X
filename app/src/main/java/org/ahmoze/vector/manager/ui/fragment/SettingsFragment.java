@@ -255,7 +255,7 @@ public class SettingsFragment extends BaseFragment {
                         entries.add(getString(rikka.core.R.string.follow_system));
                         continue;
                     }
-                    var locale = Locale.forLanguageTag(lang);
+                    var locale = "sr".equals(lang) ? Locale.forLanguageTag("sr-Latn") : Locale.forLanguageTag(lang);
                     entries.add(HtmlCompat.fromHtml(locale.getDisplayName(locale), HtmlCompat.FROM_HTML_MODE_LEGACY));
                 }
                 language.setEntries(entries.toArray(new CharSequence[0]));
@@ -263,8 +263,8 @@ public class SettingsFragment extends BaseFragment {
                 if (TextUtils.isEmpty(tag) || SYSTEM.equals(tag)) {
                     language.setSummary(getString(rikka.core.R.string.follow_system));
                 } else {
-                    var locale = Locale.forLanguageTag(tag);
-                    language.setSummary(!TextUtils.isEmpty(locale.getScript()) ? locale.getDisplayScript(userLocale) : locale.getDisplayName(userLocale));
+                    var locale = "sr".equals(tag) ? Locale.forLanguageTag("sr-Latn") : Locale.forLanguageTag(tag);
+                    language.setSummary(locale.getDisplayName(userLocale));
                 }
                 language.setOnPreferenceChangeListener((preference, newValue) -> {
                     var app = App.getInstance();

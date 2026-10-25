@@ -140,7 +140,8 @@ object FileSystem {
           isAccessible = true
         }
     addAssetPath.invoke(am, daemonApkPath.toString())
-    @Suppress("DEPRECATION") Resources(am, null, null)
+    val sysRes = Resources.getSystem()
+    @Suppress("DEPRECATION") Resources(am, sysRes.displayMetrics, sysRes.configuration)
   }
 
   /** Loads a single DEX file into SharedMemory, optionally applying obfuscation. */

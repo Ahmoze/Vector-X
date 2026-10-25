@@ -440,6 +440,7 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
         public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
             var args = getArguments();
             if (args == null) throw new IllegalArgumentException();
+            var context = requireActivity().getApplicationContext();
             return new com.google.android.material.dialog.MaterialAlertDialogBuilder(requireActivity(), R.style.ThemeOverlay_MaterialAlertDialog_Centered_FullWidthButtons)
                     .setTitle(R.string.module_release_view_assets)
                     .setPositiveButton(android.R.string.cancel, null)
@@ -449,21 +450,50 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                                 String name = args.getStringArrayList("raw_names").get(which);
                                 if (url != null && !url.trim().isEmpty()) {
                                     try {
+                                        boolean isApk = name != null && name.toLowerCase(Locale.ROOT).endsWith(".apk");
                                         android.app.DownloadManager.Request req = new android.app.DownloadManager.Request(android.net.Uri.parse(url));
                                         req.setTitle(name);
-                                        req.setDescription(requireActivity().getString(R.string.app_name) + " Download");
-                                        if (name != null && name.toLowerCase(Locale.ROOT).endsWith(".apk")) {
+                                        req.setDescription(context.getString(R.string.app_name) + " Download");
+                                        if (isApk) {
                                             req.setMimeType("application/vnd.android.package-archive");
                                         }
                                         req.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                                         req.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, name);
-                                        android.app.DownloadManager manager = (android.app.DownloadManager) requireActivity().getSystemService(android.content.Context.DOWNLOAD_SERVICE);
+                                        android.app.DownloadManager manager = (android.app.DownloadManager) context.getSystemService(android.content.Context.DOWNLOAD_SERVICE);
                                         if (manager != null) {
-                                            manager.enqueue(req);
-                                            android.widget.Toast.makeText(requireActivity(), "Download started...", android.widget.Toast.LENGTH_SHORT).show();
+                                            final long downloadId = manager.enqueue(req);
+                                            if (isApk) {
+                                                android.content.BroadcastReceiver receiver = new android.content.BroadcastReceiver() {
+                                                    @Override
+                                                    public void onReceive(android.content.Context ctx, android.content.Intent intent) {
+                                                        long id = intent.getLongExtra(android.app.DownloadManager.EXTRA_DOWNLOAD_ID, -1L);
+                                                        if (id != downloadId) return;
+                                                        try {
+                                                            context.unregisterReceiver(this);
+                                                        } catch (Exception ignored) {
+                                                        }
+                                                        android.net.Uri apkUri = manager.getUriForDownloadedFile(downloadId);
+                                                        if (apkUri != null) {
+                                                            try {
+                                                                android.content.Intent installIntent = new android.content.Intent(android.content.Intent.ACTION_VIEW);
+                                                                installIntent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                                                                installIntent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                                                context.startActivity(installIntent);
+                                                            } catch (Exception e) {
+                                                                Log.e(App.TAG, "Failed to launch package installer for downloaded APK", e);
+                                                            }
+                                                        }
+                                                    }
+                                                };
+                                                context.registerReceiver(
+                                                        receiver,
+                                                        new android.content.IntentFilter(android.app.DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                                                        android.content.Context.RECEIVER_EXPORTED);
+                                            }
+                                            android.widget.Toast.makeText(context, context.getString(R.string.download_started), android.widget.Toast.LENGTH_SHORT).show();
                                         }
                                     } catch (Exception e) {
-                                        android.widget.Toast.makeText(requireActivity(), "Download failed: " + e.getMessage(), android.widget.Toast.LENGTH_SHORT).show();
+                                        android.widget.Toast.makeText(context, context.getString(R.string.download_failed, e.getMessage()), android.widget.Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             })
@@ -599,7 +629,7 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                     if (url != null && !url.trim().isEmpty()) {
                         NavUtil.startURL(requireActivity(), url);
                     } else {
-                        android.widget.Toast.makeText(requireActivity(), "URL not available", android.widget.Toast.LENGTH_SHORT).show();
+                        android.widget.Toast.makeText(requireActivity(), R.string.url_not_available, android.widget.Toast.LENGTH_SHORT).show();
                     }
                 });
                 List<ReleaseAsset> assets = release.getReleaseAssets();
@@ -764,7 +794,7 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
             
             if (repoItemFragment.module.getReadmeHTML() == null) {
                 fetchReadmeFromGithub(repoItemFragment);
-                repoItemFragment.renderGithubMarkdown(binding.readme, "<center>Loading...</center>");
+                repoItemFragment.renderGithubMarkdown(binding.readme, "<center>" + getString(R.string.loading) + "</center>");
             } else {
                 repoItemFragment.renderGithubMarkdown(binding.readme, repoItemFragment.module.getReadmeHTML());
             }
@@ -790,11 +820,20 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                     try (response) {
                         if (!isAdded() || getActivity() == null) return;
                         if (response.isSuccessful() && response.body() != null) {
-                            var jsonObj = com.google.gson.JsonParser.parseString(response.body().string()).getAsJsonObject();
-                            if (jsonObj.has("readmeHTML") && !jsonObj.get("readmeHTML").isJsonNull()) {
-                                String html = jsonObj.get("readmeHTML").getAsString();
+                            String bodyStr = response.body().string();
+                            OnlineModule detailModule = new com.google.gson.Gson().fromJson(bodyStr, OnlineModule.class);
+                            if (detailModule != null) {
+                                if (detailModule.getName() == null) {
+                                    detailModule.setName(pkgName);
+                                }
+                                RepoLoader.getInstance().mergeOnlineModule(detailModule, false);
+                                repoItemFragment.module = detailModule;
+                                repoItemFragment.updateSubtitle();
+                                if (repoItemFragment.releaseAdapter != null) {
+                                    repoItemFragment.runAsync(repoItemFragment.releaseAdapter::loadItems);
+                                }
+                                String html = detailModule.getReadmeHTML();
                                 if (html != null && !html.isEmpty()) {
-                                    repoItemFragment.module.setReadmeHTML(html);
                                     getActivity().runOnUiThread(() -> repoItemFragment.renderGithubMarkdown(binding.readme, html));
                                     return;
                                 }

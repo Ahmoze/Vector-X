@@ -247,4 +247,13 @@
     <string name="color_blue_grey">Niebiesko szary</string>
     <string name="menu_uninstall">Odinstaluj moduł</string>
     <string name="uninstall_module_confirm">Czy na pewno chcesz odinstalować ten moduł?</string>
+    <string name="install_and_reboot">Zainstaluj i uruchom ponownie</string>
+    <string name="update_flash_confirm_msg">Czy chcesz zainstalować przez Root i uruchomić ponownie? Wymagany dostęp Root.</string>
+    <string name="rescue_mode_title">Tryb ratunkowy Bootloop</string>
+    <string name="rescue_mode_summary">Vector wykrył pętlę rozruchową systemu. Wszystkie moduły zostały wyłączone, aby chronić urządzenie.</string>
+    <string name="download_started">Rozpoczęto pobieranie…</string>
+    <string name="download_failed">Pobieranie nie powiodło się: %s</string>
+    <string name="url_not_available">URL niedostępny</string>
+    <string name="custom_repo_url_title">Własny adres URL repozytorium</string>
+    <string name="custom_repo_url_summary">Wprowadź własny adres URL repozytorium modułów. Pozostaw puste, aby użyć domyślnego.</string>
 </resources>

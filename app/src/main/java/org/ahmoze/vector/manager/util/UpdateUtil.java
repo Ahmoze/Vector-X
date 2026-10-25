@@ -95,29 +95,59 @@ public class UpdateUtil {
     private static void checkAssets(JsonObject assets, String releaseNotes, String tagName, String releaseTitle) {
         var pref = App.getPreferences();
         var name = assets.get("name").getAsString();
-        
+        boolean updateAvailable = isRemoteNewer(tagName, releaseTitle, releaseNotes);
+
         pref.edit()
                 .putString("latest_version_name", tagName)
                 .putString("latest_release_title", releaseTitle)
                 .putLong("latest_check", Instant.now().getEpochSecond())
                 .putString("release_notes", releaseNotes)
-                .putString("zip_file", null)
                 .putBoolean("checked", true)
                 .apply();
-                
+
+        var cachedZip = new File(App.getInstance().getCacheDir(), name);
+        if (!updateAvailable) {
+            if (cachedZip.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                cachedZip.delete();
+            }
+            pref.edit().putString("zip_file", null).apply();
+            return;
+        }
+
         var updatedAt = Instant.parse(assets.get("updated_at").getAsString());
         var downloadUrl = assets.get("browser_download_url").getAsString();
+        var size = assets.get("size").getAsLong();
         var zipTime = pref.getLong("zip_time", 0);
-        if (!updatedAt.equals(Instant.ofEpochSecond(zipTime))) {
-            var zip = downloadNewZipSync(downloadUrl, name);
-            var size = assets.get("size").getAsLong();
-            if (zip != null && zip.length() == size) {
-                pref.edit()
-                        .putLong("zip_time", updatedAt.getEpochSecond())
-                        .putString("zip_file", zip.getAbsolutePath())
-                        .apply();
+        if (updatedAt.equals(Instant.ofEpochSecond(zipTime)) && cachedZip.exists() && cachedZip.length() == size) {
+            pref.edit()
+                    .putString("zip_file", cachedZip.getAbsolutePath())
+                    .apply();
+            return;
+        }
+
+        pref.edit().putString("zip_file", null).apply();
+        var zip = downloadNewZipSync(downloadUrl, name);
+        if (zip != null && zip.length() == size) {
+            pref.edit()
+                    .putLong("zip_time", updatedAt.getEpochSecond())
+                    .putString("zip_file", zip.getAbsolutePath())
+                    .apply();
+        }
+    }
+
+    private static boolean isRemoteNewer(String latestVersionName, String latestReleaseTitle, String releaseNotes) {
+        if (latestVersionName != null && !latestVersionName.isEmpty()) {
+            int cmp = compareVersions(latestVersionName, BuildConfig.VERSION_NAME);
+            if (cmp > 0) return true;
+            if (cmp == 0) {
+                int remoteBuild = extractBuildCode(latestReleaseTitle, latestVersionName, releaseNotes);
+                if (remoteBuild > BuildConfig.VERSION_CODE) {
+                    return true;
+                }
             }
         }
+        return false;
     }
 
     private static int extractBuildCode(String... sources) {
@@ -166,18 +196,7 @@ public class UpdateUtil {
             var latestVersionName = pref.getString("latest_version_name", "");
             var latestReleaseTitle = pref.getString("latest_release_title", "");
             var releaseNotes = pref.getString("release_notes", "");
-            if (latestVersionName != null && !latestVersionName.isEmpty()) {
-                int cmp = compareVersions(latestVersionName, BuildConfig.VERSION_NAME);
-                if (cmp > 0) return true;
-                if (cmp == 0) {
-                    int remoteBuild = extractBuildCode(latestReleaseTitle, latestVersionName, releaseNotes);
-                    if (remoteBuild > BuildConfig.VERSION_CODE) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            return false;
+            return isRemoteNewer(latestVersionName, latestReleaseTitle, releaseNotes);
         }
         return buildTime.atOffset(ZoneOffset.UTC).plusDays(30).toInstant().isBefore(now);
     }

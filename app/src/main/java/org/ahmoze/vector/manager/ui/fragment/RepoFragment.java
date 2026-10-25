@@ -129,7 +129,7 @@ public class RepoFragment extends BaseFragment implements RepoLoader.RepoListene
         binding.swipeRefreshLayout.setOnRefreshListener(adapter::fullRefresh);
         binding.swipeRefreshLayout.setProgressViewEndTarget(true, binding.swipeRefreshLayout.getProgressViewEndOffset());
         View.OnClickListener l = v -> {
-            if (searchView.isIconified()) {
+            if (searchView == null || searchView.isIconified()) {
                 binding.recyclerView.smoothScrollToPosition(0);
                 binding.appBar.setExpanded(true, true);
             }
@@ -374,7 +374,7 @@ public class RepoFragment extends BaseFragment implements RepoLoader.RepoListene
             }
 
             holder.itemView.setOnClickListener(v -> {
-                searchView.clearFocus();
+                if (searchView != null) searchView.clearFocus();
                 safeNavigate(RepoFragmentDirections.actionRepoFragmentToRepoItemFragment(module.getName()));
             });
             holder.itemView.setTooltipText(module.getDescription());

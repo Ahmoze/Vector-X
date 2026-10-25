@@ -157,11 +157,11 @@ public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoad
                     if (zipPath != null && new java.io.File(zipPath).exists()) {
                         new org.ahmoze.vector.manager.ui.dialog.BlurBehindDialogBuilder(activity)
                             .setTitle(R.string.install)
-                            .setMessage(notes + "\n\nDo you want to flash it via Root and reboot? Root access is required.")
-                            .setPositiveButton("Install & Reboot", (dialog, which) -> {
+                            .setMessage(notes + "\n\n" + getString(R.string.update_flash_confirm_msg))
+                            .setPositiveButton(R.string.install_and_reboot, (dialog, which) -> {
                                 new Thread(() -> {
                                     try {
-                                        Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "ksud module install '" + zipPath + "' || apmod install '" + zipPath + "' || magisk --install-module '" + zipPath + "'; reboot"});
+                                        Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "(/data/adb/ksud module install '" + zipPath + "' || ksud module install '" + zipPath + "' || /data/adb/apd module install '" + zipPath + "' || apd module install '" + zipPath + "' || magisk --install-module '" + zipPath + "') && reboot"});
                                         p.waitFor();
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -231,8 +231,8 @@ public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoad
                 binding.statusIcon.setImageResource(R.drawable.ic_round_warning_24);
                 binding.warningCard.setVisibility(View.VISIBLE);
                 if (rescueModeActive) {
-                    binding.warningTitle.setText("Bootloop Rescue Mode");
-                    binding.warningSummary.setText("Vector detected a system bootloop. All modules have been disabled to protect your device.");
+                    binding.warningTitle.setText(R.string.rescue_mode_title);
+                    binding.warningSummary.setText(R.string.rescue_mode_summary);
                 } else if (sepolicyAbnormal) {
                     binding.warningTitle.setText(R.string.selinux_policy_not_loaded_summary);
                     binding.warningSummary.setText(HtmlCompat.fromHtml(getString(R.string.selinux_policy_not_loaded), HtmlCompat.FROM_HTML_MODE_LEGACY));

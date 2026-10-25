@@ -234,4 +234,13 @@
     <string name="color_blue_grey">청회색</string>
     <string name="menu_uninstall">모듈 제거</string>
     <string name="uninstall_module_confirm">이 모듈을 제거하시겠습니까?</string>
+    <string name="install_and_reboot">설치 및 재부팅</string>
+    <string name="update_flash_confirm_msg">Root 권한으로 플래싱하고 재부팅하시겠습니까? Root 권한이 필요합니다.</string>
+    <string name="rescue_mode_title">부트루프 복구 모드</string>
+    <string name="rescue_mode_summary">시스템 부트루프가 감지되었습니다. 기기를 보호하기 위해 모든 모듈이 비활성화되었습니다.</string>
+    <string name="download_started">다운로드 시작됨…</string>
+    <string name="download_failed">다운로드 실패: %s</string>
+    <string name="url_not_available">URL을 사용할 수 없음</string>
+    <string name="custom_repo_url_title">사용자 지정 저장소 URL</string>
+    <string name="custom_repo_url_summary">모듈 저장소의 사용자 지정 URL을 입력하세요. 기본값을 사용하려면 비워 두세요.</string>
 </resources>

@@ -241,4 +241,13 @@
     <string name="color_blue_grey">Modrá šedá</string>
     <string name="menu_uninstall">Odinštalovať modul</string>
     <string name="uninstall_module_confirm">Naozaj chcete odinštalovať tento modul?</string>
+    <string name="install_and_reboot">Nainštalovať a reštartovať</string>
+    <string name="update_flash_confirm_msg">Chcete aktualizáciu nainštalovať cez Root a reštartovať? Vyžaduje sa prístup Root.</string>
+    <string name="rescue_mode_title">Záchranný režim Bootloop</string>
+    <string name="rescue_mode_summary">Vector zistil zacyklenie štartu systému. Všetky moduly boli deaktivované na ochranu zariadenia.</string>
+    <string name="download_started">Sťahovanie sa začalo…</string>
+    <string name="download_failed">Sťahovanie zlyhalo: %s</string>
+    <string name="url_not_available">URL nie je k dispozícii</string>
+    <string name="custom_repo_url_title">Vlastná URL repozitára</string>
+    <string name="custom_repo_url_summary">Zadajte vlastnú URL pre repozitár modulov. Ponechajte prázdne pre predvolenú.</string>
 </resources>

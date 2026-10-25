@@ -21,6 +21,8 @@
 package org.ahmoze.vector.manager.ui.activity.base;
 
 import android.app.ActivityManager;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -37,10 +39,23 @@ import org.ahmoze.vector.manager.App;
 import org.ahmoze.vector.manager.R;
 import org.ahmoze.vector.manager.util.ThemeUtil;
 
+import rikka.material.app.LocaleDelegate;
 import rikka.material.app.MaterialActivity;
 
 public class BaseActivity extends MaterialActivity {
     private static Bitmap icon = null;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        var locale = App.getLocale();
+        if (locale != null) {
+            LocaleDelegate.setDefaultLocale(locale);
+            var config = new Configuration(newBase.getResources().getConfiguration());
+            config.setLocale(locale);
+            newBase = newBase.createConfigurationContext(config);
+        }
+        super.attachBaseContext(newBase);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

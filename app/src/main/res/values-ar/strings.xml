@@ -249,4 +249,13 @@
     <string name="color_blue_grey">أزرق رمادي</string>
     <string name="menu_uninstall">إلغاء تثبيت الوحدة</string>
     <string name="uninstall_module_confirm">هل أنت متأكد من إلغاء التثبيت؟</string>
+    <string name="install_and_reboot">تثبيت وإعادة التشغيل</string>
+    <string name="update_flash_confirm_msg">هل تريد تثبيته عبر صلاحيات الروت وإعادة التشغيل؟ يتطلب صلاحيات الروت.</string>
+    <string name="rescue_mode_title">وضع الإنقاذ من تعليق الإقلاع</string>
+    <string name="rescue_mode_summary">اكتشف Vector تعليقًا في إقلاع النظام. تم تعطيل جميع الوحدات لحماية جهازك.</string>
+    <string name="download_started">بدأ التنزيل…</string>
+    <string name="download_failed">فشل التنزيل: %s</string>
+    <string name="url_not_available">الرابط غير متاح</string>
+    <string name="custom_repo_url_title">رابط المستودع المخصص</string>
+    <string name="custom_repo_url_summary">أدخل رابطًا مخصصًا لمستودع الوحدات. اتركه فارغًا لاستخدام الافتراضي.</string>
 </resources>

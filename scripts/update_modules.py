@@ -87,8 +87,11 @@ def normalize_releases(releases_list):
         if r.get('url'):
             rel_obj["url"] = r['url']
         desc_html = r.get('descriptionHTML')
-        if desc_html and len(desc_html) <= 15000:
-            rel_obj["descriptionHTML"] = desc_html
+        if desc_html:
+            if len(desc_html) <= 15000:
+                rel_obj["descriptionHTML"] = desc_html
+            else:
+                rel_obj["descriptionHTML"] = desc_html[:15000] + "\n<p>...</p>"
         normalized.append(rel_obj)
 
     if len(normalized) > 3:
@@ -133,7 +136,7 @@ def fetch_github_releases(repo_url):
                 })
         if not assets:
             continue
-        rels.append({
+        rel_entry = {
             "name": r.get('name') or r.get('tag_name', ''),
             "url": r.get('html_url', ''),
             "tagName": r.get('tag_name', ''),
@@ -141,7 +144,18 @@ def fetch_github_releases(repo_url):
             "publishedAt": r.get('published_at') or r.get('created_at', ''),
             "isPrerelease": bool(r.get('prerelease', False)),
             "releaseAssets": assets,
-        })
+        }
+        body_text = (r.get('body') or '').strip()
+        if body_text:
+            escaped = (
+                body_text.replace('&', '&amp;')
+                .replace('<', '&lt;')
+                .replace('>', '&gt;')
+                .replace('\r\n', '<br>')
+                .replace('\n', '<br>')
+            )
+            rel_entry["descriptionHTML"] = f"<div>{escaped[:15000]}</div>"
+        rels.append(rel_entry)
         if len(rels) >= 3 and any(not x.get('isPrerelease') for x in rels):
             break
     return rels
@@ -183,7 +197,7 @@ def process_module(item):
             and cached.get('latestReleaseTime') == mod['latestReleaseTime']
             and cached.get('latestRelease') == mod['latestRelease']
             and bool(mod['latestRelease'])
-            and (first_tag == mod['latestRelease'] or 'descriptionHTML' in cached_rels[0])
+            and all(bool(r.get('descriptionHTML')) for r in cached_rels)
         )
         if has_canonical_cache:
             mod['releases'] = normalize_releases(cached_rels)

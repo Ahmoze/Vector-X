@@ -134,8 +134,14 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
                     default -> {
                         var data = intent.getData();
                         if (data != null && Objects.equals(data.getScheme(), "module")) {
+                            int port = data.getPort();
+                            int userId = port >= 0 ? port : 0;
                             navController.navigate(
-                                    new Uri.Builder().scheme("lsposed").authority("module").appendQueryParameter("modulePackageName", data.getHost()).appendQueryParameter("moduleUserId", String.valueOf(data.getPort())).build(),
+                                    new Uri.Builder().scheme("lsposed").authority("module").appendQueryParameter("modulePackageName", data.getHost()).appendQueryParameter("moduleUserId", String.valueOf(userId)).build(),
+                                    new NavOptions.Builder().setEnterAnim(R.anim.fragment_enter).setExitAnim(R.anim.fragment_exit).setPopEnterAnim(R.anim.fragment_enter_pop).setPopExitAnim(R.anim.fragment_exit_pop).setLaunchSingleTop(true).setPopUpTo(navController.getGraph().getStartDestinationId(), false, true).build());
+                        } else if (data != null && Objects.equals(data.getScheme(), "lsposed")) {
+                            navController.navigate(
+                                    data,
                                     new NavOptions.Builder().setEnterAnim(R.anim.fragment_enter).setExitAnim(R.anim.fragment_exit).setPopEnterAnim(R.anim.fragment_enter_pop).setPopExitAnim(R.anim.fragment_exit_pop).setLaunchSingleTop(true).setPopUpTo(navController.getGraph().getStartDestinationId(), false, true).build());
                         }
                     }
@@ -244,6 +250,7 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
 
     @Override
     public void onModulesReloaded() {
+        repoLoader.refreshInstalledModulesIfNeeded();
         onRepoLoaded();
         setModulesSummary(moduleUtil.getEnabledModulesCount());
     }

@@ -241,4 +241,13 @@
     <string name="color_blue_grey">Mavi gri</string>
     <string name="menu_uninstall">Modülü kaldır</string>
     <string name="uninstall_module_confirm">Bu modülü kaldırmak istediğinizden emin misiniz?</string>
+    <string name="install_and_reboot">Yükle ve Yeniden Başlat</string>
+    <string name="update_flash_confirm_msg">Root ile flaşlayıp yeniden başlatmak istiyor musunuz? Root erişimi gereklidir.</string>
+    <string name="rescue_mode_title">Bootloop Kurtarma Modu</string>
+    <string name="rescue_mode_summary">Vector bir sistem açılış döngüsü (bootloop) algıladı. Cihazınızı korumak için tüm modüller devre dışı bırakıldı.</string>
+    <string name="download_started">İndirme başladı…</string>
+    <string name="download_failed">İndirme başarısız: %s</string>
+    <string name="url_not_available">URL mevcut değil</string>
+    <string name="custom_repo_url_title">Özel Depo URL\'si</string>
+    <string name="custom_repo_url_summary">Modül deposu için özel bir URL girin. Varsayılanı kullanmak için boş bırakın.</string>
 </resources>
