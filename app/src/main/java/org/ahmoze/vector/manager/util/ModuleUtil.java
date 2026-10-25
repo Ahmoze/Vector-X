@@ -192,8 +192,10 @@ public final class ModuleUtil {
             ConfigManager.setModuleEnabled(predPkg, false);
             enabledModules.remove(predPkg);
         }
+        enabledModules = new HashSet<>(Arrays.asList(ConfigManager.getEnabledModules()));
         if (ConfigManager.uninstallPackage(predPkg, predMod.userId)) {
             installedModules.remove(Pair.create(predPkg, predMod.userId));
+            listeners.forEach(ModuleListener::onModulesReloaded);
         }
     }
 

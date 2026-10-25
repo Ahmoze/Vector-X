@@ -33,6 +33,27 @@ object ModuleDatabase {
       changed = db.update("modules", values, "module_pkg_name = ?", arrayOf(packageName)) > 0
     }
 
+    if (packageName == "org.lsposed.corepatch") {
+      runCatching {
+            if (PreferenceStore.getModulePrefs(packageName, 0, "conf").isEmpty()) {
+              val defaults =
+                  mapOf<String, Any?>(
+                      "downgrade" to java.lang.Boolean.TRUE,
+                      "bypass_min_sdk" to java.lang.Boolean.TRUE,
+                      "bypass_verification" to java.lang.Boolean.TRUE,
+                      "bypass_resource_arsc_restrictions" to java.lang.Boolean.TRUE,
+                      "bypass_digest" to java.lang.Boolean.TRUE,
+                      "bypass_exact_sig_match" to java.lang.Boolean.TRUE,
+                      "allow_hidden_apis_for_system_apps" to java.lang.Boolean.TRUE,
+                      "bypass_shared_user" to java.lang.Boolean.TRUE,
+                      "bypass_block" to java.lang.Boolean.TRUE,
+                  )
+              PreferenceStore.updateModulePrefs(packageName, 0, "conf", defaults)
+            }
+          }
+          .onFailure { Log.w(TAG, "Failed to seed default prefs for $packageName", it) }
+    }
+
     if (changed) ConfigCache.requestCacheUpdate()
     return changed
   }

@@ -208,15 +208,28 @@ class ModuleService(private val loadedModule: Module) : IXposedService.Stub() {
 
     runCatching {
           PreferenceStore.updateModulePrefs(loadedModule.packageName, userId, group, values)
-          (loadedModule.service as? InjectedModuleService)?.onUpdateRemotePreferences(group, diff)
+          val svc1 = loadedModule.service as? InjectedModuleService
+          val svc2 =
+              ConfigCache.getModuleByPackage(loadedModule.packageName)?.service
+                  as? InjectedModuleService
+          svc1?.onUpdateRemotePreferences(group, diff)
+          if (svc2 != null && svc2 !== svc1) {
+            svc2.onUpdateRemotePreferences(group, diff)
+          }
         }
         .getOrElse { throw RemoteException(it.message) }
   }
 
   override fun deleteRemotePreferences(group: String) {
     PreferenceStore.deleteModulePrefs(loadedModule.packageName, ensureModule(), group)
-    (loadedModule.service as? InjectedModuleService)
-        ?.onUpdateRemotePreferences(group, Bundle().apply { putBoolean("clear", true) })
+    val clearBundle = Bundle().apply { putBoolean("clear", true) }
+    val svc1 = loadedModule.service as? InjectedModuleService
+    val svc2 =
+        ConfigCache.getModuleByPackage(loadedModule.packageName)?.service as? InjectedModuleService
+    svc1?.onUpdateRemotePreferences(group, clearBundle)
+    if (svc2 != null && svc2 !== svc1) {
+      svc2.onUpdateRemotePreferences(group, clearBundle)
+    }
   }
 
   override fun listRemoteFiles(): Array<String> {

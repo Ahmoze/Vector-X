@@ -205,12 +205,14 @@ object ConfigCache {
                 appInfo?.sourceDir != null &&
                 apkPath != null &&
                 oldModule.apkPath != null &&
-                oldModule.versionCode == pkgInfo.longVersionCode &&
+                (oldModule.versionCode == pkgInfo.longVersionCode || oldModule.versionCode == 0L) &&
                 FileSystem.toGlobalNamespace(apkPath).exists() &&
                 apkPath == oldModule.apkPath &&
                 File(appInfo.sourceDir).parent == File(apkPath).parent) {
 
-              if (oldModule.appId == -1) oldModule.applicationInfo = appInfo
+              oldModule.versionCode = pkgInfo.longVersionCode
+              oldModule.appId = appInfo.uid
+              oldModule.applicationInfo = appInfo
               newModules[pkgName] = oldModule
               continue
             }
@@ -396,65 +398,74 @@ object ConfigCache {
       return modules
     }
 
-    val currentState = state
+    synchronized(this) {
+      dbHelper.readableDatabase
+          .query(
+              "scope INNER JOIN modules ON scope.mid = modules.mid",
+              arrayOf("module_pkg_name", "apk_path"),
+              "app_pkg_name=? AND enabled=1",
+              arrayOf("system"),
+              null,
+              null,
+              null)
+          .use { cursor ->
+            val updatedModules = state.modules.toMutableMap()
+            var mutated = false
+            while (cursor.moveToNext()) {
+              val pkgName = cursor.getString(0)
+              val apkPath = cursor.getString(1)
 
-    dbHelper.readableDatabase
-        .query(
-            "scope INNER JOIN modules ON scope.mid = modules.mid",
-            arrayOf("module_pkg_name", "apk_path"),
-            "app_pkg_name=? AND enabled=1",
-            arrayOf("system"),
-            null,
-            null,
-            null)
-        .use { cursor ->
-          while (cursor.moveToNext()) {
-            val pkgName = cursor.getString(0)
-            val apkPath = cursor.getString(1)
+              val cached = updatedModules[pkgName]
+              if (cached != null) {
+                modules.add(cached)
+                continue
+              }
 
-            val cached = currentState.modules[pkgName]
-            if (cached != null) {
-              modules.add(cached)
-              continue
+              val statPath = FileSystem.toGlobalNamespace("/data/user_de/0/$pkgName").absolutePath
+              val module =
+                  Module().apply {
+                    packageName = pkgName
+                    this.apkPath = apkPath
+                    appId = runCatching { Os.stat(statPath).st_uid }.getOrDefault(-1)
+                    versionCode = 0
+                    service = InjectedModuleService(pkgName)
+                  }
+
+              runCatching {
+                    @Suppress("DEPRECATION")
+                    val pkg = PackageParser().parsePackage(File(apkPath), 0, false)
+                    module.applicationInfo = pkg.applicationInfo
+                  }
+                  .onFailure {
+                    module.applicationInfo = ApplicationInfo().apply { packageName = pkgName }
+                  }
+
+              if (module.applicationInfo == null) {
+                module.applicationInfo = ApplicationInfo().apply { packageName = pkgName }
+              }
+
+              // Always apply the critical paths manually, even on fallback
+              module.applicationInfo?.apply {
+                sourceDir = apkPath
+                dataDir = statPath
+                deviceProtectedDataDir = statPath
+                HiddenApiBridge.ApplicationInfo_credentialProtectedDataDir(this, statPath)
+                processName = pkgName
+                uid = module.appId
+              }
+
+              FileSystem.loadModule(apkPath, state.isDexObfuscateEnabled)?.let {
+                module.file = it
+                modules.add(module)
+                updatedModules[pkgName] = module
+                mutated = true
+              }
             }
-
-            val statPath = FileSystem.toGlobalNamespace("/data/user_de/0/$pkgName").absolutePath
-            val module =
-                Module().apply {
-                  packageName = pkgName
-                  this.apkPath = apkPath
-                  appId = runCatching { Os.stat(statPath).st_uid }.getOrDefault(-1)
-                  versionCode = 0
-                  service = InjectedModuleService(pkgName)
-                }
-
-            runCatching {
-                  @Suppress("DEPRECATION")
-                  val pkg = PackageParser().parsePackage(File(apkPath), 0, false)
-                  module.applicationInfo = pkg.applicationInfo
-                }
-                .onFailure {
-                  Log.w(TAG, "PackageParser failed for $apkPath, using fallback ApplicationInfo")
-                  module.applicationInfo = ApplicationInfo().apply { packageName = pkgName }
-                }
-
-            // Always apply the critical paths manually, even on fallback
-            module.applicationInfo?.apply {
-              sourceDir = apkPath
-              dataDir = statPath
-              deviceProtectedDataDir = statPath
-              HiddenApiBridge.ApplicationInfo_credentialProtectedDataDir(this, statPath)
-              processName = pkgName
-              uid = module.appId
-            }
-
-            FileSystem.loadModule(apkPath, state.isDexObfuscateEnabled)?.let {
-              module.file = it
-              modules.add(module)
-              // We intentionally don't mutate state.modules here. Cache update will catch it.
+            if (mutated) {
+              state = state.copy(modules = updatedModules)
             }
           }
-        }
+    }
     return modules
   }
 
