@@ -34,17 +34,17 @@ jobs:
              '.version = $ver | .versionCode = $vcode | .zipUrl = $url' \
              zygisk/update.json > tmp.json && mv tmp.json zygisk/update.json
 
-          # Prepare new changelog section
-          echo "🚀 **What's New in $TAG_NAME** 🚀" > new_changelog.md
-          echo "" >> new_changelog.md
-          echo "$RELEASE_BODY" >> new_changelog.md
-          echo "" >> new_changelog.md
-          echo "---" >> new_changelog.md
-          echo "" >> new_changelog.md
-          
-          # Append the old changelog to the new one
-          cat zygisk/changelog.md >> new_changelog.md
-          mv new_changelog.md zygisk/changelog.md
+          # Prepare new changelog section only if not already present
+          if ! grep -q "What's New in $TAG_NAME" zygisk/changelog.md; then
+            echo "🚀 **What's New in $TAG_NAME** 🚀" > new_changelog.md
+            echo "" >> new_changelog.md
+            echo "$RELEASE_BODY" >> new_changelog.md
+            echo "" >> new_changelog.md
+            echo "---" >> new_changelog.md
+            echo "" >> new_changelog.md
+            cat zygisk/changelog.md >> new_changelog.md
+            mv new_changelog.md zygisk/changelog.md
+          fi
           
       - name: Commit and push changes
         run: |

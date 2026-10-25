@@ -1,3 +1,43 @@
+🚀 **What's New in v2.0.29** 🚀
+
+## 🚀 Vector-X v2.0.29 (Repository Update Engine, Live Module Sync & Update Notification Edition)
+
+This release resolves critical bugs in the **Module Repository Engine**, **Update Notification & Badge System**, and **Live Module List Synchronization**, ensuring that every installed module accurately detects new versions, surfaces update indicators across the entire Manager UI, and refreshes module lists immediately upon installation, update, or removal.
+
+---
+
+### 🌟 What's New & Fixed:
+
+* **🔔 Module Update Detection & Notification Engine Fixed:**
+  * **Complete `latestRelease` & Channel Metadata Population**: Rebuilt `scripts/update_modules.py` to synchronize full canonical module metadata (`latestRelease`, `latestBetaRelease`, `latestSnapshotRelease`, `latestReleaseTime`, `collaborators`, `scope`, and full `releases` history with `originalDownloadUrl`) directly from `modules.lsposed.org/module/<pkg>.json` with multi-threaded concurrency and GitHub API fallback.
+  * **Automatic Release Fallback & Semantic Version Comparison**: Enhanced `RepoLoader.updateLatestVersion()` to automatically fall back to the newest channel release (`releases[0]`) when `latestRelease` is missing or outdated, and hardened `ModuleVersion.upgradable()` with null-safe `versionCode` + semantic `versionName` comparison.
+  * **Overview (`HomeFragment`) Module Update Banner**: Added a live module updates card directly on the Overview tab whenever installed modules have updates available, displaying the exact `"old → new"` version diff and a one-tap shortcut to the Repository.
+  * **Modules Tab Upgradable Counter & One-Tap Jump**: The Modules tab toolbar subtitle now displays `"X modules enabled · Y module(s) upgradable"`, and tapping the `"Update available: X.Y.Z"` hint on any installed module card navigates directly to that module's Repository page.
+
+* **🔄 Real-Time Module List Synchronization (Daemon & Manager Broadcast Fix):**
+  * **Fixed `App.java` Broadcast Extra Extraction Bug**: Resolved a critical bug in `App.java` where `org.ahmoze.vector.manager.NOTIFICATION` broadcasts read `"android.intent.extra.PACKAGES"` and `Intent.EXTRA_USER` from the outer wrapper intent instead of the inner `inIntent` populated by `VectorService.kt`. Previously, `packageName` was always `null`, causing `ModuleUtil.reloadSingleModule()` to never execute when modules were installed, updated, or removed.
+  * **Direct Package Change Receiver & Live UI Listeners**: Added a direct `ACTION_PACKAGE_ADDED` / `REPLACED` / `CHANGED` / `FULLY_REMOVED` receiver in `App.java` and wired `onSingleModuleReloaded()` across `MainActivity`, `HomeFragment`, `ModulesFragment`, `RepoFragment`, and `RepoItemFragment` so badges, lists, and version statuses update instantaneously.
+  * **Daemon `isXposedModule` State Preservation**: Fixed `VectorService.kt` where `ModuleDatabase.updateModuleApkPath()` overwrote `isXposedModule` to `false` when an updated module stayed at the same APK path.
+  * **Standalone Manager Notification Routing**: Updated `ManagerService.openManager()` to launch the installed standalone `org.ahmoze.vector.manager` (`MainActivity`) when tapping system `"Module updated"` notifications.
+
+* **📦 Repository Scraper & Asset Downloader Fixes:**
+  * **Fixed `io.github.*` Repository URL Corruption**: Fixed a string replacement bug (`replace('.git', '')` → suffix strip `[:-4]`) in `scripts/update_modules.py` and `RepoItemFragment.java` that previously corrupted all 294 `io.github.*` repository names into `iohub.*` (fixing missing releases and broken README views).
+  * **Permanent Asset Download URLs & Direct APK Installer**: Prioritized permanent GitHub `originalDownloadUrl` over expiring CDN links in `ReleaseAsset`, and configured `DownloadManager` requests with `application/vnd.android.package-archive` MIME type for one-tap APK installation from the notification shade.
+  * **Eliminated `RepoLoader` Race Condition & Added Auto-Refresh**: Removed the `repoLoaded = false` reset during background refresh that caused momentary empty states, replaced dead backup repo URLs with `https://ahmoze.github.io/Vector-X/`, and added automatic 15-minute staleness refresh on Manager resume.
+
+* **🛠️ Resilience & Recovery Polish:**
+  * **Cloudflare DoH Fallback**: Added automatic fallback to system DNS (`SYSTEM.lookup`) in `CloudflareDNS` when DoH queries fail.
+  * **Smart OTA Asset Selection**: Fixed `UpdateUtil` to select only the matching `-Release.zip` / `-Debug.zip` asset instead of downloading both.
+  * **Action & Installer Script Alignment**: Updated `action.sh` to clear `/data/adb/lspd/` rescue mode and bootloop counters alongside APatch `magiskpolicy` support, and updated `customize.sh` to purge stale `org.ahmoze.vector.manager` `repo.json` caches on upgrade.
+
+---
+
+### 📦 Downloads:
+* **`Vector-v2.0.29-Release.zip`**: Standard production release build (Optimized & Minified).
+* **`Vector-v2.0.29-Debug.zip`**: Troubleshooting build with full debug symbols and verbose logging.
+
+---
+
 🚀 **What's New in v2.0.28** 🚀
 
 ## 🚀 Vector-X v2.0.28 (Android 17 / HyperOS 4 Module Injection & ClassLoader Shield Edition)

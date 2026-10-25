@@ -246,14 +246,15 @@ object VectorService : IDaemonService.Stub() {
 
     val appInfo =
         moduleName?.let {
-          packageManager
-              ?.getPackageInfoCompat(it, MATCH_ALL_FLAGS or PackageManager.GET_META_DATA, 0)
+          (packageManager?.getPackageInfoCompat(it, MATCH_ALL_FLAGS or PackageManager.GET_META_DATA, userId)
+                  ?: packageManager?.getPackageInfoCompat(it, MATCH_ALL_FLAGS or PackageManager.GET_META_DATA, 0))
               ?.applicationInfo
         }
     var isXposedModule =
         appInfo != null &&
             (appInfo.metaData?.containsKey("xposedminversion") == true ||
                 ConfigCache.getModuleApkPath(appInfo) != null)
+    var moduleApkPathUpdated = false
 
     when (action) {
       Intent.ACTION_PACKAGE_FULLY_REMOVED -> {
@@ -273,7 +274,7 @@ object VectorService : IDaemonService.Stub() {
       Intent.ACTION_PACKAGE_CHANGED -> {
         if (isXposedModule && moduleName != null && appInfo != null) {
           // Update the database with the new APK path if it's an Xposed module
-          isXposedModule =
+          moduleApkPathUpdated =
               ModuleDatabase.updateModuleApkPath(
                   moduleName, ConfigCache.getModuleApkPath(appInfo), false)
         } else {
@@ -322,9 +323,15 @@ object VectorService : IDaemonService.Stub() {
 
     // Notify the manager (foreground) that a package state changed so it can refresh its view.
     if (moduleName != null) {
+      val innerIntent =
+          Intent(intent).apply {
+            putExtra("android.intent.extra.PACKAGES", moduleName)
+            putExtra(Intent.EXTRA_USER, userId)
+            putExtra("isXposedModule", isXposedModule)
+          }
       val notifyIntent =
           Intent(ACTION_MANAGER_NOTIFICATION).apply {
-            putExtra(Intent.EXTRA_INTENT, intent)
+            putExtra(Intent.EXTRA_INTENT, innerIntent)
             putExtra("android.intent.extra.PACKAGES", moduleName)
             putExtra(Intent.EXTRA_USER, userId)
             putExtra("isXposedModule", isXposedModule)
@@ -338,8 +345,12 @@ object VectorService : IDaemonService.Stub() {
           }
     }
 
-    // If an actual Xposed module was updated (not removed), show a system notification.
-    if (moduleName != null && isXposedModule && !isRemovedAction && !isRemovedForAllUsers) {
+    // If an actual Xposed module was added or updated (not removed), show a system notification.
+    if (moduleName != null &&
+        isXposedModule &&
+        !isRemovedAction &&
+        !isRemovedForAllUsers &&
+        (action == Intent.ACTION_PACKAGE_ADDED || moduleApkPathUpdated)) {
       val scopes = ConfigCache.getModuleScope(moduleName) ?: emptyList()
       val isSystemModule = scopes.any { it.packageName == "system" }
       val isEnabled = ManagerService.enabledModules().contains(moduleName)

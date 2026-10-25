@@ -224,11 +224,13 @@ public class ModulesFragment extends BaseFragment implements ModuleUtil.ModuleLi
     public void onResume() {
         super.onResume();
         forEachAdaptor(ModuleAdapter::refresh);
+        updateModuleSummary();
     }
 
     @Override
     public void onSingleModuleReloaded(ModuleUtil.InstalledModule module) {
         forEachAdaptor(ModuleAdapter::refresh);
+        updateModuleSummary();
     }
 
     @Override
@@ -265,13 +267,36 @@ public class ModulesFragment extends BaseFragment implements ModuleUtil.ModuleLi
     @Override
     public void onRepoLoaded() {
         forEachAdaptor(ModuleAdapter::refresh);
+        updateModuleSummary();
     }
 
     private void updateModuleSummary() {
         var moduleCount = moduleUtil.getEnabledModulesCount();
+        final int[] upgradableCount = new int[]{0};
+        var modules = moduleUtil.getModules();
+        if (modules != null && repoLoader.isRepoLoaded()) {
+            HashSet<String> processed = new HashSet<>();
+            modules.forEach((k, v) -> {
+                if (!processed.contains(k.first)) {
+                    processed.add(k.first);
+                    var ver = repoLoader.getModuleLatestVersion(k.first);
+                    if (ver != null && ver.upgradable(v.versionCode, v.versionName)) {
+                        ++upgradableCount[0];
+                    }
+                }
+            });
+        }
         runOnUiThread(() -> {
-            if (binding != null) {
-                binding.toolbar.setSubtitle(moduleCount == -1 ? getString(R.string.loading) : getResources().getQuantityString(R.plurals.modules_enabled_count, moduleCount, moduleCount));
+            if (binding != null && isAdded()) {
+                if (moduleCount == -1) {
+                    binding.toolbar.setSubtitle(getString(R.string.loading));
+                } else {
+                    String subtitle = getResources().getQuantityString(R.plurals.modules_enabled_count, moduleCount, moduleCount);
+                    if (upgradableCount[0] > 0) {
+                        subtitle += " · " + getResources().getQuantityString(R.plurals.module_repo_upgradable, upgradableCount[0], upgradableCount[0]);
+                    }
+                    binding.toolbar.setSubtitle(subtitle);
+                }
                 binding.toolbarLayout.setSubtitle(binding.toolbar.getSubtitle());
             }
         });
@@ -583,7 +608,8 @@ public class ModulesFragment extends BaseFragment implements ModuleUtil.ModuleLi
                 sb.setSpan(foregroundColorSpan, sb.length() - warningText.length(), sb.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             }
             var ver = repoLoader.getModuleLatestVersion(item.packageName);
-            if (ver != null && ver.upgradable(item.versionCode, item.versionName)) {
+            boolean isUpgradable = ver != null && ver.upgradable(item.versionCode, item.versionName);
+            if (isUpgradable) {
                 if (warningText != null) sb.append("\n");
                 String recommended = getString(R.string.update_available, ver.versionName);
                 sb.append(recommended);
@@ -599,9 +625,23 @@ public class ModulesFragment extends BaseFragment implements ModuleUtil.ModuleLi
             }
             if (sb.length() == 0) {
                 holder.hint.setVisibility(View.GONE);
+                holder.hint.setOnClickListener(null);
+                holder.hint.setClickable(false);
             } else {
                 holder.hint.setVisibility(View.VISIBLE);
                 holder.hint.setText(sb);
+                if (isUpgradable && !isPick) {
+                    holder.hint.setOnClickListener(v -> {
+                        searchView.clearFocus();
+                        var navController = getNavController();
+                        navController.navigate(
+                                new Uri.Builder().scheme("lsposed").authority("repo").appendQueryParameter("modulePackageName", item.packageName).build(),
+                                new NavOptions.Builder().setEnterAnim(R.anim.fragment_enter).setExitAnim(R.anim.fragment_exit).setPopEnterAnim(R.anim.fragment_enter_pop).setPopExitAnim(R.anim.fragment_exit_pop).setLaunchSingleTop(true).setPopUpTo(getNavController().getGraph().getStartDestinationId(), false, true).build());
+                    });
+                } else {
+                    holder.hint.setOnClickListener(null);
+                    holder.hint.setClickable(false);
+                }
             }
 
             if (!isPick) {
@@ -686,6 +726,7 @@ public class ModulesFragment extends BaseFragment implements ModuleUtil.ModuleLi
             runAsync(() -> {
                 setLoaded(null, false);
                 moduleUtil.reloadInstalledModules();
+                repoLoader.loadRemoteData();
                 refresh();
             });
         }

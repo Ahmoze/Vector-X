@@ -26,15 +26,18 @@ if [ -x "/data/adb/magisk/magiskpolicy" ]; then
 elif [ -x "/data/adb/ksu/bin/magiskpolicy" ]; then
     /data/adb/ksu/bin/magiskpolicy --live --apply "$MODDIR/sepolicy.rule" >/dev/null 2>&1
     echo -e "${C_GREEN}[+] SEPolicy rules applied via magiskpolicy.${C_RESET}"
+elif [ -x "/data/adb/ap/bin/magiskpolicy" ]; then
+    /data/adb/ap/bin/magiskpolicy --live --apply "$MODDIR/sepolicy.rule" >/dev/null 2>&1
+    echo -e "${C_GREEN}[+] SEPolicy rules applied via magiskpolicy.${C_RESET}"
 elif command -v supolicy >/dev/null 2>&1; then
     supolicy --live --apply "$MODDIR/sepolicy.rule" >/dev/null 2>&1
     echo -e "${C_GREEN}[+] SEPolicy rules applied via supolicy.${C_RESET}"
 fi
 
 # 2. Self-Healing: Reset Rescue Mode / Bootloop counter if present
-if [ -f "/data/adb/vector/rescue_mode_active" ] || [ -f "/data/adb/vector/bootloop_counter" ]; then
+if [ -f "/data/adb/lspd/rescue_mode_active" ] || [ -f "/data/adb/lspd/bootloop_counter" ] || [ -f "/data/adb/vector/rescue_mode_active" ] || [ -f "/data/adb/vector/bootloop_counter" ]; then
     echo -e "${C_YELLOW}[!] Rescue mode or bootloop counter detected. Clearing...${C_RESET}"
-    rm -f /data/adb/vector/rescue_mode_active /data/adb/vector/bootloop_counter 2>/dev/null
+    rm -f /data/adb/lspd/rescue_mode_active /data/adb/lspd/bootloop_counter /data/adb/vector/rescue_mode_active /data/adb/vector/bootloop_counter 2>/dev/null
     echo -e "${C_GREEN}[+] Rescue mode reset.${C_RESET}"
 fi
 

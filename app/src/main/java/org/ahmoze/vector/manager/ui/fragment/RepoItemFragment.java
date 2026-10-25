@@ -80,6 +80,7 @@ import org.ahmoze.vector.manager.ui.dialog.BlurBehindDialogBuilder;
 import org.ahmoze.vector.manager.ui.widget.EmptyStateRecyclerView;
 import org.ahmoze.vector.manager.ui.widget.LinkifyTextView;
 import org.ahmoze.vector.manager.util.AccessibilityUtils;
+import org.ahmoze.vector.manager.util.ModuleUtil;
 import org.ahmoze.vector.manager.util.NavUtil;
 import org.ahmoze.vector.manager.util.SimpleStatefulAdaptor;
 import org.ahmoze.vector.manager.util.chrome.CustomTabsURLSpan;
@@ -93,6 +94,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -104,11 +106,34 @@ import rikka.material.app.LocaleDelegate;
 import rikka.recyclerview.RecyclerViewKt;
 import rikka.widget.borderview.BorderView;
 
-public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoListener, MenuProvider {
+public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoListener, ModuleUtil.ModuleListener, MenuProvider {
     FragmentPagerBinding binding;
     OnlineModule module;
     private ReleaseAdapter releaseAdapter;
     private InformationAdapter informationAdapter;
+
+    private void updateSubtitle() {
+        if (binding == null || module == null || !isAdded()) return;
+        String pkg = module.getName();
+        var installed = ModuleUtil.getInstance().getModule(pkg);
+        String subtitle = pkg;
+        if (installed != null) {
+            var latestVer = RepoLoader.getInstance().getModuleLatestVersion(pkg);
+            if (latestVer != null && latestVer.upgradable(installed.versionCode, installed.versionName)) {
+                subtitle = pkg + " · " + getString(R.string.installed) + " " + installed.versionName
+                        + " (" + getString(R.string.update_available, latestVer.versionName) + ")";
+            } else {
+                subtitle = pkg + " · " + getString(R.string.installed) + " " + installed.versionName;
+            }
+        }
+        final String finalSubtitle = subtitle;
+        runOnUiThread(() -> {
+            if (binding != null) {
+                binding.toolbar.setSubtitle(finalSubtitle);
+                binding.toolbarLayout.setSubtitle(finalSubtitle);
+            }
+        });
+    }
 
     @Nullable
     @Override
@@ -121,6 +146,7 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
         setupToolbar(binding.toolbar, binding.clickView, moduleName, R.menu.menu_repo_item);
         binding.clickView.setTooltipText(moduleName);
         binding.toolbar.setSubtitle(modulePackageName);
+        updateSubtitle();
         binding.viewPager.setAdapter(new PagerAdapter(this));
         int[] titles = new int[]{R.string.module_readme, R.string.module_releases, R.string.module_information};
 
@@ -147,6 +173,7 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
         releaseAdapter = new ReleaseAdapter();
         informationAdapter = new InformationAdapter();
         RepoLoader.getInstance().addListener(this);
+        ModuleUtil.getInstance().addListener(this);
         return binding.getRoot();
     }
 
@@ -278,12 +305,32 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
     public void onDestroyView() {
         super.onDestroyView();
         RepoLoader.getInstance().removeListener(this);
+        ModuleUtil.getInstance().removeListener(this);
         binding = null;
+    }
+
+    @Override
+    public void onRepoLoaded() {
+        updateSubtitle();
+        if (releaseAdapter != null) {
+            runAsync(releaseAdapter::loadItems);
+        }
+    }
+
+    @Override
+    public void onModulesReloaded() {
+        updateSubtitle();
+    }
+
+    @Override
+    public void onSingleModuleReloaded(ModuleUtil.InstalledModule reloadedModule) {
+        updateSubtitle();
     }
 
     @Override
     public void onModuleReleasesLoaded(OnlineModule module) {
         this.module = module;
+        updateSubtitle();
         var repoLoader = RepoLoader.getInstance();
         if (releaseAdapter != null) {
             runAsync(releaseAdapter::loadItems);
@@ -405,6 +452,9 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                                         android.app.DownloadManager.Request req = new android.app.DownloadManager.Request(android.net.Uri.parse(url));
                                         req.setTitle(name);
                                         req.setDescription(requireActivity().getString(R.string.app_name) + " Download");
+                                        if (name != null && name.toLowerCase(Locale.ROOT).endsWith(".apk")) {
+                                            req.setMimeType("application/vnd.android.package-archive");
+                                        }
                                         req.setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                                         req.setDestinationInExternalPublicDir(android.os.Environment.DIRECTORY_DOWNLOADS, name);
                                         android.app.DownloadManager manager = (android.app.DownloadManager) requireActivity().getSystemService(android.content.Context.DOWNLOAD_SERVICE);
@@ -480,7 +530,7 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                 }).collect(Collectors.toList()) : null;
             } else tmpList = releases;
             runOnUiThread(() -> {
-                items = tmpList;
+                items = tmpList != null ? tmpList : new ArrayList<>();
                 notifyDataSetChanged();
             });
         }
@@ -510,10 +560,21 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
             } else {
                 Release release = items.get(position);
                 holder.title.setText(release.getName());
-                var instant = Instant.parse(release.getPublishedAt());
-                var formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-                        .withLocale(App.getLocale()).withZone(ZoneId.systemDefault());
-                holder.publishedTime.setText(String.format(getString(R.string.module_repo_published_time), formatter.format(instant)));
+                Instant instant = null;
+                try {
+                    if (release.getPublishedAt() != null) {
+                        instant = Instant.parse(release.getPublishedAt());
+                    }
+                } catch (Exception ignored) {
+                }
+                if (instant != null) {
+                    var formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                            .withLocale(App.getLocale()).withZone(ZoneId.systemDefault());
+                    holder.publishedTime.setText(String.format(getString(R.string.module_repo_published_time), formatter.format(instant)));
+                    holder.publishedTime.setVisibility(View.VISIBLE);
+                } else {
+                    holder.publishedTime.setVisibility(View.GONE);
+                }
                 renderGithubMarkdown(holder.description, release.getDescriptionHTML());
                 holder.openInBrowser.setOnClickListener(v -> {
                     String url = release.getUrl();
@@ -543,6 +604,7 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                 });
                 List<ReleaseAsset> assets = release.getReleaseAssets();
                 if (assets != null && !assets.isEmpty()) {
+                    holder.viewAssets.setVisibility(View.VISIBLE);
                     holder.viewAssets.setOnClickListener(v -> DownloadDialog.create(requireActivity(), getParentFragmentManager(), assets));
                 } else {
                     holder.viewAssets.setVisibility(View.GONE);
@@ -712,18 +774,56 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
         }
 
         private void fetchReadmeFromGithub(RepoItemFragment repoItemFragment) {
+            String pkgName = repoItemFragment.module.getName();
+            String moduleDetailUrl = String.format("https://modules.lsposed.org/module/%s.json", pkgName);
+            App.getOkHttpClient().newCall(new okhttp3.Request.Builder()
+                    .url(moduleDetailUrl)
+                    .header("User-Agent", "Vector-App")
+                    .build()).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onFailure(@NonNull okhttp3.Call call, @NonNull java.io.IOException e) {
+                    fetchReadmeFromGithubApiFallback(repoItemFragment);
+                }
+
+                @Override
+                public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws java.io.IOException {
+                    try (response) {
+                        if (!isAdded() || getActivity() == null) return;
+                        if (response.isSuccessful() && response.body() != null) {
+                            var jsonObj = com.google.gson.JsonParser.parseString(response.body().string()).getAsJsonObject();
+                            if (jsonObj.has("readmeHTML") && !jsonObj.get("readmeHTML").isJsonNull()) {
+                                String html = jsonObj.get("readmeHTML").getAsString();
+                                if (html != null && !html.isEmpty()) {
+                                    repoItemFragment.module.setReadmeHTML(html);
+                                    getActivity().runOnUiThread(() -> repoItemFragment.renderGithubMarkdown(binding.readme, html));
+                                    return;
+                                }
+                            }
+                        }
+                    } catch (Throwable ignored) {
+                    }
+                    fetchReadmeFromGithubApiFallback(repoItemFragment);
+                }
+            });
+        }
+
+        private void fetchReadmeFromGithubApiFallback(RepoItemFragment repoItemFragment) {
+            if (!isAdded() || getActivity() == null) return;
             String sourceUrl = repoItemFragment.module.getSourceUrl();
             if (sourceUrl == null || !sourceUrl.startsWith("https://github.com/")) {
-                repoItemFragment.renderGithubMarkdown(binding.readme, null);
+                getActivity().runOnUiThread(() -> repoItemFragment.renderGithubMarkdown(binding.readme, null));
                 return;
             }
             String[] parts = sourceUrl.split("/");
             if (parts.length < 5) {
-                repoItemFragment.renderGithubMarkdown(binding.readme, null);
+                getActivity().runOnUiThread(() -> repoItemFragment.renderGithubMarkdown(binding.readme, null));
                 return;
             }
             String owner = parts[3];
-            String repo = parts[4].replace(".git", "");
+            String repo = parts[4];
+            if (repo.endsWith(".git")) {
+                repo = repo.substring(0, repo.length() - 4);
+            }
             String apiUrl = "https://api.github.com/repos/" + owner + "/" + repo + "/readme";
 
             App.getOkHttpClient().newCall(new okhttp3.Request.Builder()
@@ -741,17 +841,19 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
 
                 @Override
                 public void onResponse(@NonNull okhttp3.Call call, @NonNull okhttp3.Response response) throws java.io.IOException {
-                    if (!isAdded() || getActivity() == null) return;
-                    if (response.isSuccessful() && response.body() != null) {
-                        String html = response.body().string();
-                        repoItemFragment.module.setReadmeHTML(html);
-                        getActivity().runOnUiThread(() -> {
-                            repoItemFragment.renderGithubMarkdown(binding.readme, html);
-                        });
-                    } else {
-                        getActivity().runOnUiThread(() -> {
-                            repoItemFragment.renderGithubMarkdown(binding.readme, null);
-                        });
+                    try (response) {
+                        if (!isAdded() || getActivity() == null) return;
+                        if (response.isSuccessful() && response.body() != null) {
+                            String html = response.body().string();
+                            repoItemFragment.module.setReadmeHTML(html);
+                            getActivity().runOnUiThread(() -> {
+                                repoItemFragment.renderGithubMarkdown(binding.readme, html);
+                            });
+                        } else {
+                            getActivity().runOnUiThread(() -> {
+                                repoItemFragment.renderGithubMarkdown(binding.readme, null);
+                            });
+                        }
                     }
                 }
             });

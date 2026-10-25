@@ -136,12 +136,10 @@ jobs:
                   content = f.read()
               start = content.find('🚀 **What\'s New in ' + tag)
               if start != -1:
-                  first_dash = content.find('---', start)
-                  if first_dash != -1:
-                      next_dash = content.find('---', first_dash + 3)
-                      body = content[start:next_dash if next_dash != -1 else len(content)].strip()
-                  else:
-                      body = content[start:].strip()
+                  next_rel = content.find('🚀 **What\'s New in v', start + 20)
+                  body = content[start:next_rel if next_rel != -1 else len(content)].strip()
+                  while body.endswith('---'):
+                      body = body[:-3].strip()
                   with open('release_notes.md', 'w') as out:
                       out.write(body)
               else:

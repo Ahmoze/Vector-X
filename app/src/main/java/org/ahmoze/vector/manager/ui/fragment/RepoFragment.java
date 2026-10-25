@@ -221,6 +221,7 @@ public class RepoFragment extends BaseFragment implements RepoLoader.RepoListene
     public void onResume() {
         super.onResume();
         adapter.refresh();
+        updateRepoSummary();
         if (preLoadWebview) {
             mHandler.postDelayed(() -> new WebView(requireContext()), 500);
             preLoadWebview = false;
@@ -251,7 +252,15 @@ public class RepoFragment extends BaseFragment implements RepoLoader.RepoListene
 
     @Override
     public void onModulesReloaded() {
+        if (adapter != null) {
+            adapter.refresh();
+        }
         updateRepoSummary();
+    }
+
+    @Override
+    public void onSingleModuleReloaded(ModuleUtil.InstalledModule module) {
+        onModulesReloaded();
     }
 
     @Override

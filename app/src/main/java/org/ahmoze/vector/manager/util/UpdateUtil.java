@@ -61,8 +61,20 @@ public class UpdateUtil {
                     var tagName = info.has("tag_name") ? info.get("tag_name").getAsString() : "";
                     var releaseTitle = info.has("name") && !info.get("name").isJsonNull() ? info.get("name").getAsString() : "";
                     var assetsArray = info.getAsJsonArray("assets");
+                    JsonObject targetAsset = null;
+                    String preferredSuffix = BuildConfig.DEBUG ? "-debug.zip" : "-release.zip";
                     for (var assets : assetsArray) {
-                        checkAssets(assets.getAsJsonObject(), notes, tagName, releaseTitle);
+                        var obj = assets.getAsJsonObject();
+                        var assetName = obj.has("name") ? obj.get("name").getAsString().toLowerCase(Locale.ROOT) : "";
+                        if (assetName.endsWith(preferredSuffix)) {
+                            targetAsset = obj;
+                            break;
+                        } else if (targetAsset == null && assetName.endsWith(".zip")) {
+                            targetAsset = obj;
+                        }
+                    }
+                    if (targetAsset != null) {
+                        checkAssets(targetAsset, notes, tagName, releaseTitle);
                     }
                 } catch (Throwable t) {
                     Log.e(App.TAG, t.getMessage(), t);

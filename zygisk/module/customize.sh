@@ -153,6 +153,8 @@ fi
 
 ui_print "  [*] Purging old repository caches..."
 rm -f /data/user*/0/org.matrix.vector.manager/files/repo.json
+rm -f /data/user*/0/org.ahmoze.vector.manager/files/repo.json
+rm -f /data/data/org.ahmoze.vector.manager/files/repo.json
 
 if [ "$BOOTMODE" = true ]; then
     ui_print "  [+] Executing Automatic Manager Installation..."

@@ -36,6 +36,9 @@ public class ReleaseAsset {
     @SerializedName("downloadUrl")
     @Expose
     private String downloadUrl;
+    @SerializedName("originalDownloadUrl")
+    @Expose
+    private String originalDownloadUrl;
     @SerializedName("downloadCount")
     @Expose
     private int downloadCount = 0;
@@ -63,11 +66,23 @@ public class ReleaseAsset {
 
     @Nullable
     public String getDownloadUrl() {
+        if (originalDownloadUrl != null && !originalDownloadUrl.isEmpty()) {
+            return originalDownloadUrl;
+        }
         return downloadUrl;
     }
 
     public void setDownloadUrl(String downloadUrl) {
         this.downloadUrl = downloadUrl;
+    }
+
+    @Nullable
+    public String getOriginalDownloadUrl() {
+        return originalDownloadUrl;
+    }
+
+    public void setOriginalDownloadUrl(String originalDownloadUrl) {
+        this.originalDownloadUrl = originalDownloadUrl;
     }
 
     public int getDownloadCount() {

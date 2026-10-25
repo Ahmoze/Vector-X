@@ -49,6 +49,8 @@ import org.ahmoze.vector.manager.R;
 import org.ahmoze.vector.manager.databinding.DialogAboutBinding;
 import org.ahmoze.vector.manager.databinding.FragmentHomeBinding;
 import org.ahmoze.vector.manager.ui.dialog.BlurBehindDialogBuilder;
+import org.ahmoze.vector.manager.repo.RepoLoader;
+import org.ahmoze.vector.manager.util.ModuleUtil;
 import org.ahmoze.vector.manager.util.NavUtil;
 import org.ahmoze.vector.manager.util.UpdateUtil;
 import org.ahmoze.vector.manager.util.chrome.LinkTransformationMethod;
@@ -56,15 +58,20 @@ import org.ahmoze.vector.manager.util.chrome.LinkTransformationMethod;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rikka.core.util.ClipboardUtils;
 import rikka.material.app.LocaleDelegate;
 
-public class HomeFragment extends BaseFragment implements MenuProvider {
+public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoader.RepoListener, ModuleUtil.ModuleListener {
     private FragmentHomeBinding binding;
+    private final RepoLoader repoLoader = RepoLoader.getInstance();
+    private final ModuleUtil moduleUtil = ModuleUtil.getInstance();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,9 +110,38 @@ public class HomeFragment extends BaseFragment implements MenuProvider {
         binding.appBar.setLiftable(true);
         binding.nestedScrollView.getBorderViewDelegate().setBorderVisibilityChangedListener((top, oldTop, bottom, oldBottom) -> binding.appBar.setLifted(!top));
 
+        repoLoader.addListener(this);
+        moduleUtil.addListener(this);
         updateStates(requireActivity(), ConfigManager.isBinderAlive(), UpdateUtil.needUpdate());
 
         return binding.getRoot();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (binding != null && isAdded()) {
+            updateStates(requireActivity(), ConfigManager.isBinderAlive(), UpdateUtil.needUpdate());
+        }
+    }
+
+    @Override
+    public void onRepoLoaded() {
+        runOnUiThread(() -> {
+            if (binding != null && isAdded()) {
+                updateStates(requireActivity(), ConfigManager.isBinderAlive(), UpdateUtil.needUpdate());
+            }
+        });
+    }
+
+    @Override
+    public void onSingleModuleReloaded(ModuleUtil.InstalledModule module) {
+        onRepoLoaded();
+    }
+
+    @Override
+    public void onModulesReloaded() {
+        onRepoLoaded();
     }
 
     private void updateStates(Activity activity, boolean binderAlive, boolean needUpdate) {
@@ -115,6 +151,7 @@ public class HomeFragment extends BaseFragment implements MenuProvider {
                 String notes = App.getPreferences().getString("release_notes", getString(R.string.please_update_summary));
                 binding.updateSummary.setText(notes);
                 binding.statusIcon.setImageResource(R.drawable.ic_round_update_24);
+                binding.updateBtn.setText(R.string.install);
                 binding.updateBtn.setOnClickListener(v -> {
                     String zipPath = App.getPreferences().getString("zip_file", null);
                     if (zipPath != null && new java.io.File(zipPath).exists()) {
@@ -139,7 +176,51 @@ public class HomeFragment extends BaseFragment implements MenuProvider {
                 });
                 binding.updateCard.setVisibility(View.VISIBLE);
             } else {
-                binding.updateCard.setVisibility(View.GONE);
+                List<String> upgradableLines = new ArrayList<>();
+                List<String> upgradablePkgs = new ArrayList<>();
+                var modules = moduleUtil.getModules();
+                if (modules != null && repoLoader.isRepoLoaded()) {
+                    HashSet<String> seen = new HashSet<>();
+                    modules.forEach((k, v) -> {
+                        if (!seen.contains(k.first)) {
+                            seen.add(k.first);
+                            var ver = repoLoader.getModuleLatestVersion(k.first);
+                            if (ver != null && ver.upgradable(v.versionCode, v.versionName)) {
+                                upgradablePkgs.add(k.first);
+                                upgradableLines.add("• " + v.getAppName() + " (" + v.versionName + " → " + ver.versionName + ")");
+                            }
+                        }
+                    });
+                }
+                if (!upgradablePkgs.isEmpty()) {
+                    int count = upgradablePkgs.size();
+                    binding.updateTitle.setText(getResources().getQuantityString(R.plurals.module_repo_upgradable, count, count));
+                    binding.updateSummary.setText(String.join("\n", upgradableLines));
+                    binding.updateBtn.setText(R.string.module_repo);
+                    binding.updateBtn.setOnClickListener(v -> {
+                        if (upgradablePkgs.size() == 1) {
+                            String pkg = upgradablePkgs.get(0);
+                            getNavController().navigate(
+                                    new android.net.Uri.Builder().scheme("lsposed").authority("repo").appendQueryParameter("modulePackageName", pkg).build(),
+                                    new androidx.navigation.NavOptions.Builder()
+                                            .setEnterAnim(R.anim.fragment_enter)
+                                            .setExitAnim(R.anim.fragment_exit)
+                                            .setPopEnterAnim(R.anim.fragment_enter_pop)
+                                            .setPopExitAnim(R.anim.fragment_exit_pop)
+                                            .setLaunchSingleTop(true)
+                                            .setPopUpTo(getNavController().getGraph().getStartDestinationId(), false, true)
+                                            .build());
+                        } else {
+                            com.google.android.material.navigation.NavigationBarView nav = activity.findViewById(R.id.nav);
+                            if (nav != null) {
+                                nav.setSelectedItemId(R.id.repo_nav);
+                            }
+                        }
+                    });
+                    binding.updateCard.setVisibility(View.VISIBLE);
+                } else {
+                    binding.updateCard.setVisibility(View.GONE);
+                }
             }
             boolean dex2oatAbnormal = ConfigManager.getDex2OatWrapperCompatibility() != ILSPManagerService.DEX2OAT_OK && !ConfigManager.dex2oatFlagsLoaded();
             var sepolicyAbnormal = !ConfigManager.isSepolicyLoaded();
@@ -319,6 +400,8 @@ public class HomeFragment extends BaseFragment implements MenuProvider {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        repoLoader.removeListener(this);
+        moduleUtil.removeListener(this);
         binding = null;
     }
 }

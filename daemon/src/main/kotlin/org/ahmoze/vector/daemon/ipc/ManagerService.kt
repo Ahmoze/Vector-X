@@ -147,8 +147,22 @@ object ManagerService : ILSPManagerService.Stub() {
   }
 
   fun openManager(withData: Uri?) {
-    val intent = getManagerIntent() ?: return
-    val launchIntent = Intent(intent).apply { data = withData }
+    val standaloneInstalled =
+        packageManager?.getPackageInfoCompat(BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME, 0, 0) != null
+    val baseIntent =
+        if (standaloneInstalled) {
+          Intent(Intent.ACTION_MAIN).apply {
+            component =
+                ComponentName(
+                    BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME,
+                    "${BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME}.ui.activity.MainActivity")
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            setPackage(BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME)
+          }
+        } else {
+          getManagerIntent() ?: return
+        }
+    val launchIntent = Intent(baseIntent).apply { data = withData }
     runCatching {
           activityManager?.startActivityAsUserWithFeature(
               SystemContext.appThread,

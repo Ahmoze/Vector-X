@@ -223,24 +223,54 @@ public class App extends Application {
             @Override
             public void onReceive(Context context, Intent inIntent) {
                 var intent = (Intent) inIntent.getParcelableExtra(Intent.EXTRA_INTENT);
+                if (intent == null || intent.getAction() == null) return;
                 Log.d(TAG, "onReceive: " + intent);
                 switch (intent.getAction()) {
-                    case Intent.ACTION_PACKAGE_ADDED, Intent.ACTION_PACKAGE_CHANGED, Intent.ACTION_PACKAGE_FULLY_REMOVED, Intent.ACTION_UID_REMOVED -> {
-                        var userId = intent.getIntExtra(Intent.EXTRA_USER, 0);
-                        var packageName = intent.getStringExtra("android.intent.extra.PACKAGES");
-                        var packageRemovedForAllUsers = intent.getBooleanExtra(EXTRA_REMOVED_FOR_ALL_USERS, false);
-                        var isXposedModule = intent.getBooleanExtra("isXposedModule", false);
-                        if (packageName != null) {
-                            if (isXposedModule)
-                                ModuleUtil.getInstance().reloadSingleModule(packageName, userId, packageRemovedForAllUsers);
-                            else
-                                App.getExecutorService().submit(() -> AppHelper.getAppList(true));
+                    case Intent.ACTION_PACKAGE_ADDED, Intent.ACTION_PACKAGE_CHANGED, Intent.ACTION_PACKAGE_REPLACED, Intent.ACTION_PACKAGE_FULLY_REMOVED, Intent.ACTION_UID_REMOVED -> {
+                        var userId = inIntent.getIntExtra(Intent.EXTRA_USER, intent.getIntExtra(Intent.EXTRA_USER, 0));
+                        var packageName = inIntent.getStringExtra("android.intent.extra.PACKAGES");
+                        if (packageName == null) {
+                            packageName = intent.getStringExtra("android.intent.extra.PACKAGES");
+                        }
+                        if (packageName == null && intent.getData() != null) {
+                            packageName = intent.getData().getSchemeSpecificPart();
+                        }
+                        var packageRemovedForAllUsers = inIntent.getBooleanExtra(EXTRA_REMOVED_FOR_ALL_USERS, intent.getBooleanExtra(EXTRA_REMOVED_FOR_ALL_USERS, false));
+                        var isFullyRemoved = packageRemovedForAllUsers || Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(intent.getAction());
+                        var isXposedModule = inIntent.getBooleanExtra("isXposedModule", intent.getBooleanExtra("isXposedModule", false));
+                        final String pkg = packageName;
+                        if (pkg != null) {
+                            App.getExecutorService().submit(() -> {
+                                var reloaded = ModuleUtil.getInstance().reloadSingleModule(pkg, userId, isFullyRemoved);
+                                if (reloaded == null && !isXposedModule) {
+                                    AppHelper.getAppList(true);
+                                }
+                            });
                         }
                     }
                     case ACTION_USER_ADDED, ACTION_USER_REMOVED, ACTION_USER_INFO_CHANGED -> App.getExecutorService().submit(() -> ModuleUtil.getInstance().reloadInstalledModules());
                 }
             }
-        }, intentFilter, Context.RECEIVER_NOT_EXPORTED);
+        }, intentFilter, Context.RECEIVER_EXPORTED);
+
+        IntentFilter pkgFilter = new IntentFilter();
+        pkgFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        pkgFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        pkgFilter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+        pkgFilter.addAction(Intent.ACTION_PACKAGE_FULLY_REMOVED);
+        pkgFilter.addDataScheme("package");
+        registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent == null || intent.getData() == null) return;
+                String pkg = intent.getData().getSchemeSpecificPart();
+                if (pkg == null) return;
+                boolean isFullyRemoved = Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(intent.getAction());
+                App.getExecutorService().submit(() -> {
+                    ModuleUtil.getInstance().reloadSingleModule(pkg, 0, isFullyRemoved);
+                });
+            }
+        }, pkgFilter, Context.RECEIVER_EXPORTED);
 
         UpdateUtil.loadRemoteVersion();
     }

@@ -3,122 +3,265 @@ import json
 import re
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
-headers = {'User-Agent': 'Mozilla/5.0'}
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+gh_headers = {'User-Agent': USER_AGENT}
 if GITHUB_TOKEN:
-    # Use Bearer token format for GitHub API
-    headers['Authorization'] = f'Bearer {GITHUB_TOKEN}'
+    gh_headers['Authorization'] = f'Bearer {GITHUB_TOKEN}'
 
 print("Loading existing modules.json cache...")
 cache_modules = {}
-try:
-    cache_req = urllib.request.Request('https://raw.githubusercontent.com/Ahmoze/Vector-X/gh-pages/modules.json', headers={'User-Agent': 'Mozilla/5.0'})
-    cache_data = json.loads(urllib.request.urlopen(cache_req).read().decode('utf-8'))
-    for m in cache_data.get('modules', []):
-        cache_modules[m['name']] = m
-    print(f"Loaded {len(cache_modules)} modules from cache.")
-except Exception as e:
-    print(f"No existing cache found or failed to load: {e}")
+for source_label, loader in (
+    ("remote gh-pages", lambda: json.loads(urllib.request.urlopen(
+        urllib.request.Request('https://raw.githubusercontent.com/Ahmoze/Vector-X/gh-pages/modules.json', headers={'User-Agent': USER_AGENT}),
+        timeout=20
+    ).read().decode('utf-8'))),
+    ("local scripts/modules.json", lambda: json.load(open('scripts/modules.json', 'r', encoding='utf-8')) if os.path.exists('scripts/modules.json') else {}),
+):
+    try:
+        cache_data = loader()
+        raw_list = cache_data.get('modules', []) if isinstance(cache_data, dict) else cache_data
+        for m in (raw_list or []):
+            if isinstance(m, dict) and m.get('name'):
+                cache_modules[m['name']] = m
+        print(f"Loaded {len(cache_modules)} total modules after reading {source_label}.")
+    except Exception as e:
+        print(f"Cache source {source_label} unavailable: {e}")
 
 print("Fetching paginated module list from modules.lsposed.org...")
 page = 1
 total_pages = 1
-modules = []
-new_fetches = 0
+raw_items = []
 
 while page <= total_pages:
     print(f"Fetching page {page}/{total_pages}...")
     url = f'https://modules.lsposed.org/module-list/{page}.json'
-    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    req = urllib.request.Request(url, headers={'User-Agent': USER_AGENT})
     try:
-        data = json.loads(urllib.request.urlopen(req).read().decode('utf-8'))
+        data = json.loads(urllib.request.urlopen(req, timeout=20).read().decode('utf-8'))
         if page == 1:
             total_pages = data.get('pageCount', 1)
-        
-        for item in data.get('modules', []):
-            pkg_name = item.get('name')
-            friendly_name = item.get('description', '')
-            summary = item.get('summary', '')
-            source_url = item.get('sourceUrl', '')
-            latest_api_release = item.get('latestReleaseTime', '')
-            
-            # Use cached module if it hasn't been updated
-            if pkg_name in cache_modules:
-                cached = cache_modules[pkg_name]
-                # If we have cached releases and the API says there's no new release, use cache!
-                if cached.get('releases') and cached.get('latestReleaseTime') == latest_api_release:
-                    # Keep the cached version but update description/summary in case they changed
-                    cached['description'] = friendly_name
-                    cached['summary'] = summary
-                    modules.append(cached)
-                    continue
-
-            # If we reach here, we need to fetch releases from GitHub API
-            new_fetches += 1
-            mod = {
-                "name": pkg_name,
-                "description": friendly_name,
-                "summary": summary,
-                "sourceUrl": source_url,
-                "latestReleaseTime": latest_api_release,
-                "releases": []
-            }
-            
-            m = re.match(r'https://github\.com/([^/]+)/([^/]+)', source_url)
-            if not m:
-                # Still add it even without releases
-                modules.append(mod)
-                continue
-                
-            owner, repo = m.groups()
-            repo = repo.replace('.git', '')
-            api_url = f'https://api.github.com/repos/{owner}/{repo}/releases'
-            
-            try:
-                api_req = urllib.request.Request(api_url, headers=headers)
-                resp = urllib.request.urlopen(api_req)
-                releases_data = json.loads(resp.read().decode('utf-8'))
-                
-                for r in releases_data:
-                    if 'draft' in r and r['draft']:
-                        continue
-                    assets = []
-                    for a in r.get('assets', []):
-                        if a['name'].endswith('.apk') or a['name'].endswith('.zip'):
-                            assets.append({
-                                "name": a['name'],
-                                "downloadUrl": a['browser_download_url'],
-                                "size": a['size']
-                            })
-                    if not assets:
-                        continue
-                        
-                    mod['releases'].append({
-                        "name": r['name'] or r.get('tag_name', ''),
-                        "tagName": r.get('tag_name', ''),
-                        "createdAt": r.get('created_at', ''),
-                        "publishedAt": r.get('published_at', ''),
-                        "releaseAssets": assets
-                    })
-            except Exception as e:
-                print(f"Failed to fetch releases for {owner}/{repo}: {e}")
-                # Fallback to cache if available
-                if pkg_name in cache_modules:
-                    mod['releases'] = cache_modules[pkg_name].get('releases', [])
-            
-            modules.append(mod)
-            time.sleep(0.2) # Small delay to be polite to GitHub API
-            
+        raw_items.extend(data.get('modules', []))
     except Exception as e:
         print(f"Failed to fetch page {page}: {e}")
         break
-        
     page += 1
+
+
+def normalize_releases(releases_list):
+    normalized = []
+    for r in (releases_list or []):
+        if not isinstance(r, dict):
+            continue
+        assets = []
+        for a in (r.get('releaseAssets') or []):
+            if not isinstance(a, dict):
+                continue
+            dl_url = a.get('originalDownloadUrl') or a.get('downloadUrl') or ''
+            name = a.get('name') or ''
+            if not dl_url:
+                continue
+            asset_obj = {
+                "name": name,
+                "downloadUrl": dl_url,
+                "size": a.get('size', 0),
+                "downloadCount": a.get('downloadCount', 0),
+            }
+            if a.get('contentType'):
+                asset_obj["contentType"] = a['contentType']
+            if a.get('originalDownloadUrl'):
+                asset_obj["originalDownloadUrl"] = a['originalDownloadUrl']
+            assets.append(asset_obj)
+        if not assets:
+            continue
+        rel_obj = {
+            "name": r.get('name') or r.get('tagName') or '',
+            "tagName": r.get('tagName') or r.get('name') or '',
+            "createdAt": r.get('createdAt') or '',
+            "publishedAt": r.get('publishedAt') or r.get('createdAt') or '',
+            "isPrerelease": bool(r.get('isPrerelease', False)),
+            "releaseAssets": assets,
+        }
+        if r.get('url'):
+            rel_obj["url"] = r['url']
+        desc_html = r.get('descriptionHTML')
+        if desc_html and len(desc_html) <= 15000:
+            rel_obj["descriptionHTML"] = desc_html
+        normalized.append(rel_obj)
+
+    if len(normalized) > 3:
+        top = normalized[:3]
+        if all(x.get('isPrerelease') for x in top):
+            for extra in normalized[3:]:
+                if not extra.get('isPrerelease'):
+                    top.append(extra)
+                    break
+        return top
+    return normalized
+
+
+def fetch_github_releases(repo_url):
+    if not repo_url:
+        return []
+    m = re.match(r'https://github\.com/([^/]+)/([^/#?]+)', repo_url.strip().rstrip('/'))
+    if not m:
+        return []
+    owner, repo = m.groups()
+    if repo.endswith('.git'):
+        repo = repo[:-4]
+    api_url = f'https://api.github.com/repos/{owner}/{repo}/releases?per_page=10'
+    api_req = urllib.request.Request(api_url, headers=gh_headers)
+    resp = urllib.request.urlopen(api_req, timeout=20)
+    releases_data = json.loads(resp.read().decode('utf-8'))
+    rels = []
+    for r in releases_data:
+        if r.get('draft'):
+            continue
+        assets = []
+        for a in r.get('assets', []):
+            aname = a.get('name', '')
+            if aname.endswith('.apk') or aname.endswith('.zip'):
+                assets.append({
+                    "name": aname,
+                    "downloadUrl": a.get('browser_download_url', ''),
+                    "originalDownloadUrl": a.get('browser_download_url', ''),
+                    "size": a.get('size', 0),
+                    "downloadCount": a.get('download_count', 0),
+                    "contentType": a.get('content_type', 'application/vnd.android.package-archive'),
+                })
+        if not assets:
+            continue
+        rels.append({
+            "name": r.get('name') or r.get('tag_name', ''),
+            "url": r.get('html_url', ''),
+            "tagName": r.get('tag_name', ''),
+            "createdAt": r.get('created_at', ''),
+            "publishedAt": r.get('published_at') or r.get('created_at', ''),
+            "isPrerelease": bool(r.get('prerelease', False)),
+            "releaseAssets": assets,
+        })
+        if len(rels) >= 3 and any(not x.get('isPrerelease') for x in rels):
+            break
+    return rels
+
+
+def process_module(item):
+    pkg_name = item.get('name')
+    if not pkg_name:
+        return None, False
+
+    mod = {
+        "name": pkg_name,
+        "description": item.get('description', ''),
+        "summary": item.get('summary', ''),
+        "url": item.get('url', f'https://github.com/Xposed-Modules-Repo/{pkg_name}'),
+        "homepageUrl": item.get('homepageUrl') or item.get('sourceUrl', ''),
+        "sourceUrl": item.get('sourceUrl', ''),
+        "hide": bool(item.get('hide', False)),
+        "latestRelease": item.get('latestRelease') or '',
+        "latestReleaseTime": item.get('latestReleaseTime') or '',
+        "latestBetaRelease": item.get('latestBetaRelease') or '',
+        "latestBetaReleaseTime": item.get('latestBetaReleaseTime') or '',
+        "latestSnapshotRelease": item.get('latestSnapshotRelease') or '',
+        "latestSnapshotReleaseTime": item.get('latestSnapshotReleaseTime') or '',
+        "updatedAt": item.get('updatedAt') or '',
+        "createdAt": item.get('createdAt') or '',
+        "stargazerCount": item.get('stargazerCount', 0),
+        "collaborators": item.get('collaborators') or [],
+        "scope": item.get('scope') or [],
+        "releases": [],
+    }
+
+    cached = cache_modules.get(pkg_name)
+    if cached:
+        cached_rels = cached.get('releases') or []
+        first_tag = cached_rels[0].get('tagName', '') if cached_rels else ''
+        has_canonical_cache = (
+            bool(cached_rels)
+            and cached.get('latestReleaseTime') == mod['latestReleaseTime']
+            and cached.get('latestRelease') == mod['latestRelease']
+            and bool(mod['latestRelease'])
+            and (first_tag == mod['latestRelease'] or 'descriptionHTML' in cached_rels[0])
+        )
+        if has_canonical_cache:
+            mod['releases'] = normalize_releases(cached_rels)
+            if cached.get('collaborators'):
+                mod['collaborators'] = cached['collaborators']
+            if cached.get('scope'):
+                mod['scope'] = cached['scope']
+            return mod, False
+
+    # Primary fetch: modules.lsposed.org/module/{pkg_name}.json
+    try:
+        detail_url = f'https://modules.lsposed.org/module/{pkg_name}.json'
+        detail_req = urllib.request.Request(detail_url, headers={'User-Agent': USER_AGENT})
+        detail = json.loads(urllib.request.urlopen(detail_req, timeout=20).read().decode('utf-8'))
+        if isinstance(detail, dict):
+            for k in (
+                'url', 'homepageUrl', 'sourceUrl', 'latestRelease', 'latestReleaseTime',
+                'latestBetaRelease', 'latestBetaReleaseTime', 'latestSnapshotRelease',
+                'latestSnapshotReleaseTime', 'updatedAt', 'createdAt', 'stargazerCount'
+            ):
+                if detail.get(k) is not None and detail.get(k) != '':
+                    mod[k] = detail[k]
+            if detail.get('collaborators'):
+                mod['collaborators'] = detail['collaborators']
+            if detail.get('scope'):
+                mod['scope'] = detail['scope']
+            mod['releases'] = normalize_releases(detail.get('releases'))
+    except Exception as e:
+        print(f"Warn: modules.lsposed.org detail fetch failed for {pkg_name}: {e}")
+
+    # Fallback to GitHub API if releases still empty
+    if not mod['releases']:
+        for candidate_url in (mod.get('url'), mod.get('sourceUrl')):
+            if not candidate_url:
+                continue
+            try:
+                rels = fetch_github_releases(candidate_url)
+                if rels:
+                    mod['releases'] = rels
+                    break
+            except Exception as e:
+                print(f"Warn: GitHub fallback failed for {pkg_name} ({candidate_url}): {e}")
+
+    # Final fallback to cache if network failed
+    if not mod['releases'] and cached and cached.get('releases'):
+        mod['releases'] = cached['releases']
+
+    if not mod.get('latestRelease') and mod['releases']:
+        mod['latestRelease'] = mod['releases'][0].get('tagName') or mod['releases'][0].get('name', '')
+    if not mod.get('latestReleaseTime') and mod['releases']:
+        mod['latestReleaseTime'] = mod['releases'][0].get('publishedAt') or mod['releases'][0].get('createdAt', '')
+
+    return mod, True
+
+
+modules = [None] * len(raw_items)
+new_fetches = 0
+
+print(f"Processing {len(raw_items)} modules with parallel workers...")
+with ThreadPoolExecutor(max_workers=16) as executor:
+    future_to_idx = {executor.submit(process_module, item): idx for idx, item in enumerate(raw_items)}
+    for future in as_completed(future_to_idx):
+        idx = future_to_idx[future]
+        try:
+            mod, fetched = future.result()
+            modules[idx] = mod
+            if fetched:
+                new_fetches += 1
+        except Exception as e:
+            print(f"Error processing module at index {idx}: {e}")
+
+modules = [m for m in modules if m is not None]
 
 with open('scripts/modules.json', 'w', encoding='utf-8') as f:
     json.dump({"modules": modules}, f, indent=2, ensure_ascii=False)
-print(f"Saved {len(modules)} modules to modules.json successfully. Performed {new_fetches} new GitHub API fetches.")
+with_latest = sum(1 for m in modules if m.get('latestRelease'))
+with_releases = sum(1 for m in modules if m.get('releases'))
+print(f"Saved {len(modules)} modules to modules.json ({with_releases} with releases, {with_latest} with latestRelease). Performed {new_fetches} detail fetches.")
 
 # 1. Create .nojekyll to bypass Jekyll processing on GitHub Pages
 with open('scripts/.nojekyll', 'w', encoding='utf-8') as f:

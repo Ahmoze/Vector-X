@@ -211,26 +211,35 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
                 }
         );
         runOnUiThread(() -> {
-            if (count[0] > 0 && binding != null) {
+            if (binding != null) {
                 var nav = (NavigationBarView) binding.nav;
                 var badge = nav.getOrCreateBadge(R.id.repo_nav);
-                badge.setVisible(true);
-                badge.setNumber(count[0]);
-            } else {
-                onThrowable(null);
+                if (count[0] > 0) {
+                    badge.setVisible(true);
+                    badge.setNumber(count[0]);
+                } else {
+                    badge.setVisible(false);
+                }
             }
         });
     }
 
     @Override
     public void onThrowable(Throwable t) {
-        runOnUiThread(() -> {
-            if (binding != null) {
-                var nav = (NavigationBarView) binding.nav;
-                var badge = nav.getOrCreateBadge(R.id.repo_nav);
-                badge.setVisible(false);
-            }
-        });
+        if (!repoLoader.isRepoLoaded()) {
+            runOnUiThread(() -> {
+                if (binding != null) {
+                    var nav = (NavigationBarView) binding.nav;
+                    var badge = nav.getOrCreateBadge(R.id.repo_nav);
+                    badge.setVisible(false);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onSingleModuleReloaded(ModuleUtil.InstalledModule module) {
+        onModulesReloaded();
     }
 
     @Override
@@ -244,7 +253,10 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
         super.onResume();
         if (ConfigManager.isBinderAlive()) {
             setModulesSummary(moduleUtil.getEnabledModulesCount());
+            App.getExecutorService().submit(moduleUtil::reloadInstalledModules);
         } else setModulesSummary(0);
+        repoLoader.loadRemoteDataIfNeeded();
+        onRepoLoaded();
         if (binding != null) {
             var nav = (NavigationBarView) binding.nav;
             if (UpdateUtil.needUpdate()) {
