@@ -310,6 +310,15 @@ public class RepoFragment extends BaseFragment implements RepoLoader.RepoListene
                 if (ver != null && ver.upgradable(installedModule.versionCode, installedModule.versionName))
                     return ver;
             }
+            String predPkg = RepoLoader.getPredecessorPackage(module.getName());
+            if (predPkg != null && installedModule == null) {
+                ModuleUtil.InstalledModule predInstalled = moduleUtil.getModule(predPkg);
+                if (predInstalled != null) {
+                    var ver = repoLoader.getModuleLatestVersion(predPkg);
+                    if (ver != null && ver.upgradable(predInstalled.versionCode, predInstalled.versionName))
+                        return ver;
+                }
+            }
             return null;
         }
 
@@ -375,7 +384,10 @@ public class RepoFragment extends BaseFragment implements RepoLoader.RepoListene
 
             holder.itemView.setOnClickListener(v -> {
                 if (searchView != null) searchView.clearFocus();
-                safeNavigate(RepoFragmentDirections.actionRepoFragmentToRepoItemFragment(module.getName()));
+                String targetPkg = upgradableVer != null && upgradableVer.targetPackageName != null
+                        ? upgradableVer.targetPackageName
+                        : module.getName();
+                safeNavigate(RepoFragmentDirections.actionRepoFragmentToRepoItemFragment(targetPkg));
             });
             holder.itemView.setTooltipText(module.getDescription());
         }

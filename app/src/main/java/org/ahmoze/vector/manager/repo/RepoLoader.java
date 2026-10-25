@@ -58,20 +58,72 @@ public class RepoLoader {
     private volatile Map<String, OnlineModule> onlineModules = new HashMap<>();
     private volatile Map<String, ModuleVersion> latestVersion = new ConcurrentHashMap<>();
 
+    public static final Map<String, String> LEGACY_PACKAGE_SUCCESSORS = Map.of(
+            "com.coderstory.toolkit", "org.lsposed.corepatch",
+            "com.seepd.toki", "io.github.meiyongai.toki",
+            "cn.wankkoree.xposed.portrait2landscape", "cn.wankkoree.xp.portrait2landscape",
+            "cn.wankkoree.xposed.enablewebviewdebugging", "cn.wankkoree.xp.webviewpp"
+    );
+
+    @Nullable
+    public static String getSuccessorPackage(@Nullable String packageName) {
+        return packageName != null ? LEGACY_PACKAGE_SUCCESSORS.get(packageName) : null;
+    }
+
+    @Nullable
+    public static String getPredecessorPackage(@Nullable String packageName) {
+        if (packageName == null) return null;
+        for (var entry : LEGACY_PACKAGE_SUCCESSORS.entrySet()) {
+            if (packageName.equals(entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public String resolveTargetPackageName(@Nullable String packageName) {
+        if (packageName == null) return null;
+        String successor = LEGACY_PACKAGE_SUCCESSORS.get(packageName);
+        if (successor != null && onlineModules.containsKey(successor)) {
+            return successor;
+        }
+        return packageName;
+    }
+
     public static class ModuleVersion {
         public String versionName;
         public long versionCode;
         public boolean hasValidCode;
+        public boolean isSuccessorMigration;
+        @Nullable
+        public String targetPackageName;
 
         private ModuleVersion(long versionCode, String versionName, boolean hasValidCode) {
+            this(versionCode, versionName, hasValidCode, false, null);
+        }
+
+        private ModuleVersion(long versionCode, String versionName, boolean hasValidCode, boolean isSuccessorMigration, @Nullable String targetPackageName) {
             this.versionName = versionName != null ? versionName.trim() : "";
             this.versionCode = versionCode;
             this.hasValidCode = hasValidCode;
+            this.isSuccessorMigration = isSuccessorMigration;
+            this.targetPackageName = targetPackageName;
         }
 
         public boolean upgradable(long installedCode, String installedName) {
+            if (isSuccessorMigration && targetPackageName != null) {
+                var util = org.ahmoze.vector.manager.util.ModuleUtil.getInstance();
+                return util == null || util.getModule(targetPackageName) == null;
+            }
             if (hasValidCode && this.versionCode > 0 && installedCode > 0) {
-                return this.versionCode > installedCode;
+                if (this.versionCode != installedCode) {
+                    return this.versionCode > installedCode;
+                }
+                if (this.versionName != null && !this.versionName.isEmpty() && installedName != null && !installedName.isEmpty()) {
+                    return compareVersionNames(this.versionName, installedName) > 0;
+                }
+                return false;
             }
             if (this.versionName != null && !this.versionName.isEmpty() && installedName != null && !installedName.isEmpty()) {
                 return compareVersionNames(this.versionName, installedName) > 0;
@@ -185,13 +237,46 @@ public class RepoLoader {
         App.getExecutorService().submit(this::refreshInstalledModulesRemote);
     }
 
+    private static void mergeModulePreservingAssets(@Nullable OnlineModule existing, @NonNull OnlineModule detail) {
+        if (existing == null || existing.getReleases() == null || existing.getReleases().isEmpty()) return;
+        List<Release> detailRels = detail.getReleases() != null ? new ArrayList<>(detail.getReleases()) : new ArrayList<>();
+        for (Release exRel : existing.getReleases()) {
+            if (exRel == null) continue;
+            Release matched = null;
+            for (Release dr : detailRels) {
+                if (dr != null && java.util.Objects.equals(dr.getTagName(), exRel.getTagName())) {
+                    matched = dr;
+                    break;
+                }
+            }
+            if (matched == null) {
+                detailRels.add(0, exRel);
+            } else if (exRel.getReleaseAssets() != null && !exRel.getReleaseAssets().isEmpty()) {
+                List<org.ahmoze.vector.manager.repo.model.ReleaseAsset> assets =
+                        matched.getReleaseAssets() != null ? new ArrayList<>(matched.getReleaseAssets()) : new ArrayList<>();
+                for (var exAsset : exRel.getReleaseAssets()) {
+                    if (exAsset != null && assets.stream().noneMatch(a -> a != null && java.util.Objects.equals(a.getName(), exAsset.getName()))) {
+                        assets.add(0, exAsset);
+                    }
+                }
+                matched.setReleaseAssets(assets);
+            }
+        }
+        detail.setReleases(detailRels);
+    }
+
     private void refreshInstalledModulesRemote() {
         var installedMap = org.ahmoze.vector.manager.util.ModuleUtil.getInstance().getModules();
         if (installedMap == null || installedMap.isEmpty()) return;
         Set<String> pkgNames = new java.util.HashSet<>();
         for (var entry : installedMap.entrySet()) {
-            if (entry.getKey().first != null) {
-                pkgNames.add(entry.getKey().first);
+            String pkg = entry.getKey().first;
+            if (pkg != null) {
+                pkgNames.add(pkg);
+                String successor = LEGACY_PACKAGE_SUCCESSORS.get(pkg);
+                if (successor != null) {
+                    pkgNames.add(successor);
+                }
             }
         }
         if (pkgNames.isEmpty()) return;
@@ -209,6 +294,7 @@ public class RepoLoader {
                     String bodyStr = response.body().string();
                     OnlineModule detail = gson.fromJson(bodyStr, OnlineModule.class);
                     if (detail != null && detail.getName() != null) {
+                        mergeModulePreservingAssets(onlineModules.get(detail.getName()), detail);
                         detail.releasesLoaded = true;
                         onlineModules.put(detail.getName(), detail);
                         anyUpdated = true;
@@ -455,6 +541,41 @@ public class RepoLoader {
                 versions.put(module.getName(), parsed);
             }
         }
+        for (var entry : LEGACY_PACKAGE_SUCCESSORS.entrySet()) {
+            String legacyPkg = entry.getKey();
+            String successorPkg = entry.getValue();
+            OnlineModule successorMod = onlineModules.get(successorPkg);
+            ModuleVersion successorVer = versions.get(successorPkg);
+            if (successorMod != null && successorVer != null) {
+                String label = successorMod.getDescription() != null && !successorMod.getDescription().trim().isEmpty()
+                        ? successorMod.getDescription().trim() + " " + successorVer.versionName
+                        : successorVer.versionName;
+                versions.put(legacyPkg, new ModuleVersion(
+                        successorVer.versionCode,
+                        label,
+                        successorVer.hasValidCode,
+                        true,
+                        successorPkg
+                ));
+                OnlineModule legacyMod = onlineModules.get(legacyPkg);
+                if (legacyMod != null && successorMod.getReleases() != null && !successorMod.getReleases().isEmpty()) {
+                    List<Release> merged = new ArrayList<>(successorMod.getReleases());
+                    if (legacyMod.getReleases() != null) {
+                        for (Release r : legacyMod.getReleases()) {
+                            if (r != null && merged.stream().noneMatch(m ->
+                                    java.util.Objects.equals(m.getTagName(), r.getTagName()) &&
+                                    java.util.Objects.equals(m.getName(), r.getName()))) {
+                                merged.add(r);
+                            }
+                        }
+                    }
+                    legacyMod.setReleases(merged);
+                    if (successorMod.getLatestReleaseTime() != null && !successorMod.getLatestReleaseTime().isEmpty()) {
+                        legacyMod.setLatestReleaseTime(successorMod.getLatestReleaseTime());
+                    }
+                }
+            }
+        }
         latestVersion = versions;
         repoLoaded = true;
         for (RepoListener listener : listeners) {
@@ -540,6 +661,7 @@ public class RepoLoader {
                         Gson gson = new Gson();
                         OnlineModule module = gson.fromJson(bodyString, OnlineModule.class);
                         if (module != null) {
+                            mergeModulePreservingAssets(onlineModules.get(packageName), module);
                             module.releasesLoaded = true;
                             onlineModules.put(packageName, module);
                             var channel = App.getPreferences().getString("update_channel", channels[0]);

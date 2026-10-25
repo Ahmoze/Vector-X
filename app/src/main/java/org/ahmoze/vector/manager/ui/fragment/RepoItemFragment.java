@@ -116,9 +116,19 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
         if (binding == null || module == null || !isAdded()) return;
         String pkg = module.getName();
         var installed = ModuleUtil.getInstance().getModule(pkg);
+        String latestLookupPkg = pkg;
+        if (installed == null) {
+            String predPkg = RepoLoader.getPredecessorPackage(pkg);
+            if (predPkg != null) {
+                installed = ModuleUtil.getInstance().getModule(predPkg);
+                if (installed != null) {
+                    latestLookupPkg = predPkg;
+                }
+            }
+        }
         String subtitle = pkg;
         if (installed != null) {
-            var latestVer = RepoLoader.getInstance().getModuleLatestVersion(pkg);
+            var latestVer = RepoLoader.getInstance().getModuleLatestVersion(latestLookupPkg);
             if (latestVer != null && latestVer.upgradable(installed.versionCode, installed.versionName)) {
                 subtitle = pkg + " · " + getString(R.string.installed) + " " + installed.versionName
                         + " (" + getString(R.string.update_available, latestVer.versionName) + ")";
@@ -183,7 +193,11 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
         super.onCreate(savedInstanceState);
 
         String modulePackageName = getArguments() == null ? null : getArguments().getString("modulePackageName");
-        module = RepoLoader.getInstance().getOnlineModule(modulePackageName);
+        String resolvedPackageName = RepoLoader.getInstance().resolveTargetPackageName(modulePackageName);
+        module = RepoLoader.getInstance().getOnlineModule(resolvedPackageName);
+        if (module == null && modulePackageName != null) {
+            module = RepoLoader.getInstance().getOnlineModule(modulePackageName);
+        }
         if (module == null) {
             if (!safeNavigate(R.id.action_repo_item_fragment_to_repo_fragment)) {
                 safeNavigate(R.id.repo_nav);

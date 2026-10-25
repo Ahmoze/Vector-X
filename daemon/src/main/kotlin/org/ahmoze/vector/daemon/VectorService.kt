@@ -233,6 +233,34 @@ object VectorService : IDaemonService.Stub() {
   private const val FLAG_RECEIVER_INCLUDE_BACKGROUND = 0x01000000
   private const val FLAG_RECEIVER_FROM_SHELL = 0x00400000
 
+  private val SUCCESSOR_TO_LEGACY_PACKAGE =
+      mapOf(
+          "org.lsposed.corepatch" to "com.coderstory.toolkit",
+          "io.github.meiyongai.toki" to "com.seepd.toki",
+          "cn.wankkoree.xp.portrait2landscape" to "cn.wankkoree.xposed.portrait2landscape",
+          "cn.wankkoree.xp.webviewpp" to "cn.wankkoree.xposed.enablewebviewdebugging")
+
+  private fun migrateLegacyPredecessorInDaemon(moduleName: String) {
+    val predPkg = SUCCESSOR_TO_LEGACY_PACKAGE[moduleName] ?: return
+    if (!ManagerService.enabledModules().contains(predPkg)) return
+    val predScopes =
+        ConfigCache.getModuleScope(predPkg)
+            ?.filter { it.packageName != predPkg && it.packageName != moduleName }
+            ?.toMutableList() ?: mutableListOf()
+    if (moduleName == "org.lsposed.corepatch" && predScopes.none { it.packageName == "system" }) {
+      predScopes.add(
+          Application().apply {
+            packageName = "system"
+            userId = 0
+          })
+    }
+    ModuleDatabase.enableModule(moduleName)
+    if (predScopes.isNotEmpty()) {
+      ModuleDatabase.setModuleScope(moduleName, predScopes)
+    }
+    ModuleDatabase.disableModule(predPkg)
+  }
+
   private fun dispatchPackageChanged(intent: Intent) {
     val action = intent.action ?: return
     val uid = intent.getIntExtra(Intent.EXTRA_UID, -1)
@@ -277,6 +305,9 @@ object VectorService : IDaemonService.Stub() {
           moduleApkPathUpdated =
               ModuleDatabase.updateModuleApkPath(
                   moduleName, ConfigCache.getModuleApkPath(appInfo), false)
+          if (action == Intent.ACTION_PACKAGE_ADDED) {
+            migrateLegacyPredecessorInDaemon(moduleName)
+          }
           if (!moduleApkPathUpdated && action == Intent.ACTION_PACKAGE_ADDED) {
             ConfigCache.requestCacheUpdate()
           }

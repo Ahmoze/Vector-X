@@ -1,3 +1,30 @@
+🚀 **What's New in v2.0.31** 🚀
+
+## 🚀 Vector-X v2.0.31 (Core Patch N / libxposed API 101 Package Migration & Automatic Scope Transfer Edition)
+
+This release resolves the **Legacy-to-Modern Package ID Migration & Version Reset issue** (most notably **Core Patch `com.coderstory.toolkit` `4.9` → Core Patch N `org.lsposed.corepatch` `1.0`**), restores **Automatic Recommended Scope Pre-Population (`system`)**, and adds **Seamless In-Place Successor Module Migration** in both the Manager and Daemon.
+
+---
+
+### 🌟 What's New & Fixed:
+
+* **🔄 Legacy-to-Modern Successor Module Update Engine (`Core Patch N` & API 100/101 Migrations):**
+  * **Cross-Package Update Detection (`LEGACY_PACKAGE_SUCCESSORS`)**: Modules that migrated their `applicationId` and reset their `versionCode` for the modern `libxposed API 100/101` architecture (including `com.coderstory.toolkit` → `org.lsposed.corepatch` **Core Patch N**, `com.seepd.toki` → `io.github.meiyongai.toki`, `cn.wankkoree.xposed.portrait2landscape` → `cn.wankkoree.xp.portrait2landscape`, and `cn.wankkoree.xposed.enablewebviewdebugging` → `cn.wankkoree.xp.webviewpp`) are now automatically detected as upgradable across the Overview (`HomeFragment`), Modules (`ModulesFragment`), and Repository (`RepoFragment`) tabs.
+  * **Android 17 QPR2 & Min-SDK Hook Support for Core Patch N**: Included the latest official LSPosed-signed `CorePatch-N-1.0-A17.apk` build (`ddf87bb`) in the repository assets, featuring the redesigned `Core Patch N` UI, the `Bypass minimum SDK version check` toggle, and the Android 17 QPR2 `ApkSignatureVerifierHook` fix.
+  * **Direct Successor Routing**: Tapping update banners, module update badges, or repository entries for legacy predecessor packages automatically opens and resolves to the modern successor module (`org.lsposed.corepatch`).
+
+* **⚙️ Automatic Scope Migration & Recommended Scope Pre-Population:**
+  * **Seamless Predecessor-to-Successor State Transfer**: Installing a modern successor module (`org.lsposed.corepatch`) while its legacy predecessor (`com.coderstory.toolkit`) is installed automatically transfers the enabled status and scope (`system`), disables the legacy module to prevent duplicate `system_server` hooks, and cleanly uninstalls the obsolete legacy package.
+  * **Restored Recommended Scope Pre-Selection**: Fixed `ScopeAdapter.refresh()` and `ModuleUtil.setModuleEnabled()` so newly installed modules with `META-INF/xposed/scope.list` or `xposedscope` (such as `system` for `Core Patch N`) automatically pre-populate their recommended scope upon activation.
+
+---
+
+### 📦 Downloads:
+* **`Vector-v2.0.31-Release.zip`**: Standard production release build (Optimized & Minified).
+* **`Vector-v2.0.31-Debug.zip`**: Troubleshooting build with full debug symbols and verbose logging.
+
+---
+
 🚀 **What's New in v2.0.30** 🚀
 
 ## 🚀 Vector-X v2.0.30 (Real-Time Module Update Engine, One-Tap APK Installer & System Locale Edition)

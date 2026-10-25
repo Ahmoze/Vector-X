@@ -186,7 +186,8 @@ public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoad
                             seen.add(k.first);
                             var ver = repoLoader.getModuleLatestVersion(k.first);
                             if (ver != null && ver.upgradable(v.versionCode, v.versionName)) {
-                                upgradablePkgs.add(k.first);
+                                String targetPkg = ver.targetPackageName != null ? ver.targetPackageName : k.first;
+                                upgradablePkgs.add(targetPkg);
                                 upgradableLines.add("• " + v.getAppName() + " (" + v.versionName + " → " + ver.versionName + ")");
                             }
                         }

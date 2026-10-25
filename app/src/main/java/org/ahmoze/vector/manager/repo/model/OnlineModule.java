@@ -159,6 +159,10 @@ public class OnlineModule {
         return latestReleaseTime;
     }
 
+    public void setLatestReleaseTime(String latestReleaseTime) {
+        this.latestReleaseTime = latestReleaseTime;
+    }
+
     public void setReleases(List<Release> releases) {
         this.releases = releases;
     }

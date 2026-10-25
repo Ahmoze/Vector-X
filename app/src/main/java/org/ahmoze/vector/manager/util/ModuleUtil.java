@@ -151,7 +151,50 @@ public final class ModuleUtil {
         }
         enabledModules = newEnabled;
         modulesLoaded = true;
+        for (InstalledModule mod : new ArrayList<>(installedModules.values())) {
+            migrateLegacyPredecessorIfNeeded(mod);
+        }
         listeners.forEach(ModuleListener::onModulesReloaded);
+    }
+
+    private void migrateLegacyPredecessorIfNeeded(InstalledModule module) {
+        if (module == null) return;
+        String predPkg = org.ahmoze.vector.manager.repo.RepoLoader.getPredecessorPackage(module.packageName);
+        if (predPkg == null) return;
+        InstalledModule predMod = getModule(predPkg, module.userId);
+        if (predMod == null) predMod = getModule(predPkg);
+        if (predMod == null) return;
+
+        boolean predWasEnabled = isModuleEnabled(predPkg);
+        var predScopes = ConfigManager.getModuleScope(predPkg);
+        var newScopes = new java.util.HashSet<org.ahmoze.vector.manager.adapters.ScopeAdapter.ApplicationWithEquals>();
+        if (predScopes != null) {
+            for (var s : predScopes) {
+                if (!predPkg.equals(s.packageName) && !module.packageName.equals(s.packageName)) {
+                    newScopes.add(s);
+                }
+            }
+        }
+        List<String> recScopes = module.getScopeList();
+        if (recScopes != null) {
+            for (String s : recScopes) {
+                if (s != null && !s.trim().isEmpty()) {
+                    newScopes.add(new org.ahmoze.vector.manager.adapters.ScopeAdapter.ApplicationWithEquals(s.trim(), 0));
+                }
+            }
+        }
+        if (predWasEnabled) {
+            ConfigManager.setModuleEnabled(module.packageName, true);
+            enabledModules.add(module.packageName);
+            if (!newScopes.isEmpty()) {
+                ConfigManager.setModuleScope(module.packageName, module.legacy, newScopes);
+            }
+            ConfigManager.setModuleEnabled(predPkg, false);
+            enabledModules.remove(predPkg);
+        }
+        if (ConfigManager.uninstallPackage(predPkg, predMod.userId)) {
+            installedModules.remove(Pair.create(predPkg, predMod.userId));
+        }
     }
 
     @Nullable
@@ -185,6 +228,7 @@ public final class ModuleUtil {
         if (modernApk != null || isLegacyModule(app)) {
             InstalledModule module = new InstalledModule(pkg, modernApk);
             installedModules.put(Pair.create(packageName, userId), module);
+            migrateLegacyPredecessorIfNeeded(module);
             listeners.forEach(i -> i.onSingleModuleReloaded(module));
             return module;
         } else {
@@ -228,6 +272,21 @@ public final class ModuleUtil {
         }
         if (enabled) {
             enabledModules.add(packageName);
+            InstalledModule mod = getModule(packageName);
+            if (mod != null) {
+                List<String> recScopes = mod.getScopeList();
+                if (recScopes != null && !recScopes.isEmpty() && ConfigManager.getModuleScope(packageName).isEmpty()) {
+                    var defaultScopes = new java.util.HashSet<org.ahmoze.vector.manager.adapters.ScopeAdapter.ApplicationWithEquals>();
+                    for (String s : recScopes) {
+                        if (s != null && !s.trim().isEmpty()) {
+                            defaultScopes.add(new org.ahmoze.vector.manager.adapters.ScopeAdapter.ApplicationWithEquals(s.trim(), 0));
+                        }
+                    }
+                    if (!defaultScopes.isEmpty()) {
+                        ConfigManager.setModuleScope(packageName, mod.legacy, defaultScopes);
+                    }
+                }
+            }
         } else {
             enabledModules.remove(packageName);
         }

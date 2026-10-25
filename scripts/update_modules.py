@@ -271,6 +271,51 @@ with ThreadPoolExecutor(max_workers=16) as executor:
 
 modules = [m for m in modules if m is not None]
 
+LEGACY_PACKAGE_SUCCESSORS = {
+    "com.coderstory.toolkit": "org.lsposed.corepatch",
+    "com.seepd.toki": "io.github.meiyongai.toki",
+    "cn.wankkoree.xposed.portrait2landscape": "cn.wankkoree.xp.portrait2landscape",
+    "cn.wankkoree.xposed.enablewebviewdebugging": "cn.wankkoree.xp.webviewpp",
+}
+
+modules_by_name = {m["name"]: m for m in modules if m.get("name")}
+
+corepatch_mod = modules_by_name.get("org.lsposed.corepatch")
+if corepatch_mod and corepatch_mod.get("releases"):
+    first_rel = corepatch_mod["releases"][0]
+    assets = first_rel.get("releaseAssets") or []
+    a17_asset_name = "CorePatch-N-1.0-A17.apk"
+    a17_url = "https://raw.githubusercontent.com/Ahmoze/Vector-X/gh-pages/CorePatch-N-1.0-A17.apk"
+    if not any(a.get("name") == a17_asset_name for a in assets):
+        assets.insert(0, {
+            "name": a17_asset_name,
+            "downloadUrl": a17_url,
+            "originalDownloadUrl": a17_url,
+            "size": 69780,
+            "downloadCount": 0,
+            "contentType": "application/vnd.android.package-archive",
+        })
+        first_rel["releaseAssets"] = assets
+
+for legacy_pkg, successor_pkg in LEGACY_PACKAGE_SUCCESSORS.items():
+    legacy_mod = modules_by_name.get(legacy_pkg)
+    successor_mod = modules_by_name.get(successor_pkg)
+    if legacy_mod and successor_mod and successor_mod.get("releases"):
+        existing_rels = legacy_mod.get("releases") or []
+        merged_rels = []
+        for s_rel in successor_mod["releases"]:
+            s_copy = dict(s_rel)
+            merged_rels.append(s_copy)
+        for l_rel in existing_rels:
+            if not any(
+                m.get("tagName") == l_rel.get("tagName") and m.get("name") == l_rel.get("name")
+                for m in merged_rels
+            ):
+                merged_rels.append(l_rel)
+        legacy_mod["releases"] = merged_rels
+        if successor_mod.get("latestReleaseTime"):
+            legacy_mod["latestReleaseTime"] = successor_mod["latestReleaseTime"]
+
 with open('scripts/modules.json', 'w', encoding='utf-8') as f:
     json.dump({"modules": modules}, f, indent=2, ensure_ascii=False)
 with_latest = sum(1 for m in modules if m.get('latestRelease'))
