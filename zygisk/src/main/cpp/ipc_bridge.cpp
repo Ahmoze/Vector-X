@@ -396,17 +396,6 @@ lsplant::ScopedLocalRef<jobject> IPCBridge::RequestManagerBinderFromSystemServer
     return result_binder;
 }
 
-bool IPCBridge::IsSystemServerRunning(JNIEnv *env) {
-    if (!initialized_ || !check_service_method_) {
-        return false;
-    }
-
-    auto service_name = lsplant::ScopedLocalRef(env, env->NewStringUTF(kBridgeServiceName.data()));
-    auto binder = lsplant::JNI_CallStaticObjectMethod(env, service_manager_class_,
-                                                      check_service_method_, service_name.get());
-    return binder.get() != nullptr;
-}
-
 std::tuple<int, size_t> IPCBridge::FetchFrameworkDex(JNIEnv *env, jobject binder) {
     if (!initialized_ || !binder) {
         return {-1, 0};
