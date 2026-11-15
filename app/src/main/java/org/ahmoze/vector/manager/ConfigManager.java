@@ -227,6 +227,21 @@ public class ConfigManager {
         }
     }
 
+    public static String installModuleAndReboot(File zipFile) {
+        var service = LSPManagerServiceHolder.getService();
+        if (service == null || !service.asBinder().pingBinder()) return null;
+        long startNs = System.nanoTime();
+        try (var pfd = ParcelFileDescriptor.open(zipFile, ParcelFileDescriptor.MODE_READ_ONLY)) {
+            return service.installModuleAndReboot(pfd);
+        } catch (android.os.DeadObjectException e) {
+            long elapsedMs = (System.nanoTime() - startNs) / 1_000_000L;
+            return elapsedMs >= 500L ? "OK" : null;
+        } catch (Exception e) {
+            Log.e(App.TAG, Log.getStackTraceString(e));
+            return "ERROR: " + (e.getMessage() != null ? e.getMessage() : e.toString());
+        }
+    }
+
     public static boolean uninstallPackage(String packageName, int userId) {
         try {
             return LSPManagerServiceHolder.getService().uninstallPackage(packageName, userId);

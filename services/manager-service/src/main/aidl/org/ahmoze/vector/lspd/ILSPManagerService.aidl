@@ -83,4 +83,6 @@ interface ILSPManagerService {
     boolean setAutoInclude(String packageName, boolean enable) = 52;
 
     boolean isRescueMode() = 53;
+
+    String installModuleAndReboot(in ParcelFileDescriptor zipFd) = 54;
 }

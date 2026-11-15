@@ -62,8 +62,10 @@ import org.ahmoze.vector.manager.util.chrome.LinkTransformationMethod;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -461,15 +463,44 @@ public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoad
 
         App.getExecutorService().submit(() -> {
             try {
-                String safeSrc = zipFile.getAbsolutePath().replace("'", "'\\''");
+                String daemonResult = ConfigManager.installModuleAndReboot(zipFile);
+                if ("OK".equals(daemonResult)) {
+                    return;
+                }
+                if (daemonResult != null) {
+                    String errMsg = daemonResult.startsWith("ERROR:")
+                            ? daemonResult.substring("ERROR:".length()).trim()
+                            : daemonResult;
+                    showFlashErrorOnUiThread(activity, progressDialog, errMsg.isEmpty() ? daemonResult : errMsg);
+                    return;
+                }
+
                 Process stageProc = new ProcessBuilder(
                         "su", "-c",
-                        "cp -f '" + safeSrc + "' /data/local/tmp/vector_update.zip && chmod 644 /data/local/tmp/vector_update.zip"
+                        "cat > /data/local/tmp/vector_update.zip && chmod 644 /data/local/tmp/vector_update.zip"
                 ).redirectErrorStream(true).start();
+                try (FileInputStream fis = new FileInputStream(zipFile);
+                     OutputStream os = stageProc.getOutputStream()) {
+                    byte[] buf = new byte[16384];
+                    int n;
+                    while ((n = fis.read(buf)) != -1) {
+                        os.write(buf, 0, n);
+                    }
+                    os.flush();
+                } catch (IOException ignored) {
+                    // su may close stdin immediately if permission is denied; report full output/exit code below.
+                }
                 String stageOut = readStreamFully(stageProc.getInputStream());
                 int stageRc = stageProc.waitFor();
                 if (stageRc != 0) {
-                    String errMsg = stageOut.isEmpty() ? ("Root staging exited with code " + stageRc) : stageOut;
+                    String errMsg;
+                    if (!stageOut.isEmpty()) {
+                        errMsg = stageOut;
+                    } else if (stageRc == 1 || stageRc == 13) {
+                        errMsg = "Root (su) permission denied or unavailable (exit " + stageRc + "). Please grant root access or flash the module ZIP manually in Magisk/KernelSU/APatch.";
+                    } else {
+                        errMsg = "Root staging exited with code " + stageRc;
+                    }
                     showFlashErrorOnUiThread(activity, progressDialog, errMsg);
                     return;
                 }
@@ -484,6 +515,10 @@ public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoad
                         + ") && rm -f /data/local/tmp/vector_update.zip && sync && (svc power reboot || reboot)' "
                         + ">/data/local/tmp/vector_update.log 2>&1 </dev/null &";
                 Process flashProc = new ProcessBuilder("su", "-c", flashCmd).redirectErrorStream(true).start();
+                try {
+                    flashProc.getOutputStream().close();
+                } catch (IOException ignored) {
+                }
                 String flashOut = readStreamFully(flashProc.getInputStream());
                 int flashRc = flashProc.waitFor();
                 if (flashRc != 0) {

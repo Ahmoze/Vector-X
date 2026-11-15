@@ -11,6 +11,7 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.content.pm.VersionedPackage
 import android.net.Uri
+import android.os.Binder
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -23,10 +24,10 @@ import hidden.HiddenApiBridge
 import io.github.libxposed.service.IXposedService
 import java.io.File
 import java.util.concurrent.CountDownLatch
-import org.ahmoze.vector.lspd.ILSPManagerService
-import org.ahmoze.vector.lspd.models.Application
-import org.ahmoze.vector.lspd.models.UserInfo
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.ahmoze.vector.daemon.BuildConfig
+import org.ahmoze.vector.daemon.VectorDaemon
 import org.ahmoze.vector.daemon.data.ConfigCache
 import org.ahmoze.vector.daemon.data.FileSystem
 import org.ahmoze.vector.daemon.data.ModuleDatabase
@@ -36,6 +37,9 @@ import org.ahmoze.vector.daemon.env.LogcatMonitor
 import org.ahmoze.vector.daemon.system.*
 import org.ahmoze.vector.daemon.utils.applyXspaceWorkaround
 import org.ahmoze.vector.daemon.utils.getRealUsers
+import org.ahmoze.vector.lspd.ILSPManagerService
+import org.ahmoze.vector.lspd.models.Application
+import org.ahmoze.vector.lspd.models.UserInfo
 import rikka.parcelablelist.ParcelableListSlice
 
 private const val TAG = "VectorManagerService"
@@ -55,7 +59,13 @@ object ManagerService : ILSPManagerService.Stub() {
     private val connection =
         object : android.app.IServiceConnection.Stub() {
           override fun connected(name: ComponentName?, service: IBinder?, dead: Boolean) {}
-          override fun connected(name: ComponentName?, service: IBinder?, session: Any?, dead: Boolean) {}
+
+          override fun connected(
+              name: ComponentName?,
+              service: IBinder?,
+              session: Any?,
+              dead: Boolean
+          ) {}
         }
 
     init {
@@ -282,8 +292,41 @@ object ManagerService : ILSPManagerService.Stub() {
     activityManager?.forceStopPackage(packageName, userId)
   }
 
+  private fun startRootShell(script: String): Process {
+    synchronized(VectorDaemon.rootUidLock) {
+      android.system.Os.seteuid(0)
+      try {
+        val cmd =
+            if (File("/system/bin/nsenter").canExecute() && File("/proc/1/ns/mnt").exists()) {
+              arrayOf("/system/bin/nsenter", "-t", "1", "-m", "--", "/system/bin/sh", "-c", script)
+            } else {
+              arrayOf("/system/bin/sh", "-c", script)
+            }
+        return ProcessBuilder(*cmd).redirectErrorStream(true).start()
+      } finally {
+        android.system.Os.seteuid(1000)
+      }
+    }
+  }
+
+  private fun triggerRootReboot() {
+    runCatching {
+          startRootShell(
+                  "nohup /system/bin/sh -c 'sleep 1; svc power reboot || setprop sys.powerctl reboot || reboot' >/dev/null 2>&1 </dev/null &")
+              .apply {
+                outputStream.close()
+                inputStream.close()
+                waitFor()
+              }
+        }
+        .onFailure { Log.w(TAG, "Root shell reboot fallback failed", it) }
+  }
+
   override fun reboot() {
-    powerManager?.reboot(false, null, false)
+    if (!ConfigCache.isManager(Binder.getCallingUid())) return
+    VectorDaemon.forgetDeliberateBoot()
+    triggerRootReboot()
+    runCatching { powerManager?.reboot(false, null, false) }
   }
 
   override fun uninstallPackage(packageName: String, userId: Int): Boolean {
@@ -409,8 +452,6 @@ object ManagerService : ILSPManagerService.Stub() {
   override fun dex2oatFlagsLoaded() =
       SystemProperties.get("dalvik.vm.dex2oat-flags").contains("--inline-max-code-units=0")
 
-
-
   override fun getLogs(zipFd: ParcelFileDescriptor) {
     FileSystem.getLogs(zipFd)
   }
@@ -445,5 +486,97 @@ object ManagerService : ILSPManagerService.Stub() {
 
   override fun getAutoInclude(packageName: String) = ConfigCache.getAutoInclude(packageName)
 
-  override fun isRescueMode() = org.ahmoze.vector.daemon.VectorDaemon.isRescueMode
+  override fun isRescueMode() = VectorDaemon.isRescueMode
+
+  override fun installModuleAndReboot(zipFd: ParcelFileDescriptor?): String {
+    val callingUid = Binder.getCallingUid()
+    if (!ConfigCache.isManager(callingUid)) {
+      runCatching { zipFd?.close() }
+      return "ERROR: Unauthorized caller ($callingUid)"
+    }
+    if (zipFd == null) {
+      return "ERROR: Missing update archive file descriptor"
+    }
+
+    ConfigCache.suppressManagerAutoInstall = true
+    var proc: Process? = null
+    return try {
+      val flashScript =
+          """
+          export PATH="/data/adb/magisk:/data/adb/ksu/bin:/data/adb/ap/bin:/product/bin:/apex/com.android.runtime/bin:/system_ext/bin:/system/bin:/system/xbin:/vendor/bin:${'$'}PATH"
+          TMP_ZIP="/data/local/tmp/vector_update.zip"
+          LOG_FILE="/data/local/tmp/vector_update.log"
+          rm -f "${'$'}TMP_ZIP" "${'$'}LOG_FILE"
+          cat > "${'$'}TMP_ZIP" || { echo "Failed to write ${'$'}TMP_ZIP"; exit 10; }
+          chmod 644 "${'$'}TMP_ZIP"
+          SIZE=${'$'}(wc -c < "${'$'}TMP_ZIP" | tr -d ' \r\n')
+          if [ -z "${'$'}SIZE" ] || [ "${'$'}SIZE" -lt 100000 ]; then
+              rm -f "${'$'}TMP_ZIP"
+              echo "Staged archive is incomplete (${'$'}SIZE bytes)"
+              exit 11
+          fi
+          if [ -x /data/adb/ksud ]; then
+              /data/adb/ksud module install "${'$'}TMP_ZIP" </dev/null >"${'$'}LOG_FILE" 2>&1
+              RC=${'$'}?
+          elif command -v ksud >/dev/null 2>&1; then
+              ksud module install "${'$'}TMP_ZIP" </dev/null >"${'$'}LOG_FILE" 2>&1
+              RC=${'$'}?
+          elif [ -x /data/adb/apd ]; then
+              /data/adb/apd module install "${'$'}TMP_ZIP" </dev/null >"${'$'}LOG_FILE" 2>&1
+              RC=${'$'}?
+          elif command -v apd >/dev/null 2>&1; then
+              apd module install "${'$'}TMP_ZIP" </dev/null >"${'$'}LOG_FILE" 2>&1
+              RC=${'$'}?
+          elif [ -x /data/adb/magisk/magisk ]; then
+              /data/adb/magisk/magisk --install-module "${'$'}TMP_ZIP" </dev/null >"${'$'}LOG_FILE" 2>&1
+              RC=${'$'}?
+          elif command -v magisk >/dev/null 2>&1; then
+              magisk --install-module "${'$'}TMP_ZIP" </dev/null >"${'$'}LOG_FILE" 2>&1
+              RC=${'$'}?
+          else
+              rm -f "${'$'}TMP_ZIP"
+              echo "No root module installer found (Magisk / KernelSU / APatch)"
+              exit 12
+          fi
+          rm -f "${'$'}TMP_ZIP"
+          if [ "${'$'}RC" -ne 0 ]; then
+              cat "${'$'}LOG_FILE" 2>/dev/null
+              exit "${'$'}RC"
+          fi
+          sync
+          nohup /system/bin/sh -c 'sleep 1; svc power reboot || setprop sys.powerctl reboot || reboot' >/dev/null 2>&1 </dev/null &
+          exit 0
+          """
+              .trimIndent()
+      proc = startRootShell(flashScript)
+      runCatching {
+        ParcelFileDescriptor.AutoCloseInputStream(zipFd).use { input ->
+          proc.outputStream.use { output ->
+            input.copyTo(output)
+            output.flush()
+          }
+        }
+      }
+      val out = proc.inputStream.bufferedReader().use { it.readText().trim() }
+      val rc = proc.waitFor()
+      if (rc != 0) {
+        ConfigCache.suppressManagerAutoInstall = false
+        "ERROR: " + out.ifEmpty { "Module installer exited with code $rc" }
+      } else {
+        VectorDaemon.forgetDeliberateBoot()
+        VectorDaemon.scope.launch {
+          delay(300)
+          runCatching { powerManager?.reboot(false, null, false) }
+        }
+        "OK"
+      }
+    } catch (t: Throwable) {
+      ConfigCache.suppressManagerAutoInstall = false
+      Log.e(TAG, "installModuleAndReboot failed", t)
+      "ERROR: " + (t.message ?: t.toString())
+    } finally {
+      runCatching { zipFd.close() }
+      runCatching { if (proc?.isAlive == true) proc.destroy() }
+    }
+  }
 }

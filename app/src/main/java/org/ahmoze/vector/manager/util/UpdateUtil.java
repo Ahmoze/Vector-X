@@ -132,7 +132,7 @@ public class UpdateUtil {
                 }
                 notifyListeners();
 
-                boolean updateAvailable = isRemoteNewer(info.tagName, info.releaseTitle, info.releaseNotes, info.versionCode);
+                boolean updateAvailable = isRemoteNewer(info.tagName, info.releaseTitle, info.versionCode);
                 if (!updateAvailable) {
                     cleanupStaleCachedZip(info.assetName);
                     return;
@@ -290,11 +290,34 @@ public class UpdateUtil {
                 } catch (Exception ignored) {
                 }
             }
-            int remoteBuild = extractBuildCode(releaseTitle, tagName, notes);
+            int remoteBuild = extractBuildCode(releaseTitle, tagName);
+            if (remoteBuild <= 0) {
+                remoteBuild = fetchOtaVersionCodeForTagSync(tagName);
+            }
             return new RemoteReleaseInfo(tagName, releaseTitle, remoteBuild, notes, assetName, downloadUrl, assetSize, updatedAtEpoch);
         } catch (Throwable t) {
             Log.e(App.TAG, "fetchFromGitHubApiSync: " + t.getMessage(), t);
             return null;
+        }
+    }
+
+    private static int fetchOtaVersionCodeForTagSync(String tagName) {
+        if (TextUtils.isEmpty(tagName)) return 0;
+        var request = new Request.Builder()
+                .url(OTA_JSON_URL)
+                .cacheControl(CacheControl.FORCE_NETWORK)
+                .build();
+        try (Response response = App.getOkHttpClient().newCall(request).execute()) {
+            var body = response.body();
+            if (!response.isSuccessful() || body == null) return 0;
+            var obj = JsonParser.parseReader(body.charStream()).getAsJsonObject();
+            String otaVersion = getStringOrDefault(obj, "version", "");
+            if (!tagName.equals(otaVersion)) return 0;
+            return obj.has("versionCode") && !obj.get("versionCode").isJsonNull()
+                    ? obj.get("versionCode").getAsInt() : 0;
+        } catch (Throwable t) {
+            Log.w(App.TAG, "fetchOtaVersionCodeForTagSync: " + t.getMessage());
+            return 0;
         }
     }
 
@@ -326,7 +349,7 @@ public class UpdateUtil {
                     : "Vector-" + version + "-Release.zip";
 
             String releaseNotes = "";
-            if (!TextUtils.isEmpty(changelogUrl) && isRemoteNewer(version, "Vector-X " + version, "", versionCode)) {
+            if (!TextUtils.isEmpty(changelogUrl) && isRemoteNewer(version, "Vector-X " + version, versionCode)) {
                 releaseNotes = fetchChangelogSectionSync(changelogUrl, version);
             }
             return new RemoteReleaseInfo(version, "Vector-X " + version, versionCode, releaseNotes, assetName, zipUrl, -1L, 0L);
@@ -402,19 +425,17 @@ public class UpdateUtil {
     }
 
     private static boolean isRemoteNewer(String latestVersionName, String latestReleaseTitle,
-                                         String releaseNotes, int latestVersionCode) {
-        if (latestVersionCode > BuildConfig.VERSION_CODE) {
-            return true;
-        }
+                                         int latestVersionCode) {
         if (latestVersionName != null && !latestVersionName.isEmpty()) {
             int cmp = compareVersions(latestVersionName, BuildConfig.VERSION_NAME);
             if (cmp > 0) return true;
-            if (cmp == 0) {
-                int remoteBuild = extractBuildCode(latestReleaseTitle, latestVersionName, releaseNotes);
-                return remoteBuild > BuildConfig.VERSION_CODE;
-            }
+            if (cmp < 0) return false;
+            int effectiveCode = latestVersionCode > 0
+                    ? latestVersionCode
+                    : extractBuildCode(latestReleaseTitle, latestVersionName);
+            return effectiveCode > BuildConfig.VERSION_CODE;
         }
-        return false;
+        return latestVersionCode > BuildConfig.VERSION_CODE;
     }
 
     private static int extractBuildCode(String... sources) {
@@ -456,9 +477,8 @@ public class UpdateUtil {
 
         var latestVersionName = pref.getString("latest_version_name", "");
         var latestReleaseTitle = pref.getString("latest_release_title", "");
-        var releaseNotes = pref.getString("release_notes", "");
         int latestVersionCode = pref.getInt("latest_version_code", 0);
-        return isRemoteNewer(latestVersionName, latestReleaseTitle, releaseNotes, latestVersionCode);
+        return isRemoteNewer(latestVersionName, latestReleaseTitle, latestVersionCode);
     }
 
     @Nullable

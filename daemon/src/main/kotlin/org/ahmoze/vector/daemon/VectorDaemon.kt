@@ -44,6 +44,7 @@ object VectorDaemon {
   // SupervisorJob(): Ensures one failing task doesn't kill the whole daemon.
   val scope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
   val bridgeServiceName = "activity"
+  internal val rootUidLock = Any()
 
   @Volatile var startedAfterSystemServer = false
 
@@ -152,8 +153,6 @@ object VectorDaemon {
       "sendToBridge MUST run on the main thread!"
     }
 
-    Os.seteuid(0)
-
     runCatching {
           var bridgeService: IBinder?
           if (isRestart) Log.w(TAG, "system_server restarted...")
@@ -190,18 +189,25 @@ object VectorDaemon {
           // Try sending the Binder payload (up to 3 times)
           var success = false
           for (i in 0 until 3) {
-            val data = Parcel.obtain()
-            val reply = Parcel.obtain()
-            try {
-              data.writeInt(ACTION_SEND_BINDER)
-              data.writeStrongBinder(binder)
-              success = bridgeService.transact(BRIDGE_TRANSACTION_CODE, data, reply, 0) == true
-              reply.readException()
-              if (success) break
-            } finally {
-              data.recycle()
-              reply.recycle()
+            synchronized(rootUidLock) {
+              Os.seteuid(0)
+              try {
+                val data = Parcel.obtain()
+                val reply = Parcel.obtain()
+                try {
+                  data.writeInt(ACTION_SEND_BINDER)
+                  data.writeStrongBinder(binder)
+                  success = bridgeService.transact(BRIDGE_TRANSACTION_CODE, data, reply, 0) == true
+                  reply.readException()
+                } finally {
+                  data.recycle()
+                  reply.recycle()
+                }
+              } finally {
+                Os.seteuid(1000)
+              }
             }
+            if (success) break
             Log.w(TAG, "No response from bridge, retrying...")
             Thread.sleep(1000)
           }
@@ -218,7 +224,6 @@ object VectorDaemon {
           }
         }
         .onFailure { Log.e(TAG, "Error during injecting DaemonService", it) }
-    Os.seteuid(1000)
   }
 
   private fun clearSystemCaches() {
@@ -257,7 +262,7 @@ object VectorDaemon {
     SystemProperties.set("ctl.restart", "zygote")
   }
 
-  private fun forgetDeliberateBoot() {
+  internal fun forgetDeliberateBoot() {
     for (property in arrayOf("crashrecovery.rescue_boot_count", "sys.rescue_boot_count")) {
       runCatching { SystemProperties.set(property, "0") }
           .onFailure { Log.w(TAG, "Could not clear `$property` before restarting", it) }
