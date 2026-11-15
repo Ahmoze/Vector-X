@@ -10,6 +10,7 @@ import android.os.Binder
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.os.SystemProperties
 import android.provider.Telephony
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -210,6 +211,9 @@ object VectorService : IDaemonService.Stub() {
   private fun dispatchBootCompleted() {
     bootCompleted = true
     Log.d(TAG, "BOOT_COMPLETED event received.")
+    if (ConfigCache.state.managerUid == -1 && !ConfigCache.suppressManagerAutoInstall) {
+      ConfigCache.updateManager(false)
+    }
     if (PreferenceStore.isStatusNotificationEnabled()) {
       NotificationManager.notifyStatusNotification()
     }
@@ -357,7 +361,7 @@ object VectorService : IDaemonService.Stub() {
     }
 
     // Notify the manager (foreground) that a package state changed so it can refresh its view.
-    if (moduleName != null) {
+    if (moduleName != null && (bootCompleted || SystemProperties.get("sys.boot_completed") == "1")) {
       val innerIntent =
           Intent(intent).apply {
             putExtra("android.intent.extra.PACKAGES", moduleName)

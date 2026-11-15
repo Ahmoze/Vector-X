@@ -2,6 +2,7 @@ package org.ahmoze.vector.daemon.data
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageParser
+import android.os.SystemProperties
 import android.system.Os
 import android.util.Log
 import hidden.HiddenApiBridge
@@ -10,7 +11,9 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.attribute.PosixFilePermissions
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ahmoze.vector.daemon.BuildConfig
 import org.ahmoze.vector.daemon.VectorDaemon
@@ -36,7 +39,7 @@ object ConfigCache {
 
   private val cacheUpdateChannel = Channel<Unit>(Channel.CONFLATED)
 
-  @Volatile private var isInstallingManager = false
+  private val isInstallingManager = AtomicBoolean(false)
   @Volatile var suppressManagerAutoInstall = false
 
   init {
@@ -62,57 +65,61 @@ object ConfigCache {
     }
   }
 
+  private fun tryVerifyInstalledManager(): Boolean {
+    val info =
+        packageManager?.getPackageInfoCompat(BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME, 0, 0)
+            ?: return false
+    val uid = info.applicationInfo?.uid ?: return false
+    val installedApkPath = info.applicationInfo?.sourceDir ?: return false
+
+    @Suppress("DEPRECATION")
+    val currentVersionCode =
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+          info.longVersionCode
+        } else {
+          info.versionCode.toLong()
+        }
+    if (currentVersionCode < BuildConfig.VERSION_CODE) {
+      return false
+    }
+
+    return runCatching {
+          InstallerVerifier.verifyInstallerSignature(installedApkPath)
+          state = state.copy(managerUid = uid)
+          Log.i(TAG, "Manager verified and found at UID: $uid")
+          true
+        }
+        .getOrElse { e ->
+          Log.w(TAG, "Manager signature/verification check failed: ${e.message}")
+          false
+        }
+  }
+
   fun updateManager(uninstalled: Boolean) {
     if (uninstalled) {
       state = state.copy(managerUid = -1)
       return
     }
-    runCatching {
-          val info =
-              packageManager?.getPackageInfoCompat(BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME, 0, 0)
-          val uid = info?.applicationInfo?.uid
-          val installedApkPath = info?.applicationInfo?.sourceDir
-
-          @Suppress("DEPRECATION")
-          val currentVersionCode =
-              if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                info?.longVersionCode ?: 0L
-              } else {
-                info?.versionCode?.toLong() ?: 0L
-              }
-
-          if (suppressManagerAutoInstall) {
-            if (uid != null) {
-              Log.i(TAG, "Manager auto-install suppressed during module update (UID: $uid)")
-              state = state.copy(managerUid = uid)
-            }
-            return
-          }
-
-          if (uid == null ||
-              installedApkPath == null ||
-              currentVersionCode < BuildConfig.VERSION_CODE) {
-            Log.i(
-                TAG,
-                "Manager is missing or outdated (installed: $currentVersionCode, target: ${BuildConfig.VERSION_CODE}). Auto-installing in background...")
-            VectorDaemon.scope.launch { autoInstallManager() }
-            state = state.copy(managerUid = -1)
-            return
-          }
-
-          InstallerVerifier.verifyInstallerSignature(installedApkPath)
-          Log.i(TAG, "Manager verified and found at UID: $uid")
-          state = state.copy(managerUid = uid)
-        }
-        .onFailure { e ->
-          if (suppressManagerAutoInstall) {
-            Log.w(TAG, "Manager verification deferred during module update (${e.message})")
-            return
-          }
-          Log.w(TAG, "Manager verification failed (${e.message}), attempting auto-reinstall...")
-          VectorDaemon.scope.launch { autoInstallManager() }
-          state = state.copy(managerUid = -1)
-        }
+    if (suppressManagerAutoInstall) {
+      val uid =
+          packageManager
+              ?.getPackageInfoCompat(BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME, 0, 0)
+              ?.applicationInfo
+              ?.uid
+      if (uid != null) {
+        Log.i(TAG, "Manager auto-install suppressed during module update (UID: $uid)")
+        state = state.copy(managerUid = uid)
+      }
+      return
+    }
+    if (tryVerifyInstalledManager()) {
+      return
+    }
+    state = state.copy(managerUid = -1)
+    Log.i(
+        TAG,
+        "Manager is missing, outdated, or unverified (target: ${BuildConfig.VERSION_CODE}). Scheduling auto-install...")
+    VectorDaemon.scope.launch { autoInstallManager() }
   }
 
   private fun resolveManagerApkFile(): File {
@@ -120,35 +127,94 @@ object ConfigCache {
     return if (staged.isFile && staged.length() > 0L) staged else FileSystem.managerApkPath.toFile()
   }
 
-  private fun autoInstallManager() {
-    if (suppressManagerAutoInstall || isInstallingManager) return
-    isInstallingManager = true
+  private fun startRootInstallShell(script: String): Process {
+    synchronized(VectorDaemon.rootUidLock) {
+      Os.seteuid(0)
+      try {
+        val cmd =
+            if (File("/system/bin/nsenter").canExecute() && File("/proc/1/ns/mnt").exists()) {
+              arrayOf(
+                  "/system/bin/nsenter", "-t", "1", "-m", "--", "/system/bin/sh", "-c", script)
+            } else {
+              arrayOf("/system/bin/sh", "-c", script)
+            }
+        return ProcessBuilder(*cmd).redirectErrorStream(true).start()
+      } finally {
+        Os.seteuid(1000)
+      }
+    }
+  }
+
+  private suspend fun autoInstallManager() {
+    if (suppressManagerAutoInstall || !isInstallingManager.compareAndSet(false, true)) return
     try {
-      Log.i(TAG, "Executing pm install for Manager APK...")
-      val apkPath = resolveManagerApkFile().absolutePath
-      var process = Runtime.getRuntime().exec(arrayOf("pm", "install", "-r", "-d", apkPath))
-      var exitCode = process.waitFor()
-      if (exitCode != 0) {
-        val error = process.errorStream.bufferedReader().readText()
-        Log.w(
-            TAG, "Manager pm install -r -d failed ($exitCode: $error), retrying after uninstall...")
-        Runtime.getRuntime()
-            .exec(arrayOf("pm", "uninstall", BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME))
-            .waitFor()
-        process = Runtime.getRuntime().exec(arrayOf("pm", "install", apkPath))
-        exitCode = process.waitFor()
+      var waitedTicks = 0
+      while (SystemProperties.get("sys.boot_completed") != "1" && waitedTicks < 180) {
+        if (suppressManagerAutoInstall) return
+        delay(1000)
+        waitedTicks++
       }
-      if (exitCode == 0) {
-        Log.i(TAG, "Manager auto-installed successfully! Refreshing state.")
-        updateManager(false)
-      } else {
-        val error = process.errorStream.bufferedReader().readText()
-        Log.e(TAG, "Manager auto-install failed with exit code $exitCode: $error")
+      if (waitedTicks > 0) {
+        // Give PackageInstallerService and OEM security services a moment after BOOT_COMPLETED.
+        delay(1500)
       }
-    } catch (e: Exception) {
-      Log.e(TAG, "Failed to execute auto-install manager", e)
+
+      for (attempt in 1..5) {
+        if (suppressManagerAutoInstall || tryVerifyInstalledManager()) return
+
+        val apkFile = resolveManagerApkFile()
+        if (!apkFile.isFile || apkFile.length() <= 0L) {
+          Log.e(TAG, "Manager APK missing or empty: ${apkFile.absolutePath}")
+          return
+        }
+
+        Log.i(TAG, "Executing pm install for Manager APK (attempt $attempt/5)...")
+        val escapedApk = "'" + apkFile.absolutePath.replace("'", "'\\''") + "'"
+        val pkg = BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME
+        val size = apkFile.length()
+        val script =
+            """
+            export PATH="/product/bin:/apex/com.android.runtime/bin:/system_ext/bin:/system/bin:/system/xbin:/vendor/bin:${'$'}PATH"
+            APK=$escapedApk
+            SIZE=$size
+            PKG='$pkg'
+            if pm install -r -d -S "${'$'}SIZE" < "${'$'}APK" 2>&1 || pm install -r -d "${'$'}APK" 2>&1; then
+                exit 0
+            fi
+            pm uninstall "${'$'}PKG" >/dev/null 2>&1
+            pm install -S "${'$'}SIZE" < "${'$'}APK" 2>&1 || pm install "${'$'}APK" 2>&1
+            """
+                .trimIndent()
+
+        var output = ""
+        var exitCode = -1
+        try {
+          val proc = startRootInstallShell(script)
+          proc.outputStream.close()
+          output = proc.inputStream.bufferedReader().use { it.readText().trim() }
+          exitCode = proc.waitFor()
+        } catch (e: Exception) {
+          output = e.message ?: e.toString()
+          Log.e(TAG, "Manager auto-install attempt $attempt/5 threw exception", e)
+        }
+
+        if (exitCode == 0) {
+          repeat(5) {
+            if (tryVerifyInstalledManager()) {
+              Log.i(TAG, "Manager auto-installed successfully on attempt $attempt!")
+              return
+            }
+            delay(300)
+          }
+        }
+
+        Log.w(TAG, "Manager auto-install attempt $attempt/5 failed (exit=$exitCode): $output")
+        if (attempt < 5) {
+          delay(3000L * attempt)
+        }
+      }
     } finally {
-      isInstallingManager = false
+      isInstallingManager.set(false)
     }
   }
 

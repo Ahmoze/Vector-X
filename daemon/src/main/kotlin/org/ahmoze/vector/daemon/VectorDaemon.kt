@@ -99,6 +99,9 @@ object VectorDaemon {
       Log.i(TAG, "System boot completed successfully. Resetting bootloop counter.")
       counterFile.delete()
       File(FileSystem.basePath.toFile(), "rescue_mode_active").delete()
+      if (ConfigCache.state.managerUid == -1 && !ConfigCache.suppressManagerAutoInstall) {
+        ConfigCache.updateManager(false)
+      }
     }
 
     // Squat on the proxy service name immediately, which creates the early IPC channel of

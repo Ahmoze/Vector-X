@@ -99,6 +99,11 @@ object ManagerService : ILSPManagerService.Stub() {
 
   @Synchronized
   fun tryRegisterManagerProcess(pid: Int, uid: Int, processName: String): Boolean {
+    if (processName == BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME &&
+        ConfigCache.state.managerUid == -1 &&
+        !ConfigCache.suppressManagerAutoInstall) {
+      ConfigCache.updateManager(false)
+    }
     if (ConfigCache.isManager(uid) && processName == BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME) {
       if (pendingManager) {
         Log.v(TAG, "Parasitic manager registered.")
