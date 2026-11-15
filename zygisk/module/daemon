@@ -31,9 +31,13 @@ if [ "$debug" = "true" ]; then
   fi
 fi
 
-# Mount an empty temporary file system over /data/resource-cache to avoid possible overlay conflicts.
+# Shadow /data/resource-cache with a bind-mounted empty directory instead of tmpfs
+# to avoid allocating a globally detectable kernel anon_bdev minor number.
 # Note that this script runs inside an isolated mount namespace (via unshare).
-mount tmpfs -t tmpfs /data/resource-cache
+emptyDir="$dir/.resource-cache"
+rm -rf "$emptyDir"
+mkdir -p "$emptyDir"
+mount -o bind "$emptyDir" /data/resource-cache
 
 # Wait for Zygote socket using a polling loop
 if [ ! -S "/dev/socket/zygote" ]; then

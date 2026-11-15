@@ -1,3 +1,39 @@
+🚀 **What's New in v2.0.32** 🚀
+
+## 🚀 Vector-X v2.0.32 (Daemon Stealth, Android 17 `XResources` & Manager/Zygisk Hardening Edition)
+
+This release fixes critical runtime, stealth, and stability issues across the **Daemon**, **Zygisk loader**, **`XResources` (Android 17)**, and **Manager**, including restoring the persistent `/data/adb/lspd/lock` guard against R8 stripping, eliminating `tmpfs` mount leaks on `/data/resource-cache`, hardening Android 17 resource/layout hooks, fixing late-injection lifecycle & `sepolicy`, and resolving Direct Boot / repository / scope bugs in the Manager.
+
+---
+
+### 🌟 What's New & Fixed:
+
+* **🛡️ Daemon Lock Persistence, Root Stealth & Lifecycle Hardening:**
+  * **R8-Safe `/data/adb/lspd/lock` Persistence (`FileSystem`)**: Fixed `FileLock` and `FileChannel` being stripped by R8 as write-only fields, which left live `lspd` running without holding `/data/adb/lspd/lock`; channels are now retained via shutdown hooks and failed lock acquisition closes leaked FDs cleanly, while rescue-mode property reads now default to `false` instead of `true`.
+  * **Eliminated `/data/resource-cache` `tmpfs` Mount Leak (`zygisk/module/daemon`)**: Replaced the `mount -t tmpfs` over `/data/resource-cache` with a clean recreated bind-mount of `$dir/.resource-cache`, eliminating detectable `anon_bdev` `tmpfs` mounts in `/proc/*/mountinfo`.
+  * **Unified Late-Injection & Clean Reboot/Recovery Lifecycle (`VectorDaemon`, `SystemServerService`, `VectorService`)**: Replaced fragile `isLateInject` / `restartSystemServer()` logic with deterministic `startedAfterSystemServer` detection, duplicate-safe `ServiceRegistrationWatcher` (`IClientCallback`), strong `bridgeBinder` `DeathRecipient` retention, unconditional `ServiceManager.addService` + `sepolicy` `find` allowance, clean `softReboot()` / `forgetDeliberateBoot()`, non-negative `defaultUserId` guard, and passing `targetUser` correctly when deleting user module preferences.
+
+* **🎨 Android 17 `XResources` Thread-Safety & Layout Hook Fixes:**
+  * **Lock-Free Cache Visibility (`AtomicIntegerArray`)**: Replaced plain `byte[]` replacement caches (`sSystemReplacementsCache`, `mReplacementsCache`, `sReplacementsCacheMap`) with `AtomicIntegerArray` instances synchronized cleanly inside `synchronized (sReplacements)`.
+  * **Resource Name Resolution & `getLayout()` Hardening**: Fixed swapped `getResourceTypeName`/`getResourceEntryName` arguments in `getResourceNames` / `getSystemResourceNames`, replaced unsafe `mTmpValue` reflection in `getLayout()` with a local `TypedValue`, added fallback `resNamesInner.get(null)` lookup + accurate `NotFoundException` formatting, and registered layout callbacks before publishing resource names in `hookLayoutInternal`.
+
+* **⚙️ Zygisk JNI & Service Launch Hardening (`module.cpp`, `ipc_bridge.cpp`, `service.sh`):**
+  * **Fixed `forkCommon` JNI Signature Mismatch**: Removed the spurious 6th `is_manager_app_` argument from both `FindAndCall("forkCommon", "(ZZLjava/lang/String;Ljava/lang/String;Landroid/os/IBinder;)V", ...)` calls in `module.cpp`.
+  * **Automatic Late-Injection Detection & Mount Namespace Fallback**: Added `IPCBridge::IsSystemServerRunning` using `ServiceManager.checkService` for `postServerSpecialize`, removed the hardcoded `--system-server-max-retry=3` cap, and fixed the non-busybox `unshare -m` fallback in `service.sh` to enforce `mount -o rslave none /`.
+
+* **📱 Manager Stability, Direct Boot & Repo Asset Preservation:**
+  * **Preserved Custom Repo Assets (`RepoLoader`)**: Switched `onlineModules` to `ConcurrentHashMap`, preserved merged assets (including bundled `CorePatch-N-1.0-A17.apk`) during `mergeOnlineModule()`, and persisted merged updates to `repoFile`.
+  * **Safe Scope Normalization (`ModuleUtil`)**: Ignored blank lines in `scope.list` / left missing scope lists `null`, guarded `app.metaData != null`, stopped mutating `OnlineModule.scope` lists in-place, and scoped legacy `android ↔ system` mapping strictly to legacy scopes.
+  * **Download Receiver Lifecycle & Direct Boot Safety (`RepoItemFragment`, `App`)**: Added bounded tracking (`PENDING_DOWNLOAD_RECEIVERS`) + `DownloadManager.COLUMN_STATUS == STATUS_SUCCESSFUL` verification before launching APK installs, and added `UserManager.isUserUnlocked()` Direct Boot fallback + guarded `Settings.Global` access in `App.onCreate()`.
+
+---
+
+### 📦 Downloads:
+* **`Vector-v2.0.32-Release.zip`**: Standard production release build (Optimized & Minified).
+* **`Vector-v2.0.32-Debug.zip`**: Troubleshooting build with full debug symbols and verbose logging.
+
+---
+
 🚀 **What's New in v2.0.31** 🚀
 
 ## 🚀 Vector-X v2.0.31 (Core Patch N / libxposed API 101 Package Migration & Automatic Scope Transfer Edition)
@@ -462,19 +498,19 @@ Dive into the new API and enjoy a significantly faster and more powerful module 
 
 🚀 **What's New in v2.0.14** 🚀
 
-# 🚀 Vector v2.0.14 Release
-
-Welcome to a highly refined update focusing on debugging quality-of-life improvements, intelligent navigation, and essential system cleanup. This release makes module development and troubleshooting a much more pleasant experience!
-
-🌟 **What's New**
-
-- 🎨 **Logs UI Overhaul:** Completely revamped the log viewer interface for vastly improved readability. Logs are now dynamically colorized using `Spannable` strings based on their severity level (Errors in Red, Warnings in Orange, and metadata timestamps in a subtle Gray). We also added vertical spacing to let the text "breathe", making forensic debugging easier than ever.
-- 🧭 **Intelligent Release Redirects:** Enhanced the "Open in Browser" arrow button for repository modules. The app now parses GitHub URLs and attempts to dynamically route you directly to the module's specific `/releases/tag/` or `/releases` page, instead of blindly dumping you on the repository's root page. 
-- 🗂️ **Proper Log Export Naming:** Replaced the legacy archive nomenclature. Exported ZIP files containing your logs will now correctly save as `Vector-X_YYYY-MM-DD.zip` instead of the old `LSPosed_` prefix.
-- 🧹 **Defunct Feature Cleanup:** Completely stripped out the dead "Hide Launcher Icon" option from the settings, IPC, and AIDL interfaces. This legacy feature relied on older Android mechanisms that are no longer supported on modern OS versions, so it was removed to reduce clutter and prevent user confusion.
-
-🔧 **Under the Hood**
-- ⚙️ **Optimized Codebase:** Cleaned up unused AIDL endpoints (`setHiddenIcon`) and related bindings across the Manager and Daemon, making the codebase leaner and slightly more optimized.
+# 🚀 Vector v2.0.14 Release
+
+Welcome to a highly refined update focusing on debugging quality-of-life improvements, intelligent navigation, and essential system cleanup. This release makes module development and troubleshooting a much more pleasant experience!
+
+🌟 **What's New**
+
+- 🎨 **Logs UI Overhaul:** Completely revamped the log viewer interface for vastly improved readability. Logs are now dynamically colorized using `Spannable` strings based on their severity level (Errors in Red, Warnings in Orange, and metadata timestamps in a subtle Gray). We also added vertical spacing to let the text "breathe", making forensic debugging easier than ever.
+- 🧭 **Intelligent Release Redirects:** Enhanced the "Open in Browser" arrow button for repository modules. The app now parses GitHub URLs and attempts to dynamically route you directly to the module's specific `/releases/tag/` or `/releases` page, instead of blindly dumping you on the repository's root page. 
+- 🗂️ **Proper Log Export Naming:** Replaced the legacy archive nomenclature. Exported ZIP files containing your logs will now correctly save as `Vector-X_YYYY-MM-DD.zip` instead of the old `LSPosed_` prefix.
+- 🧹 **Defunct Feature Cleanup:** Completely stripped out the dead "Hide Launcher Icon" option from the settings, IPC, and AIDL interfaces. This legacy feature relied on older Android mechanisms that are no longer supported on modern OS versions, so it was removed to reduce clutter and prevent user confusion.
+
+🔧 **Under the Hood**
+- ⚙️ **Optimized Codebase:** Cleaned up unused AIDL endpoints (`setHiddenIcon`) and related bindings across the Manager and Daemon, making the codebase leaner and slightly more optimized.
 
 
 ---

@@ -385,10 +385,11 @@ public final class ModuleUtil {
                     var scopeEntry = modernModuleApk.getEntry("META-INF/xposed/scope.list");
                     if (scopeEntry != null) {
                         try (var reader = new BufferedReader(new InputStreamReader(modernModuleApk.getInputStream(scopeEntry)))) {
-                            scopeList = reader.lines().collect(Collectors.toList());
+                            scopeList = reader.lines()
+                                    .map(String::trim)
+                                    .filter(s -> !s.isEmpty())
+                                    .collect(Collectors.toList());
                         }
-                    } else {
-                        scopeList = Collections.emptyList();
                     }
                 } catch (IOException | OutOfMemoryError e) {
                     Log.e(App.TAG, "Error while closing modern module APK", e);
@@ -435,36 +436,45 @@ public final class ModuleUtil {
         public List<String> getScopeList() {
             if (scopeList != null) return scopeList;
             List<String> list = null;
+            boolean fromLegacyScope = true;
             try {
-                int scopeListResourceId = app.metaData.getInt("xposedscope");
-                if (scopeListResourceId != 0) {
-                    list = Arrays.asList(pm.getResourcesForApplication(app).getStringArray(scopeListResourceId));
-                } else {
-                    String scopeListString = app.metaData.getString("xposedscope");
-                    if (scopeListString != null)
-                        list = Arrays.asList(scopeListString.split(";"));
+                if (app.metaData != null) {
+                    int scopeListResourceId = app.metaData.getInt("xposedscope");
+                    if (scopeListResourceId != 0) {
+                        list = new ArrayList<>(Arrays.asList(pm.getResourcesForApplication(app).getStringArray(scopeListResourceId)));
+                    } else {
+                        String scopeListString = app.metaData.getString("xposedscope");
+                        if (scopeListString != null && !scopeListString.isEmpty()) {
+                            list = new ArrayList<>(Arrays.asList(scopeListString.split(";")));
+                        }
+                    }
                 }
             } catch (Exception ignored) {
             }
             if (list == null) {
                 OnlineModule module = RepoLoader.getInstance().getOnlineModule(packageName);
-                if (module != null && module.getScope() != null) {
-                    list = module.getScope();
+                if (module != null && module.getScope() != null && !module.getScope().isEmpty()) {
+                    // Copy so in-memory OnlineModule.scope is never mutated in place.
+                    list = new ArrayList<>(module.getScope());
+                    fromLegacyScope = legacy;
                 }
             }
             if (list != null) {
-                //For historical reasons, legacy modules use the opposite name.
-                //https://github.com/rovo89/XposedBridge/commit/6b49688c929a7768f3113b4c65b429c7a7032afa
-                list.replaceAll(s ->
-                    switch (s) {
-                        case "android" -> "system";
-                        case "system" -> "android";
-                        default -> s;
-                    }
-                );
+                if (fromLegacyScope) {
+                    //For historical reasons, legacy modules use the opposite name.
+                    //https://github.com/rovo89/XposedBridge/commit/6b49688c929a7768f3113b4c65b429c7a7032afa
+                    list.replaceAll(s ->
+                        switch (s) {
+                            case "android" -> "system";
+                            case "system" -> "android";
+                            default -> s;
+                        }
+                    );
+                }
                 scopeList = list;
+                return scopeList;
             }
-            return scopeList;
+            return Collections.emptyList();
         }
 
         public PackageInfo getPackageInfo() {

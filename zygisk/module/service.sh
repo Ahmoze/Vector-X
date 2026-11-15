@@ -21,13 +21,13 @@ fi
 
 # Start the daemon directly in the background within a private mount namespace
 if [ -x "/data/adb/magisk/busybox" ]; then
-    nohup /data/adb/magisk/busybox unshare --propagation slave -m "$MODDIR/daemon" --system-server-max-retry=3 "$@" </dev/null >/dev/null 2>&1 &
+    nohup /data/adb/magisk/busybox unshare --propagation slave -m "$MODDIR/daemon" "$@" </dev/null >/dev/null 2>&1 &
 elif [ -x "/data/adb/ksu/bin/busybox" ]; then
-    nohup /data/adb/ksu/bin/busybox unshare --propagation slave -m "$MODDIR/daemon" --system-server-max-retry=3 "$@" </dev/null >/dev/null 2>&1 &
+    nohup /data/adb/ksu/bin/busybox unshare --propagation slave -m "$MODDIR/daemon" "$@" </dev/null >/dev/null 2>&1 &
 elif [ -x "/data/adb/ap/bin/busybox" ]; then
-    nohup /data/adb/ap/bin/busybox unshare --propagation slave -m "$MODDIR/daemon" --system-server-max-retry=3 "$@" </dev/null >/dev/null 2>&1 &
+    nohup /data/adb/ap/bin/busybox unshare --propagation slave -m "$MODDIR/daemon" "$@" </dev/null >/dev/null 2>&1 &
 elif command -v busybox >/dev/null 2>&1; then
-    nohup busybox unshare --propagation slave -m "$MODDIR/daemon" --system-server-max-retry=3 "$@" </dev/null >/dev/null 2>&1 &
+    nohup busybox unshare --propagation slave -m "$MODDIR/daemon" "$@" </dev/null >/dev/null 2>&1 &
 else
-    nohup unshare -m "$MODDIR/daemon" --system-server-max-retry=3 "$@" </dev/null >/dev/null 2>&1 &
+    nohup unshare -m /system/bin/sh -c 'mount -o rslave none / 2>/dev/null; exec "$0" "$@"' "$MODDIR/daemon" "$@" </dev/null >/dev/null 2>&1 &
 fi

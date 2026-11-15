@@ -55,7 +55,7 @@ import okhttp3.ResponseBody;
 
 public class RepoLoader {
     private static RepoLoader instance = null;
-    private volatile Map<String, OnlineModule> onlineModules = new HashMap<>();
+    private volatile Map<String, OnlineModule> onlineModules = new ConcurrentHashMap<>();
     private volatile Map<String, ModuleVersion> latestVersion = new ConcurrentHashMap<>();
 
     public static final Map<String, String> LEGACY_PACKAGE_SUCCESSORS = Map.of(
@@ -316,10 +316,16 @@ public class RepoLoader {
 
     public synchronized void mergeOnlineModule(OnlineModule module, boolean notifyReleasesLoaded) {
         if (module == null || module.getName() == null) return;
+        mergeModulePreservingAssets(onlineModules.get(module.getName()), module);
         module.releasesLoaded = true;
         onlineModules.put(module.getName(), module);
         var channel = App.getPreferences().getString("update_channel", channels[0]);
         updateLatestVersion(onlineModules.values().toArray(new OnlineModule[0]), channel);
+        try {
+            String fullJson = new Gson().toJson(onlineModules.values());
+            Files.write(repoFile, fullJson.getBytes(StandardCharsets.UTF_8));
+        } catch (Throwable ignored) {
+        }
         if (notifyReleasesLoaded) {
             for (RepoListener listener : listeners) {
                 listener.onModuleReleasesLoaded(module);

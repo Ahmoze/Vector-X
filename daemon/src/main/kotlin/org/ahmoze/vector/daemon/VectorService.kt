@@ -48,8 +48,8 @@ object VectorService : IDaemonService.Stub() {
     // Initialize OS Observers using Coroutines for the dispatch blocks
     registerReceivers()
 
-    if (VectorDaemon.isLateInject) {
-      Log.i(TAG, "Late injection detected. Forcing boot completed event.")
+    if (VectorDaemon.startedAfterSystemServer) {
+      Log.i(TAG, "Started after system_server. Forcing boot completed event.")
       dispatchBootCompleted()
     }
   }
@@ -264,7 +264,8 @@ object VectorService : IDaemonService.Stub() {
   private fun dispatchPackageChanged(intent: Intent) {
     val action = intent.action ?: return
     val uid = intent.getIntExtra(Intent.EXTRA_UID, -1)
-    val userId = intent.getIntExtra(EXTRA_USER_HANDLE, uid / PER_USER_RANGE)
+    val defaultUserId = if (uid >= 0) uid / PER_USER_RANGE else 0
+    val userId = intent.getIntExtra(EXTRA_USER_HANDLE, defaultUserId)
     val isRemovedForAllUsers = intent.getBooleanExtra(EXTRA_REMOVED_FOR_ALL_USERS, false)
 
     val uri = intent.data
@@ -291,7 +292,7 @@ object VectorService : IDaemonService.Stub() {
           // If it's gone for everyone, wipe the package from all users in the DB.
           // Otherwise, only wipe it for the user that just uninstalled it.
           val targetUser = if (isRemovedForAllUsers) null else userId
-          PreferenceStore.deleteModulePrefs(moduleName, userId, group = null)
+          PreferenceStore.deleteModulePrefs(moduleName, targetUser, group = null)
           if (isRemovedForAllUsers && ModuleDatabase.removeModule(moduleName)) {
             // If it was in our DB and we successfully removed it, we treat it as an Xposed module.
             isXposedModule = true

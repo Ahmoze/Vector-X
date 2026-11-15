@@ -15,6 +15,11 @@ public class ServiceManager {
         throw new RuntimeException("STUB");
     }
 
+    @Nullable
+    public static IBinder checkService(String name) {
+        throw new RuntimeException("STUB");
+    }
+
     /**
      * Place a new @a service called @a name into the service
      * manager.

@@ -352,7 +352,7 @@ void VectorModule::postAppSpecialize(const zygisk::AppSpecializeArgs *args) {
     // Hand off control to the Java side of the framework.
     this->FindAndCall(
         env_, "forkCommon", "(ZZLjava/lang/String;Ljava/lang/String;Landroid/os/IBinder;)V",
-        JNI_FALSE, JNI_FALSE, args->nice_name, args->app_data_dir, binder.get(), is_manager_app_);
+        JNI_FALSE, JNI_FALSE, args->nice_name, args->app_data_dir, binder.get());
 
     if (env_->ExceptionCheck()) {
         LOGE("Pending exception detected in postAppSpecialize for '{}', clearing.", nice_name_str.get());
@@ -403,9 +403,9 @@ void VectorModule::postServerSpecialize(const zygisk::ServerSpecializeArgs *args
 
     // --- Framework Injection for System Server ---
     auto &ipc_bridge = IPCBridge::GetInstance();
-    std::string bridgeServiceName = "serial";
-    bool is_late_inject = (args->runtime_flags & RuntimeFlags::LATE_INJECT) != 0;
-    if (is_late_inject) bridgeServiceName = "serial_vector";
+    bool is_late_inject = (args->runtime_flags & RuntimeFlags::LATE_INJECT) != 0 ||
+                          ipc_bridge.IsSystemServerRunning(env_);
+    std::string bridgeServiceName = is_late_inject ? "serial_vector" : "serial";
     auto system_binder = ipc_bridge.RequestSystemServerBinder(env_, bridgeServiceName);
     if (!system_binder) {
         LOGE("Failed to get system server IPC binder. Aborting injection.");
@@ -445,8 +445,7 @@ void VectorModule::postServerSpecialize(const zygisk::ServerSpecializeArgs *args
     auto system_name = lsplant::ScopedLocalRef(env_, env_->NewStringUTF("system"));
     this->FindAndCall(env_, "forkCommon",
                       "(ZZLjava/lang/String;Ljava/lang/String;Landroid/os/IBinder;)V", JNI_TRUE,
-                      is_late_inject, system_name.get(), nullptr, manager_binder.get(),
-                      is_manager_app_);
+                      is_late_inject, system_name.get(), nullptr, manager_binder.get());
 
     if (env_->ExceptionCheck()) {
         LOGE("Pending exception detected in postServerSpecialize, clearing.");

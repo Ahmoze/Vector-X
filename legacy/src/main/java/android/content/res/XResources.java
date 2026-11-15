@@ -33,10 +33,10 @@ import androidx.annotation.RequiresApi;
 import org.xmlpull.v1.XmlPullParser;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
@@ -66,9 +66,9 @@ public class XResources extends XResourcesSuperClass {
 	// TT is the type of the resource;
 	// NNNN is the name of the resource in that type.
 	// For applications resources, PP is always 0x7f.
-	private static final byte[] sSystemReplacementsCache = new byte[256]; // bitmask: 0x000700ff => 2048 bit => 256 bytes
-	private byte[] mReplacementsCache; // bitmask: 0x0007007f => 1024 bit => 128 bytes
-	private static final HashMap<String, byte[]> sReplacementsCacheMap = new HashMap<>();
+	private static final AtomicIntegerArray sSystemReplacementsCache = new AtomicIntegerArray(64); // 0x000700ff => 2048 bits
+	private final AtomicIntegerArray mReplacementsCache; // 0x0007007f => 1024 bits
+	private static final HashMap<String, AtomicIntegerArray> sReplacementsCacheMap = new HashMap<>();
 	private static final SparseArray<ColorStateList> sColorStateListCache = new SparseArray<>(0);
 
 	private static final SparseArray<HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>>> sLayoutCallbacks = new SparseArray<>();
@@ -90,11 +90,17 @@ public class XResources extends XResourcesSuperClass {
 		this.mResDir = resDir;
 		this.mPackageName = getPackageName(resDir);
 
+		AtomicIntegerArray cache = null;
 		if (resDir != null) {
 			synchronized (sReplacementsCacheMap) {
-				mReplacementsCache = sReplacementsCacheMap.computeIfAbsent(resDir, k -> new byte[128]);
+				cache = sReplacementsCacheMap.get(resDir);
+				if (cache == null) {
+					cache = new AtomicIntegerArray(32);
+					sReplacementsCacheMap.put(resDir, cache);
+				}
 			}
 		}
+		mReplacementsCache = cache;
 	}
 
 	/** Dummy, will never be called (objects are transferred to this class only). */
@@ -124,7 +130,7 @@ public class XResources extends XResourcesSuperClass {
 			for (int i = 0; i < sReplacements.size(); i++) {
 				sReplacements.valueAt(i).remove(mResDir);
 			}
-			Arrays.fill(mReplacementsCache, (byte) 0);
+			clearCacheBits(mReplacementsCache);
 			return true;
 		}
 	}
@@ -285,8 +291,8 @@ public class XResources extends XResourcesSuperClass {
 		return new ResourceNames(
 				id,
 				getResourcePackageName(id),
-				getResourceTypeName(id),
-				getResourceEntryName(id));
+				getResourceEntryName(id),
+				getResourceTypeName(id));
 	}
 
 	private static ResourceNames getSystemResourceNames(int id) {
@@ -294,8 +300,8 @@ public class XResources extends XResourcesSuperClass {
 		return new ResourceNames(
 				id,
 				sysRes.getResourcePackageName(id),
-				sysRes.getResourceTypeName(id),
-				sysRes.getResourceEntryName(id));
+				sysRes.getResourceEntryName(id),
+				sysRes.getResourceTypeName(id));
 	}
 
 	private static void putResourceNames(String resDir, ResourceNames resNames) {
@@ -560,19 +566,6 @@ public class XResources extends XResourcesSuperClass {
 		if (replacement instanceof Drawable)
 			throw new IllegalArgumentException("Drawable replacements are deprecated since Xposed 2.1. Use DrawableLoader instead.");
 
-		// Cache that we have a replacement for this ID, false positives are accepted to save memory.
-		if (id < 0x7f000000) {
-			int cacheKey = (id & 0x00070000) >> 11 | (id & 0xf8) >> 3;
-			synchronized (sSystemReplacementsCache) {
-				sSystemReplacementsCache[cacheKey] |= 1 << (id & 7);
-			}
-		} else {
-			int cacheKey = (id & 0x00070000) >> 12 | (id & 0x78) >> 3;
-			synchronized (res.mReplacementsCache) {
-				res.mReplacementsCache[cacheKey] |= 1 << (id & 7);
-			}
-		}
-
 		synchronized (sReplacements) {
 			HashMap<String, Object> inner = sReplacements.get(id);
 			if (inner == null) {
@@ -580,7 +573,39 @@ public class XResources extends XResourcesSuperClass {
 				sReplacements.put(id, inner);
 			}
 			inner.put(resDir, replacement);
+
+			if (id < 0x7f000000)
+				setCacheBit(sSystemReplacementsCache, systemCacheBit(id));
+			else
+				setCacheBit(res.mReplacementsCache, appCacheBit(id));
 		}
+	}
+
+	private static int systemCacheBit(int id) {
+		return (id & 0x00070000) >> 8 | (id & 0xff);
+	}
+
+	private static int appCacheBit(int id) {
+		return (id & 0x00070000) >> 9 | (id & 0x7f);
+	}
+
+	private static boolean hasCacheBit(AtomicIntegerArray cache, int bit) {
+		return (cache.get(bit >> 5) & (1 << (bit & 31))) != 0;
+	}
+
+	private static void setCacheBit(AtomicIntegerArray cache, int bit) {
+		int index = bit >> 5;
+		int mask = 1 << (bit & 31);
+		for (;;) {
+			int word = cache.get(index);
+			if ((word & mask) != 0 || cache.compareAndSet(index, word, word | mask))
+				return;
+		}
+	}
+
+	private static void clearCacheBits(AtomicIntegerArray cache) {
+		for (int i = 0; i < cache.length(); i++)
+			cache.set(i, 0);
 	}
 
 	// =======================================================
@@ -593,12 +618,10 @@ public class XResources extends XResourcesSuperClass {
 
 		// Check the cache whether it's worth looking for replacements
 		if (id < 0x7f000000) {
-			int cacheKey = (id & 0x00070000) >> 11 | (id & 0xf8) >> 3;
-			if ((sSystemReplacementsCache[cacheKey] & (1 << (id & 7))) == 0)
+			if (!hasCacheBit(sSystemReplacementsCache, systemCacheBit(id)))
 				return null;
 		} else if (mResDir != null) {
-			int cacheKey = (id & 0x00070000) >> 12 | (id & 0x78) >> 3;
-			if ((mReplacementsCache[cacheKey] & (1 << (id & 7))) == 0)
+			if (!hasCacheBit(mReplacementsCache, appCacheBit(id)))
 				return null;
 		}
 
@@ -940,7 +963,7 @@ public class XResources extends XResourcesSuperClass {
 			}
 			if (callbacks != null) {
 				String variant = "layout";
-				TypedValue value = (TypedValue) getObjectField(this, "mTmpValue");
+				TypedValue value = new TypedValue();
 				getValue(id, value, true);
 				if (value.type == TypedValue.TYPE_STRING) {
 					String[] components = value.string.toString().split("/", 3);
@@ -950,7 +973,7 @@ public class XResources extends XResourcesSuperClass {
 						XposedBridge.log("Unexpected resource path \"" + value.string.toString()
 								+ "\" for resource id 0x" + Integer.toHexString(id));
 				} else {
-					XposedBridge.log(new NotFoundException("Could not find file name for resource id 0x") + Integer.toHexString(id));
+					XposedBridge.log(new NotFoundException("Could not find file name for resource id 0x" + Integer.toHexString(id)));
 				}
 
 				synchronized (sXmlInstanceDetails) {
@@ -958,7 +981,10 @@ public class XResources extends XResourcesSuperClass {
 						HashMap<String, ResourceNames> resNamesInner = sResourceNames.get(id);
 						if (resNamesInner != null) {
 							synchronized (resNamesInner) {
-								XMLInstanceDetails details = new XMLInstanceDetails(resNamesInner.get(mResDir), variant, callbacks);
+								ResourceNames resNames = resNamesInner.get(mResDir);
+								if (resNames == null && mResDir != null)
+									resNames = resNamesInner.get(null);
+								XMLInstanceDetails details = new XMLInstanceDetails(resNames, variant, callbacks);
 								sXmlInstanceDetails.put(result, details);
 
 								// if we were called inside LayoutInflater.parseInclude, store the details for it
@@ -1751,6 +1777,8 @@ public class XResources extends XResourcesSuperClass {
 			}
 		}
 
+		putResourceNames(resDir, resNames);
+
 		HashMap<String, CopyOnWriteSortedSet<XC_LayoutInflated>> inner;
 		synchronized (sLayoutCallbacks) {
 			inner = sLayoutCallbacks.get(id);
@@ -1765,13 +1793,12 @@ public class XResources extends XResourcesSuperClass {
 			callbacks = inner.get(resDir);
 			if (callbacks == null) {
 				callbacks = new CopyOnWriteSortedSet<>();
+				callbacks.add(callback);
 				inner.put(resDir, callbacks);
+			} else {
+				callbacks.add(callback);
 			}
 		}
-
-		callbacks.add(callback);
-
-		putResourceNames(resDir, resNames);
 
 		return callback.new Unhook(resDir, id);
 	}

@@ -449,6 +449,22 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
     }
 
     public static class DownloadDialog extends DialogFragment {
+        private static final java.util.Map<Long, android.content.BroadcastReceiver> PENDING_DOWNLOAD_RECEIVERS =
+                new java.util.concurrent.ConcurrentHashMap<>();
+
+        private static void pruneStaleReceivers(android.content.Context context) {
+            if (PENDING_DOWNLOAD_RECEIVERS.size() <= 16) return;
+            var it = PENDING_DOWNLOAD_RECEIVERS.entrySet().iterator();
+            while (it.hasNext()) {
+                var entry = it.next();
+                it.remove();
+                try {
+                    context.unregisterReceiver(entry.getValue());
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -477,15 +493,29 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                                         if (manager != null) {
                                             final long downloadId = manager.enqueue(req);
                                             if (isApk) {
+                                                pruneStaleReceivers(context);
                                                 android.content.BroadcastReceiver receiver = new android.content.BroadcastReceiver() {
                                                     @Override
                                                     public void onReceive(android.content.Context ctx, android.content.Intent intent) {
                                                         long id = intent.getLongExtra(android.app.DownloadManager.EXTRA_DOWNLOAD_ID, -1L);
                                                         if (id != downloadId) return;
+                                                        PENDING_DOWNLOAD_RECEIVERS.remove(downloadId);
                                                         try {
                                                             context.unregisterReceiver(this);
                                                         } catch (Exception ignored) {
                                                         }
+                                                        boolean downloadSuccess = false;
+                                                        android.app.DownloadManager.Query query =
+                                                                new android.app.DownloadManager.Query().setFilterById(downloadId);
+                                                        try (android.database.Cursor c = manager.query(query)) {
+                                                            if (c != null && c.moveToFirst()) {
+                                                                int status = c.getInt(c.getColumnIndexOrThrow(android.app.DownloadManager.COLUMN_STATUS));
+                                                                downloadSuccess = status == android.app.DownloadManager.STATUS_SUCCESSFUL;
+                                                            }
+                                                        } catch (Exception e) {
+                                                            Log.e(App.TAG, "Failed to query download status for id " + downloadId, e);
+                                                        }
+                                                        if (!downloadSuccess) return;
                                                         android.net.Uri apkUri = manager.getUriForDownloadedFile(downloadId);
                                                         if (apkUri != null) {
                                                             try {
@@ -499,6 +529,7 @@ public class RepoItemFragment extends BaseFragment implements RepoLoader.RepoLis
                                                         }
                                                     }
                                                 };
+                                                PENDING_DOWNLOAD_RECEIVERS.put(downloadId, receiver);
                                                 context.registerReceiver(
                                                         receiver,
                                                         new android.content.IntentFilter(android.app.DownloadManager.ACTION_DOWNLOAD_COMPLETE),

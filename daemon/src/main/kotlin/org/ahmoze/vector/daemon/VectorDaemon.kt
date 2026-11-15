@@ -45,25 +45,25 @@ object VectorDaemon {
   val scope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
   val bridgeServiceName = "activity"
 
-  var isLateInject = false
-  var proxyServiceName = "serial"
+  @Volatile var startedAfterSystemServer = false
+
+  val proxyServiceName: String
+    get() = if (startedAfterSystemServer) "serial_vector" else "serial"
+
+  @Volatile private var bridgeBinder: IBinder? = null
+
   var isRescueMode = false
 
   @JvmStatic
   fun main(args: Array<String>) {
     if (!FileSystem.tryLock()) kotlin.system.exitProcess(0)
 
-    var systemServerMaxRetry = 1
-    for (arg in args) {
-      if (arg.startsWith("--system-server-max-retry=")) {
-        systemServerMaxRetry = arg.substringAfter('=').toIntOrNull() ?: 1
-      } else if (arg == "--late-inject") {
-        isLateInject = true
-        proxyServiceName = "serial_vector"
-      }
-    }
+    startedAfterSystemServer =
+        ServiceManager.checkService(bridgeServiceName) != null || args.contains("--late-inject")
 
-    Log.i(TAG, "Vector daemon started: lateInject=$isLateInject, proxy=$proxyServiceName")
+    Log.i(
+        TAG,
+        "Vector daemon started: afterSystemServer=$startedAfterSystemServer, proxy=$proxyServiceName")
     Log.i(TAG, "Version ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
 
     Thread.setDefaultUncaughtExceptionHandler { _, e ->
@@ -125,7 +125,7 @@ object VectorDaemon {
     applyNotificationWorkaround()
 
     // Setup IPC channel for applications by injecting DaemonService binder
-    sendToBridge(VectorService.asBinder(), false, systemServerMaxRetry)
+    sendToBridge(VectorService.asBinder(), false)
 
     if (!ManagerService.isVerboseLog()) {
       LogcatMonitor.stopVerbose()
@@ -147,7 +147,6 @@ object VectorDaemon {
   private fun sendToBridge(
       binder: IBinder,
       isRestart: Boolean,
-      restartRetry: Int,
   ) {
     check(Looper.myLooper() == Looper.getMainLooper()) {
       "sendToBridge MUST run on the main thread!"
@@ -171,19 +170,22 @@ object VectorDaemon {
               object : IBinder.DeathRecipient {
                 override fun binderDied() {
                   Log.w(TAG, "System Server died! Clearing caches and re-injecting...")
-                  bridgeService.unlinkToDeath(this, 0)
+                  bridgeBinder?.unlinkToDeath(this, 0)
+                  bridgeBinder = null
                   clearSystemCaches()
                   SystemServerService.binderDied() // Cleanup old references
+                  if (startedAfterSystemServer) SystemServerService.unregisterProxyService()
+                  startedAfterSystemServer = false
+                  SystemServerService.systemServerRequested = false
                   // Re-claim the service name immediately to ensure that when system_server
                   // restarts, our proxy is already there for the Zygisk module to find.
-                  ServiceManager.addService(proxyServiceName, SystemServerService)
+                  SystemServerService.registerProxyService(proxyServiceName)
                   ManagerService.guard = null // Remove dead guard
-                  Handler(Looper.getMainLooper()).post {
-                    sendToBridge(binder, true, restartRetry - 1)
-                  }
+                  Handler(Looper.getMainLooper()).post { sendToBridge(binder, true) }
                 }
               }
           bridgeService.linkToDeath(deathRecipient, 0)
+          bridgeBinder = bridgeService
 
           // Try sending the Binder payload (up to 3 times)
           var success = false
@@ -206,9 +208,13 @@ object VectorDaemon {
 
           if (success) {
             Log.i(TAG, "Successfully injected Vector IPC binder for applications.")
+            if (startedAfterSystemServer) SystemServerService.unregisterProxyService()
           } else {
-            Log.e(TAG, "Failed to inject VectorService into system_server")
-            if (restartRetry > 0) restartSystemServer()
+            if (!SystemServerService.systemServerRequested) {
+              Log.e(TAG, "No Vector module reached system_server; leaving it running")
+            } else {
+              Log.e(TAG, "Vector reached system_server but its bridge never answered")
+            }
           }
         }
         .onFailure { Log.e(TAG, "Error during injecting DaemonService", it) }
@@ -245,14 +251,16 @@ object VectorDaemon {
         .onFailure { Log.w(TAG, "Failed to clear system caches via reflection", it) }
   }
 
-  fun restartSystemServer() {
-    Log.w(TAG, "Restarting system_server...")
-    val restartTarget =
-        if (Build.SUPPORTED_64_BIT_ABIS.isNotEmpty() && Build.SUPPORTED_32_BIT_ABIS.isNotEmpty()) {
-          "zygote_secondary"
-        } else {
-          "zygote"
-        }
-    SystemProperties.set("ctl.restart", restartTarget)
+  fun softReboot() {
+    Log.w(TAG, "Soft reboot: restarting the primary zygote")
+    forgetDeliberateBoot()
+    SystemProperties.set("ctl.restart", "zygote")
+  }
+
+  private fun forgetDeliberateBoot() {
+    for (property in arrayOf("crashrecovery.rescue_boot_count", "sys.rescue_boot_count")) {
+      runCatching { SystemProperties.set(property, "0") }
+          .onFailure { Log.w(TAG, "Could not clear `$property` before restarting", it) }
+    }
   }
 }

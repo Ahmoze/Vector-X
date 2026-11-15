@@ -18,7 +18,6 @@ import java.io.FileInputStream
 import java.io.InputStream
 import java.nio.channels.Channels
 import java.nio.channels.FileChannel
-import java.nio.channels.FileLock
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -53,8 +52,6 @@ object FileSystem {
 
   private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault())
   private val lockPath: Path = basePath.resolve("lock")
-  private var fileLock: FileLock? = null
-  private var lockChannel: FileChannel? = null
 
   init {
     runCatching {
@@ -88,18 +85,33 @@ object FileSystem {
     return cliSocket
   }
 
-  /** Tries to lock the daemon lockfile. Returns false if another daemon is running. */
+  /**
+   * Tries to lock the daemon lockfile. Returns false if another daemon is running.
+   *
+   * Hold both channel and lock in a shutdown hook so R8 cannot shrink unused private fields and GC
+   * cannot finalize/close the descriptor and drop the POSIX lock.
+   */
   fun tryLock(): Boolean {
     return runCatching {
           val permissions =
               PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------"))
-          lockChannel =
+          val channel =
               FileChannel.open(
                   lockPath, setOf(StandardOpenOption.CREATE, StandardOpenOption.WRITE), permissions)
-          fileLock = lockChannel?.tryLock()
-          fileLock?.isValid == true
+          val lock = runCatching { channel.tryLock() }.getOrNull()
+          if (lock?.isValid != true) {
+            channel.close()
+            return@runCatching false
+          }
+          Runtime.getRuntime()
+              .addShutdownHook(
+                  Thread {
+                    runCatching { lock.release() }
+                    runCatching { channel.close() }
+                  })
+          true
         }
-        .getOrDefault(true)
+        .getOrDefault(false)
   }
 
   /** Clears all special file attributes (like immutable) on a directory. */

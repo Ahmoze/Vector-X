@@ -173,6 +173,11 @@ void IPCBridge::Initialize(JNIEnv *env) {
         LOGE("IPCBridge: ServiceManager.getService method not found!");
         return;
     }
+    check_service_method_ = lsplant::JNI_GetStaticMethodID(
+        env, service_manager_class_, "checkService", "(Ljava/lang/String;)Landroid/os/IBinder;");
+    if (!check_service_method_) {
+        LOGW("IPCBridge: ServiceManager.checkService method not found.");
+    }
 
     // IBinder
     auto ibinder_class = lsplant::ScopedLocalRef(env, env->FindClass("android/os/IBinder"));
@@ -313,6 +318,17 @@ lsplant::ScopedLocalRef<jobject> IPCBridge::RequestAppBinder(JNIEnv *env, jstrin
     return result_binder;
 }
 
+bool IPCBridge::IsSystemServerRunning(JNIEnv *env) {
+    if (!initialized_ || !check_service_method_) {
+        return false;
+    }
+
+    auto service_name = lsplant::ScopedLocalRef(env, env->NewStringUTF(kBridgeServiceName.data()));
+    auto binder = lsplant::JNI_CallStaticObjectMethod(env, service_manager_class_,
+                                                      check_service_method_, service_name.get());
+    return binder.get() != nullptr;
+}
+
 lsplant::ScopedLocalRef<jobject> IPCBridge::RequestSystemServerBinder(
     JNIEnv *env, std::string bridgeServiceName) {
     if (!initialized_) {
@@ -378,6 +394,17 @@ lsplant::ScopedLocalRef<jobject> IPCBridge::RequestManagerBinderFromSystemServer
     }
     LOGD("Manager binder from system_server: {}", static_cast<void *>(result_binder.get()));
     return result_binder;
+}
+
+bool IPCBridge::IsSystemServerRunning(JNIEnv *env) {
+    if (!initialized_ || !check_service_method_) {
+        return false;
+    }
+
+    auto service_name = lsplant::ScopedLocalRef(env, env->NewStringUTF(kBridgeServiceName.data()));
+    auto binder = lsplant::JNI_CallStaticObjectMethod(env, service_manager_class_,
+                                                      check_service_method_, service_name.get());
+    return binder.get() != nullptr;
 }
 
 std::tuple<int, size_t> IPCBridge::FetchFrameworkDex(JNIEnv *env, jobject binder) {

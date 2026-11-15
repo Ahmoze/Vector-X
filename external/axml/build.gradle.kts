@@ -10,8 +10,14 @@ java {
     targetCompatibility = androidTargetCompatibility
     sourceSets {
         main {
-            java.srcDirs("manifest-editor/lib/src/main/java")
-            resources.srcDirs("manifest-editor/lib/src/main")
+            java.setSrcDirs(listOf("manifest-editor/lib/src/main/java"))
+            resources.setSrcDirs(emptyList<String>())
         }
+    }
+}
+
+tasks.processResources {
+    from("manifest-editor/lib/src/main/assets") {
+        into("assets")
     }
 }

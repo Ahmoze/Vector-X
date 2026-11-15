@@ -35,6 +35,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
+import android.os.UserManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.system.Os;
@@ -202,13 +203,18 @@ public class App extends Application {
         instance = this;
 
         setCrashReport();
-        pref = PreferenceManager.getDefaultSharedPreferences(this);
+        UserManager um = getSystemService(UserManager.class);
+        Context storageCtx = (um != null && !um.isUserUnlocked()) ? createDeviceProtectedStorageContext() : this;
+        pref = PreferenceManager.getDefaultSharedPreferences(storageCtx);
         if (!pref.contains("doh")) {
-            var name = "private_dns_mode";
-            if ("hostname".equals(Settings.Global.getString(getContentResolver(), name))) {
-                pref.edit().putBoolean("doh", false).apply();
-            } else {
-                pref.edit().putBoolean("doh", true).apply();
+            try {
+                var name = "private_dns_mode";
+                if ("hostname".equals(Settings.Global.getString(getContentResolver(), name))) {
+                    pref.edit().putBoolean("doh", false).apply();
+                } else {
+                    pref.edit().putBoolean("doh", true).apply();
+                }
+            } catch (Throwable ignored) {
             }
         }
         AppCompatDelegate.setDefaultNightMode(ThemeUtil.getDarkTheme());
