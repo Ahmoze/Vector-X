@@ -25,6 +25,7 @@ This release fixes critical runtime, stealth, and stability issues across the **
   * **Preserved Custom Repo Assets (`RepoLoader`)**: Switched `onlineModules` to `ConcurrentHashMap`, preserved merged assets (including bundled `CorePatch-N-1.0-A17.apk`) during `mergeOnlineModule()`, and persisted merged updates to `repoFile`.
   * **Safe Scope Normalization (`ModuleUtil`)**: Ignored blank lines in `scope.list` / left missing scope lists `null`, guarded `app.metaData != null`, stopped mutating `OnlineModule.scope` lists in-place, and scoped legacy `android ↔ system` mapping strictly to legacy scopes.
   * **Download Receiver Lifecycle & Direct Boot Safety (`RepoItemFragment`, `App`)**: Added bounded tracking (`PENDING_DOWNLOAD_RECEIVERS`) + `DownloadManager.COLUMN_STATUS == STATUS_SUCCESSFUL` verification before launching APK installs, and added `UserManager.isUserUnlocked()` Direct Boot fallback + guarded `Settings.Global` access in `App.onCreate()`.
+  * **Restored In-App Automatic Update & Detached Root Flash (`UpdateUtil`, `HomeFragment`, `MainActivity`)**: Eliminated the `zip_file` race and bogus 30-day forced expiration that redirected `Install` to GitHub, added on-demand ZIP download progress + `update.json` OTA fallback on GitHub API rate limits, synchronized UI listeners across `MainActivity`/`HomeFragment`, and detached root flashing via `nohup` after staging `/data/local/tmp/vector_update.zip` so `customize.sh`'s `pm install` cannot kill the installer before reboot.
 
 ---
 

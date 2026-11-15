@@ -54,7 +54,7 @@ import java.util.Objects;
 
 import rikka.core.util.ResourceUtils;
 
-public class MainActivity extends BaseActivity implements RepoLoader.RepoListener, ModuleUtil.ModuleListener {
+public class MainActivity extends BaseActivity implements RepoLoader.RepoListener, ModuleUtil.ModuleListener, UpdateUtil.UpdateListener {
     private static final String KEY_PREFIX = MainActivity.class.getName() + '.';
     private static final String EXTRA_SAVED_INSTANCE_STATE = KEY_PREFIX + "SAVED_INSTANCE_STATE";
 
@@ -87,6 +87,7 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
 
         repoLoader.addListener(this);
         moduleUtil.addListener(this);
+        UpdateUtil.addListener(this);
 
         onModulesReloaded();
 
@@ -264,12 +265,11 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
         } else setModulesSummary(0);
         repoLoader.loadRemoteDataIfNeeded();
         onRepoLoaded();
+        UpdateUtil.loadRemoteVersionIfNeeded();
         if (binding != null) {
             var nav = (NavigationBarView) binding.nav;
-            if (UpdateUtil.needUpdate()) {
-                var badge = nav.getOrCreateBadge(R.id.main_fragment);
-                badge.setVisible(true);
-            }
+            var badge = nav.getOrCreateBadge(R.id.main_fragment);
+            badge.setVisible(UpdateUtil.needUpdate());
 
             if (!ConfigManager.isBinderAlive()) {
                 nav.getMenu().removeItem(R.id.logs_fragment);
@@ -283,6 +283,17 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
             var updateShortcut = ShortcutUtil.updateShortcut();
             Log.d(App.TAG, "update shortcut success = " + updateShortcut);
         }
+    }
+
+    @Override
+    public void onUpdateStateChanged() {
+        runOnUiThread(() -> {
+            if (binding != null) {
+                var nav = (NavigationBarView) binding.nav;
+                var badge = nav.getOrCreateBadge(R.id.main_fragment);
+                badge.setVisible(UpdateUtil.needUpdate());
+            }
+        });
     }
 
     private void setModulesSummary(int moduleCount) {
@@ -307,5 +318,6 @@ public class MainActivity extends BaseActivity implements RepoLoader.RepoListene
         super.onDestroy();
         repoLoader.removeListener(this);
         moduleUtil.removeListener(this);
+        UpdateUtil.removeListener(this);
     }
 }

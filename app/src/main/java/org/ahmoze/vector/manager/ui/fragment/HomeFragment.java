@@ -29,18 +29,23 @@ import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
 import android.text.method.LinkMovementMethod;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.text.HtmlCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import org.ahmoze.vector.lspd.ILSPManagerService;
 import org.ahmoze.vector.manager.BuildConfig;
@@ -55,7 +60,11 @@ import org.ahmoze.vector.manager.util.NavUtil;
 import org.ahmoze.vector.manager.util.UpdateUtil;
 import org.ahmoze.vector.manager.util.chrome.LinkTransformationMethod;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -68,7 +77,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rikka.core.util.ClipboardUtils;
 import rikka.material.app.LocaleDelegate;
 
-public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoader.RepoListener, ModuleUtil.ModuleListener {
+public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoader.RepoListener, ModuleUtil.ModuleListener, UpdateUtil.UpdateListener {
     private FragmentHomeBinding binding;
     private final RepoLoader repoLoader = RepoLoader.getInstance();
     private final ModuleUtil moduleUtil = ModuleUtil.getInstance();
@@ -112,6 +121,7 @@ public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoad
 
         repoLoader.addListener(this);
         moduleUtil.addListener(this);
+        UpdateUtil.addListener(this);
         updateStates(requireActivity(), ConfigManager.isBinderAlive(), UpdateUtil.needUpdate());
 
         return binding.getRoot();
@@ -135,6 +145,11 @@ public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoad
     }
 
     @Override
+    public void onUpdateStateChanged() {
+        onRepoLoaded();
+    }
+
+    @Override
     public void onSingleModuleReloaded(ModuleUtil.InstalledModule module) {
         onRepoLoaded();
     }
@@ -152,28 +167,7 @@ public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoad
                 binding.updateSummary.setText(notes);
                 binding.statusIcon.setImageResource(R.drawable.ic_round_update_24);
                 binding.updateBtn.setText(R.string.install);
-                binding.updateBtn.setOnClickListener(v -> {
-                    String zipPath = App.getPreferences().getString("zip_file", null);
-                    if (zipPath != null && new java.io.File(zipPath).exists()) {
-                        new org.ahmoze.vector.manager.ui.dialog.BlurBehindDialogBuilder(activity)
-                            .setTitle(R.string.install)
-                            .setMessage(notes + "\n\n" + getString(R.string.update_flash_confirm_msg))
-                            .setPositiveButton(R.string.install_and_reboot, (dialog, which) -> {
-                                new Thread(() -> {
-                                    try {
-                                        Process p = Runtime.getRuntime().exec(new String[]{"su", "-c", "(/data/adb/ksud module install '" + zipPath + "' || ksud module install '" + zipPath + "' || /data/adb/apd module install '" + zipPath + "' || apd module install '" + zipPath + "' || magisk --install-module '" + zipPath + "') && reboot"});
-                                        p.waitFor();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }).start();
-                            })
-                            .setNegativeButton(android.R.string.cancel, null)
-                            .show();
-                    } else {
-                        NavUtil.startURL(activity, getString(R.string.latest_url));
-                    }
-                });
+                binding.updateBtn.setOnClickListener(v -> handleUpdateInstallClick(activity));
                 binding.updateCard.setVisibility(View.VISIBLE);
             } else {
                 List<String> upgradableLines = new ArrayList<>();
@@ -398,11 +392,154 @@ public class HomeFragment extends BaseFragment implements MenuProvider, RepoLoad
         new AboutDialog().show(getChildFragmentManager(), "about");
     }
 
+    private void handleUpdateInstallClick(Activity activity) {
+        File readyZip = UpdateUtil.getValidCachedZip();
+        if (readyZip != null) {
+            showFlashConfirmDialog(activity, readyZip);
+            return;
+        }
+
+        AtomicBoolean cancelled = new AtomicBoolean(false);
+        AlertDialog downloadDialog = new BlurBehindDialogBuilder(activity)
+                .setTitle(R.string.update_lsposed)
+                .setMessage(R.string.download_started)
+                .setView(createIndeterminateProgressView(activity))
+                .setNegativeButton(android.R.string.cancel, (d, w) -> cancelled.set(true))
+                .setOnCancelListener(d -> cancelled.set(true))
+                .show();
+
+        UpdateUtil.ensureUpdateZip(new UpdateUtil.ZipDownloadCallback() {
+            @Override
+            public void onReady(@NonNull File zipFile) {
+                runOnUiThread(() -> {
+                    if (downloadDialog.isShowing()) {
+                        downloadDialog.dismiss();
+                    }
+                    if (cancelled.get() || !isAdded() || activity.isFinishing() || activity.isDestroyed()) {
+                        return;
+                    }
+                    showFlashConfirmDialog(activity, zipFile);
+                });
+            }
+
+            @Override
+            public void onError(@NonNull String message) {
+                runOnUiThread(() -> {
+                    if (downloadDialog.isShowing()) {
+                        downloadDialog.dismiss();
+                    }
+                    if (cancelled.get() || !isAdded() || activity.isFinishing() || activity.isDestroyed()) {
+                        return;
+                    }
+                    new BlurBehindDialogBuilder(activity)
+                            .setTitle(R.string.update_lsposed)
+                            .setMessage(getString(R.string.download_failed, message))
+                            .setPositiveButton("GitHub", (d, w) -> NavUtil.startURL(activity, getString(R.string.latest_url)))
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show();
+                });
+            }
+        });
+    }
+
+    private void showFlashConfirmDialog(Activity activity, File zipFile) {
+        String notes = App.getPreferences().getString("release_notes", getString(R.string.please_update_summary));
+        new BlurBehindDialogBuilder(activity)
+                .setTitle(R.string.update_lsposed)
+                .setMessage(notes + "\n\n" + getString(R.string.update_flash_confirm_msg))
+                .setPositiveButton(R.string.install_and_reboot, (dialog, which) -> flashZipAndReboot(activity, zipFile))
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void flashZipAndReboot(Activity activity, File zipFile) {
+        AlertDialog progressDialog = new BlurBehindDialogBuilder(activity)
+                .setTitle(R.string.install)
+                .setView(createIndeterminateProgressView(activity))
+                .setCancelable(false)
+                .show();
+
+        App.getExecutorService().submit(() -> {
+            try {
+                String safeSrc = zipFile.getAbsolutePath().replace("'", "'\\''");
+                Process stageProc = new ProcessBuilder(
+                        "su", "-c",
+                        "cp -f '" + safeSrc + "' /data/local/tmp/vector_update.zip && chmod 644 /data/local/tmp/vector_update.zip"
+                ).redirectErrorStream(true).start();
+                String stageOut = readStreamFully(stageProc.getInputStream());
+                int stageRc = stageProc.waitFor();
+                if (stageRc != 0) {
+                    String errMsg = stageOut.isEmpty() ? ("Root staging exited with code " + stageRc) : stageOut;
+                    showFlashErrorOnUiThread(activity, progressDialog, errMsg);
+                    return;
+                }
+
+                String flashCmd = "nohup sh -c '("
+                        + "/data/adb/ksud module install /data/local/tmp/vector_update.zip || "
+                        + "ksud module install /data/local/tmp/vector_update.zip || "
+                        + "/data/adb/apd module install /data/local/tmp/vector_update.zip || "
+                        + "apd module install /data/local/tmp/vector_update.zip || "
+                        + "/data/adb/magisk/magisk --install-module /data/local/tmp/vector_update.zip || "
+                        + "magisk --install-module /data/local/tmp/vector_update.zip"
+                        + ") && rm -f /data/local/tmp/vector_update.zip && sync && (svc power reboot || reboot)' "
+                        + ">/data/local/tmp/vector_update.log 2>&1 </dev/null &";
+                Process flashProc = new ProcessBuilder("su", "-c", flashCmd).redirectErrorStream(true).start();
+                String flashOut = readStreamFully(flashProc.getInputStream());
+                int flashRc = flashProc.waitFor();
+                if (flashRc != 0) {
+                    String errMsg = flashOut.isEmpty() ? ("Root flash launch exited with code " + flashRc) : flashOut;
+                    showFlashErrorOnUiThread(activity, progressDialog, errMsg);
+                }
+            } catch (Throwable t) {
+                showFlashErrorOnUiThread(activity, progressDialog, t.getMessage() != null ? t.getMessage() : t.toString());
+            }
+        });
+    }
+
+    private View createIndeterminateProgressView(Activity activity) {
+        int padPx = Math.round(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 24, activity.getResources().getDisplayMetrics()));
+        FrameLayout container = new FrameLayout(activity);
+        container.setPadding(padPx, padPx / 2, padPx, padPx / 2);
+        LinearProgressIndicator indicator = new LinearProgressIndicator(activity);
+        indicator.setIndeterminate(true);
+        container.addView(indicator, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        return container;
+    }
+
+    private String readStreamFully(InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        int n;
+        while ((n = in.read(buf)) != -1) {
+            out.write(buf, 0, n);
+        }
+        return out.toString(StandardCharsets.UTF_8.name()).trim();
+    }
+
+    private void showFlashErrorOnUiThread(Activity activity, AlertDialog progressDialog, String message) {
+        runOnUiThread(() -> {
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            if (!isAdded() || activity.isFinishing() || activity.isDestroyed()) {
+                return;
+            }
+            new BlurBehindDialogBuilder(activity)
+                    .setTitle(R.string.update_lsposed)
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+        });
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         repoLoader.removeListener(this);
         moduleUtil.removeListener(this);
+        UpdateUtil.removeListener(this);
         binding = null;
     }
 }
